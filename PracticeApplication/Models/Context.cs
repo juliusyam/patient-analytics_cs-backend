@@ -8,4 +8,19 @@ public class Context : DbContext
         
     }
     
+    public virtual DbSet<User> Users { get; set; } = default!;
+    public virtual DbSet<Patient> Patients { get; set; } = default!;
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<User>(user =>
+        {
+            user.HasKey(e => e.Id);
+        });
+
+        modelBuilder.Entity<Patient>(patient =>
+        {
+            patient.HasKey(e => e.Id);
+        });
+    }
 }

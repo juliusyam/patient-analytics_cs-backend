@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using PracticeApplication.Middleware;
 using PracticeApplication.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +22,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseHttpStatusCodeExceptionMiddleware();
+
+app.UseExceptionHandler(new ExceptionHandlerOptions()
+{
+    AllowStatusCode404Response = true,
+    ExceptionHandlingPath = "/error"
+});
 
 app.UseHttpsRedirection();
 
