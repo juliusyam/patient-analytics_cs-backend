@@ -12,6 +12,24 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+var sqliteConnection = new SqliteConnection("Data Source=PracticeApplication.db");
+
+sqliteConnection.Open();
+
+var createUserTable =
+    "CREATE TABLE Users(Id INTEGER NOT NULL UNIQUE, DateOfBirth TEXT NOT NULL, Gender TEXT NOT NULL, Email TEXT NOT NULL UNIQUE, Address INTEGER, DateCreated TEXT NOT NULL, DateEdited TEXT, PRIMARY KEY(Id AUTOINCREMENT));";
+
+var createPatientTable =
+    "CREATE TABLE Patients(Id INTEGER NOT NULL UNIQUE, DoctorId INTEGER NOT NULL, DateOfBirth TEXT NOT NULL, Gender TEXT NOT NULL, Email TEXT NOT NULL UNIQUE, Address INTEGER, DateCreated TEXT NOT NULL, DateEdited TEXT, PRIMARY KEY(Id AUTOINCREMENT));";
+
+
+SqliteCommand sqliteCommand = sqliteConnection.CreateCommand();
+sqliteCommand.CommandText = createUserTable;
+sqliteCommand.ExecuteNonQuery();
+
+sqliteCommand.CommandText = createPatientTable;
+sqliteCommand.ExecuteNonQuery();
+
 builder.Services.AddDbContext<Context>(opt =>
     opt.UseSqlite("Data Source=PracticeApplication.db"));
 

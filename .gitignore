@@ -1,3 +1,7 @@
 .idea/
 **/bin/*
 **/obj/*
+
+# Databases
+**/**.db
+**/.DS_Store
