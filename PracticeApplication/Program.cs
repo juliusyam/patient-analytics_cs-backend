@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.Sqlite;
 using PracticeApplication.Middleware;
 using PracticeApplication.Models;
 
@@ -11,8 +12,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+new SqliteConnectionAccess();
+
 builder.Services.AddDbContext<Context>(opt =>
-    opt.UseInMemoryDatabase("TestDatabase"));
+    opt.UseSqlite("Data Source=PracticeApplication.db"));
 
 var app = builder.Build();
 

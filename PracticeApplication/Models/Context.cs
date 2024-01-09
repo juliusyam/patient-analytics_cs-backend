@@ -11,6 +11,11 @@ public class Context : DbContext
     public virtual DbSet<User> Users { get; set; } = default!;
     public virtual DbSet<Patient> Patients { get; set; } = default!;
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseSqlite("Data Source=PracticeApplication.db");
+    }
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<User>(user =>
