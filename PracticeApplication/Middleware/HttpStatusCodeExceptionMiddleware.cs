@@ -8,7 +8,7 @@ public class HttpStatusCodeExceptionMiddleware
     public HttpStatusCodeExceptionMiddleware(RequestDelegate next, ILoggerFactory loggerFactory)
     {
         _next = next ?? throw new ArgumentNullException(nameof(next));
-        _logger = loggerFactory?.CreateLogger<HttpStatusCodeExceptionMiddleware>() ?? throw new ArgumentNullException(nameof(loggerFactory));
+        _logger = loggerFactory.CreateLogger<HttpStatusCodeExceptionMiddleware>() ?? throw new ArgumentNullException(nameof(loggerFactory));
     }
 
     public async Task Invoke(HttpContext context)
@@ -30,8 +30,6 @@ public class HttpStatusCodeExceptionMiddleware
             context.Response.ContentType = ex.ContentType;
 
             await context.Response.WriteAsync(ex.Message);
-
-            return;
         }
     }
 }

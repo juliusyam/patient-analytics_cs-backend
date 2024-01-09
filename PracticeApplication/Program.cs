@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Data.Sqlite;
 using PracticeApplication.Middleware;
 using PracticeApplication.Models;
 
@@ -27,12 +26,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpStatusCodeExceptionMiddleware();
-
-app.UseExceptionHandler(new ExceptionHandlerOptions()
-{
-    AllowStatusCode404Response = true,
-    ExceptionHandlingPath = "/error"
-});
 
 app.UseHttpsRedirection();
 
