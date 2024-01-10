@@ -11,10 +11,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-new SqliteConnectionAccess();
+var connectionString = builder.Configuration.GetConnectionString("PracticeApplicationContext");
+
+SqliteConnectionAccess.EstablishConnection(connectionString);
 
 builder.Services.AddDbContext<Context>(opt =>
-    opt.UseSqlite("Data Source=PracticeApplication.db"));
+    opt.UseSqlite(connectionString));
 
 var app = builder.Build();
 

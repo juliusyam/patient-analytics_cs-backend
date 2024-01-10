@@ -8,7 +8,6 @@ namespace PracticeApplication.Controllers;
 [Route("/users")]
 public class UserController
 {
-
     [HttpGet("{userId}", Name = "GetUser")]
     public User? GetUserById([FromServices] Context context, [FromRoute] int userId)
     {
