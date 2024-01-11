@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PracticeApplication.Middleware;
 using PracticeApplication.Models;
@@ -5,11 +6,12 @@ using PracticeApplication.Models;
 namespace PracticeApplication.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("/patients")]
 public class PatientController
 {
     [HttpGet("{patientId}", Name = "GetPatient")]
-    public Patient? GetPatientById([FromServices] Context context, [FromRoute] int patientId)
+    public Patient GetPatientById([FromServices] Context context, [FromRoute] int patientId)
     {
         var patient = context.Patients.FirstOrDefault(p => p.Id == patientId);
 

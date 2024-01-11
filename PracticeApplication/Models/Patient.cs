@@ -3,8 +3,8 @@ namespace PracticeApplication.Models;
 public class Patient : Person
 {
     private Patient(
-        int doctorId, DateTime dateOfBirth, string gender, string email, string? address, DateTime dateCreated, DateTime? dateEdited
-        ) : base(dateOfBirth, gender, email, address, dateCreated, dateEdited)
+        int doctorId, DateTime dateOfBirth, string gender, string email, string? address, string? firstName, string? lastName, DateTime dateCreated, DateTime? dateEdited
+        ) : base(dateOfBirth, gender, email, address, firstName, lastName, dateCreated, dateEdited)
     {
         DoctorId = doctorId;
     }
@@ -19,6 +19,8 @@ public class Patient : Person
             payload.Gender,
             payload.Email,
             payload.Address,
+            payload.FirstName,
+            payload.LastName,
             dateCreated,
             null
         );

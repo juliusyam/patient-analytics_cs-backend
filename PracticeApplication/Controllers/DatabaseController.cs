@@ -19,7 +19,6 @@ public class DatabaseController
     public void WipeDatabase(IConfiguration configuration)
     {
         if (!HostEnvironment.IsDevelopment()) throw new HttpStatusCodeException(StatusCodes.Status404NotFound, "");
-        
         SqliteConnectionAccess.ResetDatabase(configuration.GetConnectionString("PracticeApplicationContext"));
     }
 }

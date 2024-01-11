@@ -39,7 +39,11 @@ public static class SqliteConnectionAccess
                 "DateOfBirth TEXT NOT NULL, " +
                 "Gender TEXT NOT NULL, " +
                 "Email TEXT NOT NULL UNIQUE, " +
+                "Username TEXT NOT NULL UNIQUE, " +
+                "FirstName TEXT, " +
+                "LastName TEXT, " +
                 "Address INTEGER, " +
+                "PasswordHash TEXT NOT NULL, "+
                 "DateCreated TEXT NOT NULL, " +
                 "DateEdited TEXT, " +
                 "PRIMARY KEY(Id AUTOINCREMENT)" +
@@ -63,6 +67,8 @@ public static class SqliteConnectionAccess
                 "DateOfBirth TEXT NOT NULL, " +
                 "Gender TEXT NOT NULL, " +
                 "Email TEXT NOT NULL UNIQUE, " +
+                "FirstName TEXT, " +
+                "LastName TEXT, " +
                 "Address INTEGER, " +
                 "DateCreated TEXT NOT NULL, " +
                 "DateEdited TEXT, " +
