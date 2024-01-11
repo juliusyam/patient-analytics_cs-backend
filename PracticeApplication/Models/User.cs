@@ -1,17 +1,18 @@
+using PracticeApplication.Models.Auth;
 
-using PracticeApplication.Models;
+namespace PracticeApplication.Models;
 
 public class User : Person
 {
     private User(
         DateTime dateOfBirth, string gender, string email, string passwordHash, string username, string? address, string? firstName, string? lastName, DateTime dateCreated, DateTime? dateEdited
-        ) : base(dateOfBirth, gender, email, address, firstName,lastName, dateCreated, dateEdited)
+    ) : base(dateOfBirth, gender, email, address, firstName,lastName, dateCreated, dateEdited)
     {
         PasswordHash = passwordHash;
         Username = username;
     }
 
-    public static User CreateUser(CreatePayload payload)
+    public static User CreateUser(string passwordHash, RegistrationPayload payload)
     {
         DateTime dateCreated = DateTime.Now;
 
@@ -19,7 +20,7 @@ public class User : Person
             payload.DateOfBirth,
             payload.Gender,
             payload.Email,
-            payload.Password,
+            passwordHash,
             payload.Username,
             payload.Address,
             payload.FirstName,

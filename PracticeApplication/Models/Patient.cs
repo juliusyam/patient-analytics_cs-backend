@@ -9,7 +9,7 @@ public class Patient : Person
         DoctorId = doctorId;
     }
 
-    public static Patient CreatePatient(int doctorId, CreatePayload payload)
+    public static Patient CreatePatient(int doctorId, Person payload)
     {
         DateTime dateCreated = DateTime.Now;
 

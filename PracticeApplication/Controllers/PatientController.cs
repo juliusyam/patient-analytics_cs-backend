@@ -24,7 +24,7 @@ public class PatientController
     }
 
     [HttpPost(Name = "CreatePatient")]
-    public async Task<Patient?> CreatePatient([FromServices] Context context, [FromBody] Person.CreatePayload payload)
+    public async Task<Patient?> CreatePatient([FromServices] Context context, [FromBody] Person payload)
     {
         // TODO: To be replaced with Fetch User from token
         var doctorId = 1;

@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using PracticeApplication.Middleware;
 using PracticeApplication.Models;
 using PracticeApplication.Models.Auth;
-using PracticeApplication.Services.Auth;
 using PracticeApplication.Utils;
 
 namespace PracticeApplication.Services;
@@ -50,7 +49,7 @@ public class AuthService
         return currentUser;
     }
     
-    public async Task<RegisterResponse> RegisterUser(Person.CreatePayload payload)
+    public async Task<RegisterResponse> RegisterUser(RegistrationPayload payload)
     {
         var passwordLength = int.Parse(_config["Auth:PasswordLength"] ?? "10");
         var password = payload.Password;
@@ -71,9 +70,7 @@ public class AuthService
             );
 
         var passwordHash = Password.HashPassword(password, _config);
-        payload.Password = passwordHash;
-
-        var user = await _userService.CreateUser(payload);
+        var user = await _userService.CreateUser(passwordHash, payload);
         var token = _jwtService.GenerateJwt(user);
 
         return new RegisterResponse(user, token);

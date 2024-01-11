@@ -6,7 +6,6 @@ using Microsoft.IdentityModel.Tokens;
 using PracticeApplication.Middleware;
 using PracticeApplication.Models;
 using PracticeApplication.Services;
-using PracticeApplication.Services.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();

@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PracticeApplication.Models;
 using PracticeApplication.Models.Auth;
 using PracticeApplication.Services;
 
@@ -20,7 +19,7 @@ public class AuthController : Controller
     }
     
     [HttpPost(template: "register", Name = "Register")]
-    public async Task<RegisterResponse> Register([FromBody] Person.CreatePayload payload)
+    public async Task<RegisterResponse> Register([FromBody] RegistrationPayload payload)
     {
         return await _authService.RegisterUser(payload);
     }
