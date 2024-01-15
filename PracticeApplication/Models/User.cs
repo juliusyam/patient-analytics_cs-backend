@@ -29,6 +29,7 @@ public class User : Person
             null
         );
     }
+    
     public string Username { get; private set; }
     public string PasswordHash { get; private set; }
 }

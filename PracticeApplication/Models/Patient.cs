@@ -25,6 +25,17 @@ public class Patient : Person
             null
         );
     }
+
+    public void UpdatePatient(Person payload)
+    {
+        DateOfBirth = payload.DateOfBirth;
+        Gender = payload.Gender;
+        Email = payload.Email;
+        Address = payload.Address;
+        FirstName = payload.FirstName;
+        LastName = payload.LastName;
+        DateEdited = DateTime.Now;
+    }
     
     public int DoctorId { get; private set; }
 }

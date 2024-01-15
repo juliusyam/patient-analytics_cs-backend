@@ -1,3 +1,6 @@
+using System.ComponentModel.DataAnnotations;
+using Microsoft.IdentityModel.Tokens;
+
 namespace PracticeApplication.Models;
 
 public class Person
@@ -14,12 +17,14 @@ public class Person
         FirstName = firstName;
         LastName = lastName;
     }
-    
+
     public int Id { get; protected set; }
     public DateTime DateOfBirth { get; protected set; }
     public string Gender { get; protected set; }
-    public string? FirstName { get; private set; }
-    public string? LastName { get; private set; }
+    public string? FirstName { get; protected set; }
+    public string? LastName { get; protected set; }
+    
+    [EmailAddress(ErrorMessage = "Email address format is invalid.")]
     public string Email { get; protected set; }
     public string? Address { get; protected set; }
     public DateTime DateCreated { get; protected set; }

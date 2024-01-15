@@ -1,7 +1,9 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using PracticeApplication.Middleware;
 using PracticeApplication.Models;
 
 namespace PracticeApplication.Services;
@@ -9,10 +11,12 @@ namespace PracticeApplication.Services;
 public class JwtService
 {
     private readonly IConfiguration _config;
-    
-    public JwtService(IConfiguration config)
+    private readonly Context _context;
+
+    public JwtService([FromServices] Context context, IConfiguration config)
     {
         _config = config;
+        _context = context;
     }
     
     public string GenerateJwt(User user)
@@ -38,4 +42,29 @@ public class JwtService
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
+
+    public User DecodeJWT(string token)
+    {
+        var handler = new JwtSecurityTokenHandler();
+        
+        var jsonToken = handler.ReadJwtToken(token.Replace("Bearer ", ""));
+
+        var claim = jsonToken.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid");
+        var userIdString = claim?.Value;
+        
+        if (userIdString is null || !int.TryParse(userIdString, out var userId))
+        {
+            throw new HttpStatusCodeException(StatusCodes.Status400BadRequest, "Unable to decode User ID from token");
+        }
+
+        var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+
+        if (user is null)
+        {
+            throw new HttpStatusCodeException(StatusCodes.Status400BadRequest, $"Unable to find user with id: {userId}");
+        }
+
+        return user;
+    }
+    
 }
