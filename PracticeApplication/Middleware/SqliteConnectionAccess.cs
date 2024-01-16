@@ -1,4 +1,5 @@
 using Microsoft.Data.Sqlite;
+using PracticeApplication.Services;
 
 namespace PracticeApplication.Middleware;
 
@@ -16,7 +17,7 @@ public static class SqliteConnectionAccess
         CreatePatientsTable(sqliteCommand);
     }
 
-    public static void ResetDatabase(string? connectionString)
+    public static async Task ResetDatabase(UserService userService, string? connectionString)
     {
         var sqliteConnection = new SqliteConnection(connectionString);
         
@@ -26,9 +27,13 @@ public static class SqliteConnectionAccess
         
         DropUsersTable(sqliteCommand);
         CreateUsersTable(sqliteCommand);
-        
+
+        var (user, password) = await userService.CreateInitialSuperAdmin();
+
         DropPatientsTable(sqliteCommand);
         CreatePatientsTable(sqliteCommand);
+        
+        Console.WriteLine($"Database Reset Successfully. New initial SuperAdmin account is - Username: { user.Username }, Password: { password }");
     }
     
     private static void CreateUsersTable(SqliteCommand command)
@@ -46,6 +51,7 @@ public static class SqliteConnectionAccess
                 "PasswordHash TEXT NOT NULL, "+
                 "DateCreated TEXT NOT NULL, " +
                 "DateEdited TEXT, " +
+                "Role TEXT NOT NULL, " +
                 "PRIMARY KEY(Id AUTOINCREMENT)" +
             ");";
 

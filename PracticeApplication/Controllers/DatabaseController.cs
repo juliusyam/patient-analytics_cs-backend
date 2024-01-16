@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using PracticeApplication.Middleware;
+using PracticeApplication.Services;
 
 namespace PracticeApplication.Controllers;
 
@@ -8,17 +9,19 @@ namespace PracticeApplication.Controllers;
 [Route("/database")]
 public class DatabaseController
 {
-    private readonly IHostEnvironment HostEnvironment;
+    private readonly IHostEnvironment _hostEnvironment;
+    private readonly UserService _userService;
 
-    public DatabaseController(IHostEnvironment hostEnvironment)
+    public DatabaseController(IHostEnvironment hostEnvironment, UserService userService)
     {
-        HostEnvironment = hostEnvironment;
+        _hostEnvironment = hostEnvironment;
+        _userService = userService;
     }
     
     [HttpGet("wipe", Name = "WipeDatabase")]
-    public void WipeDatabase(IConfiguration configuration)
+    public async Task WipeDatabase(IConfiguration configuration)
     {
-        if (!HostEnvironment.IsDevelopment()) throw new HttpStatusCodeException(StatusCodes.Status404NotFound, "");
-        SqliteConnectionAccess.ResetDatabase(configuration.GetConnectionString("PracticeApplicationContext"));
+        if (!_hostEnvironment.IsDevelopment()) throw new HttpStatusCodeException(StatusCodes.Status404NotFound, "");
+        await SqliteConnectionAccess.ResetDatabase(_userService, configuration.GetConnectionString("PracticeApplicationContext"));
     }
 }

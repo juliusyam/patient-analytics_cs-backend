@@ -2,7 +2,7 @@ namespace PracticeApplication.Models.Auth;
 
 public class RegistrationPayload
 {
-    public RegistrationPayload(DateTime dateOfBirth, string gender, string email, string username, string password,  string? address = null, string? firstName = null, string? lastName = null)
+    public RegistrationPayload(DateTime dateOfBirth, string gender, string email, string username, string password, string? address = null, string? firstName = null, string? lastName = null)
     {
         DateOfBirth = dateOfBirth;
         Gender = gender;

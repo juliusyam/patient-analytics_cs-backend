@@ -4,12 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using PracticeApplication.Middleware;
 using PracticeApplication.Models;
 using PracticeApplication.Services;
-using PracticeApplication.Utils;
 
 namespace PracticeApplication.Controllers;
 
 [ApiController]
-[Authorize]
+[Authorize(Roles = "Doctor")]
 [Route("/patients")]
 public class PatientController
 {
@@ -25,7 +24,7 @@ public class PatientController
     [HttpGet("{patientId:int}", Name = "GetPatient")]
     public Patient GetPatientById([FromRoute] int patientId, [FromHeader] string authorization)
     {
-        var user = _jwtService.DecodeJWT(authorization);
+        var user = _jwtService.GetUserWithJwt(authorization);
 
         var patient = _context.Patients.FirstOrDefault(p => p.Id == patientId);
 
@@ -50,7 +49,7 @@ public class PatientController
         [FromQuery] string? name,
         [FromQuery] string? address)
     {
-        var user = _jwtService.DecodeJWT(authorization);
+        var user = _jwtService.GetUserWithJwt(authorization);
 
         var query = _context.Patients.Where(p => p.DoctorId == user.Id);
         
@@ -79,7 +78,7 @@ public class PatientController
     [HttpPost(Name = "CreatePatient")]
     public async Task<Patient?> CreatePatient([FromHeader] string authorization, [FromBody] Person payload)
     {
-        var user = _jwtService.DecodeJWT(authorization);
+        var user = _jwtService.GetUserWithJwt(authorization);
 
         if (_context.Patients.FirstOrDefault(p => p.Email == payload.Email) is not null)
         {
@@ -98,7 +97,7 @@ public class PatientController
     [HttpPut("{patientId:int}", Name = "EditPatient")]
     public async Task<Patient> EditPatient([FromHeader] string authorization, [FromRoute] int patientId, [FromBody] Person payload)
     {
-        var user = _jwtService.DecodeJWT(authorization);
+        var user = _jwtService.GetUserWithJwt(authorization);
         
         var patient = _context.Patients.FirstOrDefault(p => p.Id == patientId);
 
@@ -131,7 +130,7 @@ public class PatientController
     [HttpDelete("{patientId:int}", Name = "DeletePatient")]
     public async Task<IActionResult> DeletePatient([FromHeader] string authorization, [FromRoute] int patientId)
     {
-        var user = _jwtService.DecodeJWT(authorization);
+        var user = _jwtService.GetUserWithJwt(authorization);
         
         var patient = _context.Patients.FirstOrDefault(p => p.Id == patientId);
         

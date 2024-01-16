@@ -17,13 +17,7 @@ public class AuthController : Controller
     {
         _authService = authService;
     }
-    
-    [HttpPost(template: "register", Name = "Register")]
-    public async Task<RegisterResponse> Register([FromBody] RegistrationPayload payload)
-    {
-        return await _authService.RegisterUser(payload);
-    }
-    
+
     [HttpPost(template: "login", Name = "Login")]
     public LoginResponse Login([FromBody] LoginPayload loginPayload)
     {

@@ -16,4 +16,13 @@ public static class Password
 
         return hashed;
     }
+
+    public static string GeneratePassword(int length = 64)
+    {
+        const string characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+";
+        var random = new Random();
+
+        return new string(Enumerable.Repeat(characters, length)
+            .Select(s => s[random.Next(s.Length)]).ToArray());
+    }
 }
