@@ -2,12 +2,12 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc;
-using PracticeApplication.Middleware;
-using PracticeApplication.Models;
-using PracticeApplication.Models.Auth;
-using PracticeApplication.Utils;
+using PatientAnalytics.Middleware;
+using PatientAnalytics.Models;
+using PatientAnalytics.Models.Auth;
+using PatientAnalytics.Utils;
 
-namespace PracticeApplication.Services;
+namespace PatientAnalytics.Services;
 
 public class AuthService
 {

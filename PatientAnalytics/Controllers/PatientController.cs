@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PracticeApplication.Middleware;
-using PracticeApplication.Models;
-using PracticeApplication.Services;
+using PatientAnalytics.Middleware;
+using PatientAnalytics.Models;
+using PatientAnalytics.Services;
 
-namespace PracticeApplication.Controllers;
+namespace PatientAnalytics.Controllers;
 
 [ApiController]
 [Authorize(Roles = "Doctor")]

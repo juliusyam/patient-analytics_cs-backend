@@ -3,10 +3,10 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using PracticeApplication.Middleware;
-using PracticeApplication.Models;
+using PatientAnalytics.Middleware;
+using PatientAnalytics.Models;
 
-namespace PracticeApplication.Services;
+namespace PatientAnalytics.Services;
 
 public class JwtService
 {

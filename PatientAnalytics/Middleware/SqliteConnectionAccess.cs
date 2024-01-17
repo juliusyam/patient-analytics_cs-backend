@@ -1,7 +1,7 @@
 using Microsoft.Data.Sqlite;
-using PracticeApplication.Services;
+using PatientAnalytics.Services;
 
-namespace PracticeApplication.Middleware;
+namespace PatientAnalytics.Middleware;
 
 public static class SqliteConnectionAccess
 {

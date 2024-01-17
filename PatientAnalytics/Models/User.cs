@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
-using PracticeApplication.Middleware;
-using PracticeApplication.Models.Auth;
+using PatientAnalytics.Middleware;
+using PatientAnalytics.Models.Auth;
 
-namespace PracticeApplication.Models;
+namespace PatientAnalytics.Models;
 
 public class User : Person
 {

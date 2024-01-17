@@ -1,4 +1,4 @@
-namespace PracticeApplication.Models.Auth;
+namespace PatientAnalytics.Models.Auth;
 
 public class RegistrationPayload
 {

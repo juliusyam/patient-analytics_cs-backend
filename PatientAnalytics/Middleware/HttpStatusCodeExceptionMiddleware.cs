@@ -1,4 +1,4 @@
-namespace PracticeApplication.Middleware;
+namespace PatientAnalytics.Middleware;
 
 public class HttpStatusCodeExceptionMiddleware
 {

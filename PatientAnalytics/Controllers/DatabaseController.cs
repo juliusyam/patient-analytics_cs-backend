@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using PracticeApplication.Middleware;
-using PracticeApplication.Services;
+using PatientAnalytics.Middleware;
+using PatientAnalytics.Services;
 
-namespace PracticeApplication.Controllers;
+namespace PatientAnalytics.Controllers;
 
 [Tags("Database (Development Only)")]
 [ApiController]
@@ -22,6 +22,6 @@ public class DatabaseController
     public async Task WipeDatabase(IConfiguration configuration)
     {
         if (!_hostEnvironment.IsDevelopment()) throw new HttpStatusCodeException(StatusCodes.Status404NotFound, "");
-        await SqliteConnectionAccess.ResetDatabase(_userService, configuration.GetConnectionString("PracticeApplicationContext"));
+        await SqliteConnectionAccess.ResetDatabase(_userService, configuration.GetConnectionString("PatientAnalyticsContext"));
     }
 }

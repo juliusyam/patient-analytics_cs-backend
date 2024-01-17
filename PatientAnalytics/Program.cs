@@ -1,11 +1,10 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using PracticeApplication.Middleware;
-using PracticeApplication.Models;
-using PracticeApplication.Services;
+using PatientAnalytics.Middleware;
+using PatientAnalytics.Models;
+using PatientAnalytics.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
@@ -31,7 +30,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
         });
 
-var connectionString = builder.Configuration.GetConnectionString("PracticeApplicationContext");
+var connectionString = builder.Configuration.GetConnectionString("PatientAnalyticsContext");
 
 SqliteConnectionAccess.EstablishConnection(connectionString);
 

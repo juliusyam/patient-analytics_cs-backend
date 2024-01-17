@@ -1,4 +1,4 @@
-namespace PracticeApplication.Models;
+namespace PatientAnalytics.Models;
 using Microsoft.EntityFrameworkCore;
 
 public class Context : DbContext

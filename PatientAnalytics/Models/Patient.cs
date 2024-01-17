@@ -1,4 +1,4 @@
-namespace PracticeApplication.Models;
+namespace PatientAnalytics.Models;
 
 public class Patient : Person
 {

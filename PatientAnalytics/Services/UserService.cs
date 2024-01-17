@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
-using PracticeApplication.Middleware;
-using PracticeApplication.Models;
-using PracticeApplication.Models.Auth;
-using PracticeApplication.Utils;
+using PatientAnalytics.Middleware;
+using PatientAnalytics.Models;
+using PatientAnalytics.Models.Auth;
+using PatientAnalytics.Utils;
 
-namespace PracticeApplication.Services;
+namespace PatientAnalytics.Services;
 
 public class UserService
 {
@@ -22,7 +22,7 @@ public class UserService
         var payload = new RegistrationPayload(
             DateTime.Parse("1990-02-17T06:10:35.950Z"),
             "Male",
-            "superadmin@practice-application.co.uk",
+            "superadmin@patient-analytics.co.uk",
             "superadmin",
             Password.GeneratePassword()
         );

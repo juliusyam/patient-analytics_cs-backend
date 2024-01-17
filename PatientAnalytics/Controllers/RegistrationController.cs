@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PracticeApplication.Models.Auth;
-using PracticeApplication.Services;
+using PatientAnalytics.Models.Auth;
+using PatientAnalytics.Services;
 
-namespace PracticeApplication.Controllers;
+namespace PatientAnalytics.Controllers;
 
 [Tags("Registration")]
 [ApiController]

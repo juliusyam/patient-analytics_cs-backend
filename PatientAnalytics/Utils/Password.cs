@@ -1,7 +1,7 @@
 using System.Text;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
-namespace PracticeApplication.Utils;
+namespace PatientAnalytics.Utils;
 
 public static class Password
 {

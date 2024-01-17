@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.IdentityModel.Tokens;
 
-namespace PracticeApplication.Models;
+namespace PatientAnalytics.Models;
 
 public class Person
 {
