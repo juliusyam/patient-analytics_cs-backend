@@ -32,9 +32,7 @@ public class AuthControllerTest : BaseTest
     [TearDown]
     public void TearDown()
     {
-        RemoveSaveChanges(_superUser);
-        RemoveSaveChanges(_adminUser);
-        RemoveSaveChanges(_doctorUser);
+        ClearUsers();
     }
 
     [Test]

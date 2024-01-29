@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using PatientAnalytics.Models;
@@ -31,8 +32,7 @@ public abstract class BaseTest
 
     protected const string UserPassword = "axyn234x2a!";
     protected static readonly string PasswordHash = Password.HashPassword(UserPassword, Configuration);
-
-
+       
     private static Context GetInMemoryTestDatabase()
     {
         var options = new DbContextOptionsBuilder<Context>()
@@ -105,9 +105,14 @@ public abstract class BaseTest
         DbContext.SaveChanges();
     }
 
-    protected static void RemoveSaveChanges(User newUser)
+    protected static void ClearUsers()
     {
-        DbContext.Users.Remove(newUser);
+        var allUsers = DbContext.Users.ToList();
+        foreach (var user in allUsers)
+        {
+            DbContext.Users.Remove(user);
+        }
+
         DbContext.SaveChanges();
     }
 }
