@@ -9,7 +9,6 @@ using PatientAnalytics.Services;
 using PatientAnalytics.Utils;
 
 namespace PatientAnalytics.Tests;
-
 public abstract class BaseTest
 {
     protected static readonly Context DbContext = GetInMemoryTestDatabase();
@@ -25,14 +24,14 @@ public abstract class BaseTest
         .Build();
 
     protected static readonly JwtService JwtService = new JwtService(DbContext, Configuration);
-    
+
     protected static readonly UserService UserService = new UserService(DbContext, Configuration);
-    
+
     protected static readonly AuthService AuthService = new AuthService(DbContext, JwtService, UserService, Configuration);
 
     protected const string UserPassword = "axyn234x2a!";
     protected static readonly string PasswordHash = Password.HashPassword(UserPassword, Configuration);
-       
+
     private static Context GetInMemoryTestDatabase()
     {
         var options = new DbContextOptionsBuilder<Context>()
@@ -112,7 +111,6 @@ public abstract class BaseTest
         {
             DbContext.Users.Remove(user);
         }
-
         DbContext.SaveChanges();
     }
 }

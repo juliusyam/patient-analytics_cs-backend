@@ -26,6 +26,12 @@ public class PatientController
     {
         var user = _jwtService.GetUserWithJwt(authorization);
 
+        if (user.Role != "Doctor")
+        {
+            throw new HttpStatusCodeException(StatusCodes.Status401Unauthorized,
+                "You don't have the correct authorization");
+        }
+
         var patient = _context.Patients.FirstOrDefault(p => p.Id == patientId);
 
         if (patient is null)
@@ -50,6 +56,12 @@ public class PatientController
         [FromQuery] string? address)
     {
         var user = _jwtService.GetUserWithJwt(authorization);
+
+        if (user.Role != "Doctor")
+        {
+            throw new HttpStatusCodeException(StatusCodes.Status401Unauthorized,
+                "You don't have the correct authorization");
+        }
 
         var query = _context.Patients.Where(p => p.DoctorId == user.Id);
         
@@ -80,9 +92,16 @@ public class PatientController
     {
         var user = _jwtService.GetUserWithJwt(authorization);
 
+        if (user.Role != "Doctor")
+        {
+            throw new HttpStatusCodeException(StatusCodes.Status401Unauthorized,
+                "You don't have the correct authorization");
+        }
+
         if (_context.Patients.FirstOrDefault(p => p.Email == payload.Email) is not null)
         {
-            throw new HttpStatusCodeException(StatusCodes.Status403Forbidden, $"Email address {payload.Email} already taken");
+            throw new HttpStatusCodeException(StatusCodes.Status403Forbidden, 
+                $"Email address {payload.Email} already taken");
         }
         
         var patient = Patient.CreatePatient(user.Id, payload);
@@ -98,7 +117,13 @@ public class PatientController
     public async Task<Patient> EditPatient([FromHeader] string authorization, [FromRoute] int patientId, [FromBody] Person payload)
     {
         var user = _jwtService.GetUserWithJwt(authorization);
-        
+
+        if (user.Role != "Doctor")
+        {
+            throw new HttpStatusCodeException(StatusCodes.Status401Unauthorized,
+                "You don't have the correct authorization");
+        }
+
         var patient = _context.Patients.FirstOrDefault(p => p.Id == patientId);
 
         if (patient is null)
@@ -131,7 +156,13 @@ public class PatientController
     public async Task<IActionResult> DeletePatient([FromHeader] string authorization, [FromRoute] int patientId)
     {
         var user = _jwtService.GetUserWithJwt(authorization);
-        
+
+        if (user.Role != "Doctor")
+        {
+            throw new HttpStatusCodeException(StatusCodes.Status401Unauthorized,
+                "You don't have the correct authorization");
+        }
+
         var patient = _context.Patients.FirstOrDefault(p => p.Id == patientId);
         
         if (patient is null)
