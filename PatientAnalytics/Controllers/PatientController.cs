@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using PatientAnalytics.Middleware;
 using PatientAnalytics.Models;
 using PatientAnalytics.Services;
+using Microsoft.AspNetCore.SignalR;
+using PatientAnalytics.Hubs;
 
 namespace PatientAnalytics.Controllers;
 
@@ -14,11 +16,13 @@ public class PatientController
 {
     private readonly JwtService _jwtService;
     private readonly Context _context;
+    private readonly IHubContext<PatientHub> _hubContext;
 
-    public PatientController(JwtService jwtService, Context context)
+    public PatientController(JwtService jwtService, Context context, IHubContext<PatientHub> hubContext)
     {
         _jwtService = jwtService;
         _context = context;
+        _hubContext = hubContext;
     }
     
     [HttpGet("{patientId:int}", Name = "GetPatient")]
@@ -109,6 +113,8 @@ public class PatientController
         _context.Patients.Add(patient);
 
         await _context.SaveChangesAsync();
+        
+        await _hubContext.Clients.All.SendAsync("ReceiveNewPatient", patient);
 
         return patient;
     }
@@ -149,6 +155,8 @@ public class PatientController
 
         await _context.SaveChangesAsync();
 
+        await _hubContext.Clients.All.SendAsync("ReceiveUpdatedPatient", patient);
+
         return patient;
     }
 
@@ -179,6 +187,8 @@ public class PatientController
         await _context.Patients.Where(p => p.Id == patientId).ExecuteDeleteAsync();
 
         await _context.SaveChangesAsync();
+
+        await _hubContext.Clients.All.SendAsync("DeletedPatient", patient);
 
         return new NoContentResult();
     }
