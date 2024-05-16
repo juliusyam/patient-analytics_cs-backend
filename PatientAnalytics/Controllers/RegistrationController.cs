@@ -22,9 +22,11 @@ public class RegistrationController
     }
 
     [HttpPost("admin", Name = "RegisterAdmin")]
-    public async Task<RegisterResponse> RegisterAdmin([FromHeader] string authorization, [FromBody] RegistrationPayload payload)
+    public async Task<RegisterResponse> RegisterAdmin([FromServices] IHttpContextAccessor httpContextAccessor, [FromBody] RegistrationPayload payload)
     {
+        var authorization = httpContextAccessor.HttpContext.Request.Headers["Authorization"].ToString();
         var user = _jwtService.GetUserWithJwt(authorization);
+
         if (user.Role != "SuperAdmin" && user.Role != "Admin")
         {
             throw new HttpStatusCodeException(StatusCodes.Status401Unauthorized,
@@ -35,9 +37,11 @@ public class RegistrationController
     }
     
     [HttpPost("doctor", Name = "RegisterDoctor")]
-    public async Task<RegisterResponse> RegisterDoctor([FromHeader] string authorization, [FromBody] RegistrationPayload payload)
+    public async Task<RegisterResponse> RegisterDoctor([FromServices] IHttpContextAccessor httpContextAccessor, [FromBody] RegistrationPayload payload)
     {
+        var authorization = httpContextAccessor.HttpContext.Request.Headers["Authorization"].ToString();
         var user = _jwtService.GetUserWithJwt(authorization);
+
         if (user.Role != "SuperAdmin" && user.Role != "Admin")
         {
             throw new HttpStatusCodeException(StatusCodes.Status401Unauthorized,

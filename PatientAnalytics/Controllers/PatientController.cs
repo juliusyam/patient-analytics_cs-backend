@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using PatientAnalytics.Middleware;
 using PatientAnalytics.Models;
@@ -26,8 +27,9 @@ public class PatientController
     }
     
     [HttpGet("{patientId:int}", Name = "GetPatient")]
-    public Patient GetPatientById([FromRoute] int patientId, [FromHeader] string authorization)
+    public Patient GetPatientById([FromRoute] int patientId, [FromServices] IHttpContextAccessor httpContextAccessor)
     {
+        var authorization = httpContextAccessor.HttpContext.Request.Headers["Authorization"].ToString();
         var user = _jwtService.GetUserWithJwt(authorization);
 
         if (user.Role != "Doctor")
@@ -54,11 +56,12 @@ public class PatientController
 
     [HttpGet(Name = "GetPatients")]
     public List<Patient> GetPatients(
-        [FromHeader] string authorization, 
+        [FromServices] IHttpContextAccessor httpContextAccessor, 
         [FromQuery] string? email, 
         [FromQuery] string? name,
         [FromQuery] string? address)
     {
+        var authorization = httpContextAccessor.HttpContext.Request.Headers["Authorization"].ToString();
         var user = _jwtService.GetUserWithJwt(authorization);
 
         if (user.Role != "Doctor")
@@ -92,8 +95,9 @@ public class PatientController
     }
 
     [HttpPost(Name = "CreatePatient")]
-    public async Task<Patient?> CreatePatient([FromHeader] string authorization, [FromBody] Person payload)
+    public async Task<Patient?> CreatePatient([FromServices] IHttpContextAccessor httpContextAccessor, [FromBody] Person payload)
     {
+        var authorization = httpContextAccessor.HttpContext.Request.Headers["Authorization"].ToString();
         var user = _jwtService.GetUserWithJwt(authorization);
 
         if (user.Role != "Doctor")
@@ -120,8 +124,9 @@ public class PatientController
     }
 
     [HttpPut("{patientId:int}", Name = "EditPatient")]
-    public async Task<Patient> EditPatient([FromHeader] string authorization, [FromRoute] int patientId, [FromBody] Person payload)
+    public async Task<Patient> EditPatient([FromServices] IHttpContextAccessor httpContextAccessor, [FromRoute] int patientId, [FromBody] Person payload)
     {
+        var authorization = httpContextAccessor.HttpContext.Request.Headers["Authorization"].ToString();
         var user = _jwtService.GetUserWithJwt(authorization);
 
         if (user.Role != "Doctor")
@@ -161,8 +166,9 @@ public class PatientController
     }
 
     [HttpDelete("{patientId:int}", Name = "DeletePatient")]
-    public async Task<IActionResult> DeletePatient([FromHeader] string authorization, [FromRoute] int patientId)
+    public async Task<IActionResult> DeletePatient([FromRoute] int patientId, [FromServices] IHttpContextAccessor httpContextAccessor)
     {
+        var authorization = httpContextAccessor.HttpContext.Request.Headers["Authorization"].ToString();
         var user = _jwtService.GetUserWithJwt(authorization);
 
         if (user.Role != "Doctor")

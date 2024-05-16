@@ -22,9 +22,11 @@ public class SuperAdminController : Controller
     }
     
     [HttpPost("register-super-admin", Name = "RegisterSuperAdmin")]
-    public async Task<RegisterResponse> RegisterSuperAdmin([FromHeader] string authorization, [FromBody] RegistrationPayload payload)
+    public async Task<RegisterResponse> RegisterSuperAdmin([FromServices] IHttpContextAccessor httpContextAccessor, [FromBody] RegistrationPayload payload)
     {
+        var authorization = httpContextAccessor.HttpContext.Request.Headers["Authorization"].ToString();
         var user = _jwtService.GetUserWithJwt(authorization);
+
         if (user.Role != "SuperAdmin")
         {
             throw new HttpStatusCodeException(StatusCodes.Status401Unauthorized,

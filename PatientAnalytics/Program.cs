@@ -45,6 +45,7 @@ builder.Services.AddSwaggerGen(opt =>
         }
     });
 });
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddMvc();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
