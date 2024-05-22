@@ -1,0 +1,92 @@
+@page "/"
+@using PatientAnalytics.Utils
+@using PatientAnalytics.Models.Auth
+@using PatientAnalytics.Services
+@using Microsoft.AspNetCore.Antiforgery
+@using System.Security.Claims
+@using PatientAnalytics.Middleware
+@inject IServiceScopeFactory ScopeFactory
+@inject PatientAnalyticsAuthStateProvider PatientAnalyticsAuthStateProvider
+@inject NavigationManager NavigationManager
+@inject AuthService AuthService
+@attribute [RequireAntiforgeryToken]
+@rendermode @(new InteractiveServerRenderMode(false))
+
+<PageTitle>Login</PageTitle>
+
+<section>
+    <form method="post" @onsubmit="OnSubmit" @formname="LoginForm" class="box">
+        <div class="field">
+            <label class="label">Username</label>
+            <InputText type="text" class="input is-primary" @bind-Value=Model.Username placeholder="e.g. doctor1" />
+        </div>
+        <div class="field">
+            <label class="label">Password</label>
+            <InputText type="password" class="input is-primary" @bind-Value=Model.Password placeholder="********" />
+        </div>
+        
+        @if (_exception is not null)
+        {
+            <div class="box has-background-danger p-2">
+                <h5 class="has-text-black has-text-weight-semibold">@_exception.StatusCode: @_exception.Message</h5>
+            </div>
+        }
+        
+        <button type="submit" class="button">Submit</button>
+        <AntiforgeryToken />
+    </form>
+</section>
+
+@code {
+    [SupplyParameterFromForm]
+    private LoginPayload? Model { get; set; }
+    
+    private HttpStatusCodeException? _exception;
+    
+    protected override void OnInitialized()
+    {
+        Model = new LoginPayload();
+        
+        var userPrincipal = PatientAnalyticsAuthStateProvider.FetchCurrentUser().UserPrincipal;
+        
+        if (userPrincipal is not null)
+        {
+            var role = userPrincipal.FindFirst(ClaimTypes.Role)?.Value;
+
+            if (role is not null) OnRedirect(role);
+        }
+    }
+
+    private async void OnSubmit()
+    {
+        try
+        {
+            var response = AuthService.Login(Model);
+
+            await PatientAnalyticsAuthStateProvider.Login(response);
+
+            OnRedirect(response.User.Role);
+        }
+        catch (HttpStatusCodeException exception)
+        {
+            _exception = exception;
+        }
+    }
+
+    private void OnRedirect(string role)
+    {
+        switch (role)
+        {
+            case "Doctor":
+                NavigationManager.NavigateTo("/dashboard/doctor");
+                break;
+            case "Admin":
+            case "SuperAdmin":
+                NavigationManager.NavigateTo("/dashboard/admin");
+                break;
+            default:
+                Console.WriteLine("No Matching Role!");
+                break;
+        }
+    }
+}

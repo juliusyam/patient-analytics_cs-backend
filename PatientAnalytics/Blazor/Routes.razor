@@ -1,0 +1,35 @@
+@using PatientAnalytics.Services
+@inject PatientAnalyticsAuthStateProvider PatientAnalyticsAuthStateProvider
+@rendermode InteractiveServer
+
+<CascadingAuthenticationState>
+    @if (_isCheckingUserCredentials)
+    {
+        <h1>Loading...</h1>
+    }
+    else
+    {
+        <Router AppAssembly="typeof(Program).Assembly">
+            <Found Context="routeData">
+                <RouteView RouteData="routeData" />
+                <FocusOnNavigate RouteData="routeData" Selector="h1" />
+            </Found>
+        </Router>
+    }
+</CascadingAuthenticationState>
+
+@code{
+    private bool _isCheckingUserCredentials = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await PatientAnalyticsAuthStateProvider.OnAfterRenderAsync();
+
+            _isCheckingUserCredentials = false;
+        }
+        
+        StateHasChanged();
+    }
+}

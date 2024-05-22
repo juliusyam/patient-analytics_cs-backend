@@ -1,12 +1,14 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using PatientAnalytics.Blazor;
+using PatientAnalytics.Hubs;
 using PatientAnalytics.Middleware;
 using PatientAnalytics.Models;
 using PatientAnalytics.Services;
-using PatientAnalytics.Hubs;
-using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
@@ -16,6 +18,7 @@ builder.Logging.AddConsole();
 
 builder.Services.AddControllers();
 builder.Services.AddSignalR();
+builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(opt =>
@@ -69,6 +72,7 @@ builder.Services.AddDbContext<Context>(opt =>
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<PatientService>();
 
 builder.Services.AddCors(options =>
 {
@@ -82,6 +86,13 @@ builder.Services.AddCors(options =>
             .SetIsOriginAllowedToAllowWildcardSubdomains();
     });
 });
+
+builder.Services.AddSingleton<AuthenticationDataMemoryStorage>();
+builder.Services.AddScoped<PatientAnalyticsUserService>();
+builder.Services.AddScoped<PatientAnalyticsAuthStateProvider>();
+builder.Services.AddScoped<AuthenticationStateProvider>(provider =>
+    provider.GetRequiredService<PatientAnalyticsAuthStateProvider>());
+builder.Services.AddAuthenticationCore();
 
 var app = builder.Build();
 
@@ -100,10 +111,18 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
+app.UseAntiforgery();
+
+app.MapRazorPages();
+
+app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
+
 app.MapControllers();
 
 app.MapHub<PatientHub>("/patientHub");
 
 app.UseCors("AllowSpecificOrigin");
+
+app.UseStaticFiles();
 
 app.Run();

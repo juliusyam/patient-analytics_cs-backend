@@ -1,0 +1,13 @@
+@using PatientAnalytics.Middleware
+@if (Exception is not null)
+{
+    <section class="box has-background-danger has-text-centered">
+        <h3 class="title is-1 has-text-black">@Exception.StatusCode</h3>
+        <h5 class="has-text-black has-text-weight-semibold">@Exception.Message</h5>
+    </section>
+}
+
+@code {
+    [Parameter]
+    public HttpStatusCodeException? Exception { private get; set; }
+}

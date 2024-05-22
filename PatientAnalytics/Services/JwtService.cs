@@ -44,13 +44,18 @@ public class JwtService
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    public string? DecodeJwt(string token, string type)
+    public ClaimsPrincipal? DecodeJwt(string token)
     {
         var handler = new JwtSecurityTokenHandler();
         
+        if (!handler.CanReadToken(token))
+        {
+            return null;
+        }
+        
         var jsonToken = handler.ReadJwtToken(token.Replace("Bearer ", ""));
 
-        return jsonToken.Claims.FirstOrDefault(c => c.Type == type)?.Value;
+        return new ClaimsPrincipal(new ClaimsIdentity(jsonToken.Claims,  "Custom Authentication"));
     }
 
     public User GetUserWithJwt(string token)

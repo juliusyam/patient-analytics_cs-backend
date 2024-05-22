@@ -1,12 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using PatientAnalytics.Hubs;
 using PatientAnalytics.Middleware;
 using PatientAnalytics.Models;
 using PatientAnalytics.Services;
-using Microsoft.AspNetCore.SignalR;
-using PatientAnalytics.Hubs;
 
 namespace PatientAnalytics.Controllers;
 
@@ -16,42 +15,24 @@ namespace PatientAnalytics.Controllers;
 public class PatientController
 {
     private readonly JwtService _jwtService;
+    private readonly PatientService _patientService;
     private readonly Context _context;
     private readonly IHubContext<PatientHub> _hubContext;
 
-    public PatientController(JwtService jwtService, Context context, IHubContext<PatientHub> hubContext)
+    public PatientController(JwtService jwtService, PatientService patientService, Context context, IHubContext<PatientHub> hubContext)
     {
         _jwtService = jwtService;
+        _patientService = patientService;
         _context = context;
         _hubContext = hubContext;
     }
     
     [HttpGet("{patientId:int}", Name = "GetPatient")]
-    public Patient GetPatientById([FromRoute] int patientId, [FromServices] IHttpContextAccessor httpContextAccessor)
+    public Patient GetPatientById([FromServices] IHttpContextAccessor httpContextAccessor, [FromRoute] int patientId)
     {
-        var authorization = httpContextAccessor.HttpContext.Request.Headers["Authorization"].ToString();
-        var user = _jwtService.GetUserWithJwt(authorization);
+        var authorization = httpContextAccessor?.HttpContext?.Request.Headers["Authorization"].ToString() ?? "";
 
-        if (user.Role != "Doctor")
-        {
-            throw new HttpStatusCodeException(StatusCodes.Status401Unauthorized,
-                "You don't have the correct authorization");
-        }
-
-        var patient = _context.Patients.FirstOrDefault(p => p.Id == patientId);
-
-        if (patient is null)
-        {
-            throw new HttpStatusCodeException(StatusCodes.Status404NotFound, $"Unable to find patient with id: {patientId}");
-        }
-
-        if (patient.DoctorId != user.Id)
-        {
-            throw new HttpStatusCodeException(StatusCodes.Status401Unauthorized,
-                "You can only access patients registered to you");
-        }
-        
-        return patient;
+        return _patientService.GetPatientById(authorization, patientId);
     }
 
     [HttpGet(Name = "GetPatients")]
@@ -61,37 +42,9 @@ public class PatientController
         [FromQuery] string? name,
         [FromQuery] string? address)
     {
-        var authorization = httpContextAccessor.HttpContext.Request.Headers["Authorization"].ToString();
-        var user = _jwtService.GetUserWithJwt(authorization);
+        var authorization = httpContextAccessor?.HttpContext?.Request.Headers["Authorization"].ToString() ?? "";
 
-        if (user.Role != "Doctor")
-        {
-            throw new HttpStatusCodeException(StatusCodes.Status401Unauthorized,
-                "You don't have the correct authorization");
-        }
-
-        var query = _context.Patients.Where(p => p.DoctorId == user.Id);
-        
-        if (email is not null)
-        {
-            query = query.Where(p => p.Email.ToLower().Contains(email.ToLower()));
-        }
-        
-        if (name is not null)
-        {
-            query = query
-                .Where(p => 
-                    p.FirstName != null && p.FirstName.ToLower().Contains(name.ToLower()) || 
-                    p.LastName != null && p.LastName.ToLower().Contains(name.ToLower()) || 
-                    p.FirstName != null && p.LastName != null && (p.FirstName + " " + p.LastName).ToLower().Contains(name.ToLower()));
-        }
-
-        if (address is not null)
-        {
-            query = query.Where(p => p.Address != null && p.Address.ToLower().Contains(address.ToLower()));
-        }
-
-        return query.ToList();
+        return _patientService.GetPatients(authorization, email, name, address);
     }
 
     [HttpPost(Name = "CreatePatient")]
@@ -126,43 +79,9 @@ public class PatientController
     [HttpPut("{patientId:int}", Name = "EditPatient")]
     public async Task<Patient> EditPatient([FromServices] IHttpContextAccessor httpContextAccessor, [FromRoute] int patientId, [FromBody] Person payload)
     {
-        var authorization = httpContextAccessor.HttpContext.Request.Headers["Authorization"].ToString();
-        var user = _jwtService.GetUserWithJwt(authorization);
+        var authorization = httpContextAccessor?.HttpContext?.Request.Headers["Authorization"].ToString() ?? "";
 
-        if (user.Role != "Doctor")
-        {
-            throw new HttpStatusCodeException(StatusCodes.Status401Unauthorized,
-                "You don't have the correct authorization");
-        }
-
-        var patient = _context.Patients.FirstOrDefault(p => p.Id == patientId);
-
-        if (patient is null)
-        {
-            throw new HttpStatusCodeException(StatusCodes.Status400BadRequest, $"Unable to locate patient with id: {patientId}");
-        }
-
-        if (patient.DoctorId != user.Id)
-        {
-            throw new HttpStatusCodeException(StatusCodes.Status403Forbidden, $"This user is forbidden from editing patient with id: {patientId}");
-        }
-
-        var patientWithIdenticalEmail = _context.Patients.FirstOrDefault(p => p.Email == payload.Email);
-        
-        if (patientWithIdenticalEmail is not null && patientWithIdenticalEmail != patient)
-        {
-            throw new HttpStatusCodeException(StatusCodes.Status403Forbidden, $"Email address {payload.Email} already taken");
-        }
-
-        patient.UpdatePatient(payload);
-
-        _context.Patients.Update(patient);
-
-        await _context.SaveChangesAsync();
-
-        await _hubContext.Clients.All.SendAsync("ReceiveUpdatedPatient", patient);
-
-        return patient;
+        return await _patientService.EditPatient(authorization, patientId, payload);
     }
 
     [HttpDelete("{patientId:int}", Name = "DeletePatient")]

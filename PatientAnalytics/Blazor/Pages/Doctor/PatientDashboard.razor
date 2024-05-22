@@ -1,0 +1,78 @@
+﻿@page "/dashboard/doctor/patients/{id:int}"
+@using PatientAnalytics.Services
+@using PatientAnalytics.Models
+@using PatientAnalytics.Blazor.Components
+@using System.Security.Claims
+@using PatientAnalytics.Middleware
+@inject PatientAnalyticsAuthStateProvider PatientAnalyticsAuthStateProvider
+@inject NavigationManager NavigationManager
+@inject PatientService PatientService
+
+<PageTitle>@_pageTitle</PageTitle>
+
+<AuthorizeView Roles="Doctor">
+    <Authorized>
+        @if (_patient is not null)
+        {
+            <section class="box">
+                <div class="container">
+                    <h1 class="title">Patient Dashboard</h1>
+                    <p class="subtitle">@_authMessage</p>
+                </div>
+            </section>
+            <section class="box">
+                <div class="container">
+                    <h2 class="title is-4">@_patient.FirstName @_patient.LastName</h2>
+                    <p>Email: <span class="has-text-weight-semibold">@_patient.Email</span></p>
+                    <p>Gender: <span class="has-text-weight-semibold">@_patient.Gender</span></p>
+                    <p>Date of <span class="has-text-weight-semibold">Birth: @_patient.DateOfBirth</span></p>       
+                    <p>Address: <span class="has-text-weight-semibold">@_patient.Address</span></p>
+                   
+                    <div class="divider" />
+                    
+                    <p>Date Created: <span class="has-text-weight-semibold">@_patient.DateCreated</span></p>
+                    <p>Date Edited: <span class="has-text-weight-semibold">@_patient.DateEdited</span></p>
+                </div>
+            </section>
+        }
+        
+        <HttpStatusExceptionIndicator Exception="@_exception" />
+    </Authorized>
+    <NotAuthorized>
+        <h5>You are not authorized! Redirecting...</h5>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    [Parameter] public int Id { get; set; }
+    private string _pageTitle = "Patient Dashboard";
+    private string _authMessage = "The user is NOT authenticated.";
+    
+    private Patient? _patient;
+    private HttpStatusCodeException? _exception;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        if (PatientAnalyticsAuthStateProvider.IsDoctor())
+        {
+            _authMessage = "Welcome back, Dr. " + PatientAnalyticsAuthStateProvider.FetchCurrentUser().UserPrincipal?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var token = PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token;
+
+            try
+            {
+                _patient = PatientService.GetPatientById(token, Id);
+
+                if (_patient is not null) _pageTitle = $"{_patient.FirstName} {_patient.LastName} - Patient Dashboard";
+            }
+            catch (HttpStatusCodeException exception)
+            {
+                _exception = exception;
+            }
+        }
+        else
+        {
+            await PatientAnalyticsAuthStateProvider.Logout();
+            NavigationManager.NavigateTo("/");
+        }
+    }
+}

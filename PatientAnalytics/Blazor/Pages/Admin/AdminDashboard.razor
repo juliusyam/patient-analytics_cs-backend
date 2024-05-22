@@ -1,0 +1,45 @@
+@page "/dashboard/admin"
+@using PatientAnalytics.Services
+@using System.Security.Claims
+@inject PatientAnalyticsAuthStateProvider PatientAnalyticsAuthStateProvider
+@inject NavigationManager NavigationManager
+
+<PageTitle>Admin Dashboard</PageTitle>
+
+<AuthorizeView Roles="SuperAdmin, Admin">
+    <Authorized>
+        <section class="box is-flex is-flex-direction-row is-justify-content-space-between">
+            <div class="container">
+                <h1 class="title">Admin Dashboard</h1>
+                <p class="subtitle">@authMessage</p>
+            </div>
+            
+            <button class="button" onclick="@OnLogout">Logout</button>
+        </section>
+    </Authorized>
+    <NotAuthorized>
+        <h5>You are not authorized! Redirecting...</h5>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private string authMessage = "The user is NOT authenticated.";
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (PatientAnalyticsAuthStateProvider.HasAdminPrivileges())
+        {
+            authMessage = "Welcome back, " + PatientAnalyticsAuthStateProvider.FetchCurrentUser().UserPrincipal?.FindFirst(ClaimTypes.Email);
+        }
+        else
+        {
+            await OnLogout();
+        }
+    }
+
+    private async Task OnLogout()
+    {
+        await PatientAnalyticsAuthStateProvider.Logout();
+        NavigationManager.NavigateTo("/");
+    }
+}

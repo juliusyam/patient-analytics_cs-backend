@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 using PatientAnalytics.Middleware;
 using PatientAnalytics.Models.Auth;
 
@@ -36,7 +37,21 @@ public class User : Person
             null
         );
     }
-    
+
+    public ClaimsPrincipal ToClaimsPrincipal()
+    {
+        return new ClaimsPrincipal(new ClaimsIdentity(
+            new[]
+            {
+                new Claim(ClaimTypes.Email, Email),
+                new Claim(ClaimTypes.NameIdentifier, Username),
+                new Claim(ClaimTypes.Sid, Id.ToString()),
+                new Claim(ClaimTypes.Role, Role),
+            },
+            "Custom Authentication"
+            ));
+    }
+
     public string Username { get; private set; }
     public string PasswordHash { get; private set; }
     
