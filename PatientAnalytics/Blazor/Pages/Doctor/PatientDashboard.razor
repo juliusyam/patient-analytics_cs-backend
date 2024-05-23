@@ -1,9 +1,5 @@
 ﻿@page "/dashboard/doctor/patients/{id:int}"
-@using PatientAnalytics.Services
-@using PatientAnalytics.Models
-@using PatientAnalytics.Blazor.Components
-@using System.Security.Claims
-@using PatientAnalytics.Middleware
+@inject IStringLocalizer<Localized> Localized
 @inject PatientAnalyticsAuthStateProvider PatientAnalyticsAuthStateProvider
 @inject NavigationManager NavigationManager
 @inject PatientService PatientService
@@ -16,22 +12,30 @@
         {
             <section class="box">
                 <div class="container">
-                    <h1 class="title">Patient Dashboard</h1>
+                    <h1 class="title">@Localized["Title_PatientDashboard"]</h1>
                     <p class="subtitle">@_authMessage</p>
                 </div>
             </section>
             <section class="box">
                 <div class="container">
-                    <h2 class="title is-4">@_patient.FirstName @_patient.LastName</h2>
-                    <p>Email: <span class="has-text-weight-semibold">@_patient.Email</span></p>
-                    <p>Gender: <span class="has-text-weight-semibold">@_patient.Gender</span></p>
-                    <p>Date of <span class="has-text-weight-semibold">Birth: @_patient.DateOfBirth</span></p>       
-                    <p>Address: <span class="has-text-weight-semibold">@_patient.Address</span></p>
+                    <h2 class="title is-4">
+                        @string.Format(Localized["Format_FullName"], _patient.FirstName, _patient.LastName)
+                    </h2>
+                    <ContentWithLabel Label="@Localized["Label_Email"]">@_patient.Email</ContentWithLabel>
+                    <ContentWithLabel Label="@Localized["Label_Gender"]">@_patient.Gender</ContentWithLabel>
+                    <ContentWithLabel Label="@Localized["Label_DateOfBirth"]">
+                        @_patient.DateOfBirth.ToString(Localized["DateFormatting_Date"])
+                    </ContentWithLabel>
+                    <ContentWithLabel Label="@Localized["Label_Address"]">@_patient.Address</ContentWithLabel>
                    
                     <div class="divider" />
                     
-                    <p>Date Created: <span class="has-text-weight-semibold">@_patient.DateCreated</span></p>
-                    <p>Date Edited: <span class="has-text-weight-semibold">@_patient.DateEdited</span></p>
+                    <ContentWithLabel Label="@Localized["Label_DateCreated"]">
+                        @_patient.DateCreated.ToString(Localized["DateFormatting_DateTime"])
+                    </ContentWithLabel>
+                    <ContentWithLabel Label="@Localized["Label_DateEdited"]">
+                        @_patient.DateEdited?.ToString(Localized["DateFormatting_DateTime"])
+                    </ContentWithLabel>
                 </div>
             </section>
         }
@@ -39,30 +43,31 @@
         <HttpStatusExceptionIndicator Exception="@_exception" />
     </Authorized>
     <NotAuthorized>
-        <h5>You are not authorized! Redirecting...</h5>
+        <h5>@Localized["Message_UnauthorizedRedirect"]</h5>
     </NotAuthorized>
 </AuthorizeView>
 
 @code {
     [Parameter] public int Id { get; set; }
-    private string _pageTitle = "Patient Dashboard";
-    private string _authMessage = "The user is NOT authenticated.";
+    private string _pageTitle = "";
+    private string _authMessage = "";
     
     private Patient? _patient;
     private HttpStatusCodeException? _exception;
     
     protected override async Task OnInitializedAsync()
     {
+        _pageTitle = Localized["Patienten-Dashboard"];
+        
         if (PatientAnalyticsAuthStateProvider.IsDoctor())
         {
-            _authMessage = "Welcome back, Dr. " + PatientAnalyticsAuthStateProvider.FetchCurrentUser().UserPrincipal?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            _authMessage = string.Format(Localized["Message_DashboardWelcome"], PatientAnalyticsAuthStateProvider.FetchCurrentUser().UserPrincipal?.FindFirst(ClaimTypes.Email)?.Value);
             var token = PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token;
 
             try
             {
                 _patient = PatientService.GetPatientById(token, Id);
-
-                if (_patient is not null) _pageTitle = $"{_patient.FirstName} {_patient.LastName} - Patient Dashboard";
+                if (_patient is not null) _pageTitle = string.Format(Localized["Title_PatientDashboard_WithPatientName"], _patient.FirstName, _patient.LastName);
             }
             catch (HttpStatusCodeException exception)
             {

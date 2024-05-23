@@ -1,0 +1,17 @@
+@inject IStringLocalizer<Localized> Localized
+
+@if (ChildContent is not null)
+{
+    <p>
+        <span>@string.Format(Localized["Format_WithColon"], Label)</span>
+        <span class="has-text-weight-semibold">@ChildContent</span>
+    </p>
+}
+
+@code {
+    [Parameter, EditorRequired] 
+    public string Label { private get; set; } = null!;
+
+    [Parameter, EditorRequired] 
+    public RenderFragment? ChildContent { private get; set; } = null;
+}

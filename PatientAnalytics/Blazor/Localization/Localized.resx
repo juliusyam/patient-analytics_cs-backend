@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="AppTitle" xml:space="preserve">  
+        <value>Patient Analytics</value>  
+    </data>
+    <data name="Title_DoctorDashboard" xml:space="preserve">  
+        <value>Doctor Dashboard</value>  
+    </data>
+    <data name="Title_AdminDashboard" xml:space="preserve">  
+        <value>Admin Dashboard</value>  
+    </data>
+    <data name="Title_PatientDashboard" xml:space="preserve">  
+        <value>Patient Dashboard</value>  
+    </data>
+    <data name="Title_PatientDashboard_WithPatientName" xml:space="preserve">  
+        <value>{0} {1} - Patient Dashboard</value>  
+    </data>
+    <data name="Title_Login" xml:space="preserve">  
+        <value>Login</value>  
+    </data>
+    <data name="Title_Patients" xml:space="preserve">  
+        <value>Patients</value>  
+    </data>
+    <data name="Label_Username" xml:space="preserve">
+        <value>Username</value>
+    </data>
+    <data name="Label_Password" xml:space="preserve">
+        <value>Password</value>
+    </data>
+    <data name="Label_ID" xml:space="preserve">
+        <value>ID</value>
+    </data>
+    <data name="Label_Email" xml:space="preserve">
+        <value>Email</value>
+    </data>
+    <data name="Label_Name" xml:space="preserve">
+        <value>Name</value>
+    </data>
+    <data name="Label_Gender" xml:space="preserve">
+        <value>Gender</value>
+    </data>
+    <data name="Label_DateOfBirth" xml:space="preserve">
+        <value>Date of Birth</value>
+    </data>
+    <data name="Label_DateOfBirth_Abbreviated" xml:space="preserve">
+        <value>DoB</value>
+    </data>
+    <data name="Label_DateCreated" xml:space="preserve">
+        <value>Date Created</value>
+    </data>
+    <data name="Label_DateEdited" xml:space="preserve">
+        <value>Date Edited</value>
+    </data>
+    <data name="Label_Address" xml:space="preserve">
+        <value>Address</value>
+    </data>
+    <data name="Label_ViewDetails" xml:space="preserve">
+        <value>View Details</value>
+    </data>
+    <data name="Label_Loading" xml:space="preserve">
+        <value>Loading...</value>
+    </data>
+    <data name="Placeholder_Username" xml:space="preserve">
+        <value>e.g. patient_analytics_doctor1</value>
+    </data>
+    <data name="Placeholder_Password" xml:space="preserve">
+        <value>********</value>
+    </data>
+    <data name="Format_WithColon" xml:space="preserve">
+        <value>{0}: </value>
+    </data>
+    <data name="Format_FullName" xml:space="preserve">
+        {0} {1}
+    </data>
+    <data name="Button_Submit" xml:space="preserve">
+        <value>Submit</value>
+    </data>
+    <data name="Button_View" xml:space="preserve">
+        <value>View</value>
+    </data>
+    <data name="Button_Logout" xml:space="preserve">
+        <value>Logout</value>
+    </data>
+    <data name="Message_UnauthorizedRedirect" xml:space="preserve">
+        <value>You are not authorized to view this page. Redirecting...</value>
+    </data>
+    <data name="Message_DashboardWelcome" xml:space="preserve">
+        <value>Welcome back, {0}</value>
+    </data>
+    <data name="DateFormatting_Date" xml:space="preserve">
+        <value>dd MMM yyyy</value>
+    </data>
+    <data name="DateFormatting_DateTime" xml:space="preserve">
+        <value>dd MMM yyyy - HH:mm:ss</value>
+    </data>
+</root>

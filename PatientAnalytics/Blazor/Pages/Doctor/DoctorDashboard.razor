@@ -1,37 +1,38 @@
 @page "/dashboard/doctor"
-@using PatientAnalytics.Services
-@using PatientAnalytics.Models
-@using System.Security.Claims
 @inject PatientAnalyticsAuthStateProvider PatientAnalyticsAuthStateProvider
 @inject NavigationManager NavigationManager
 @inject PatientService PatientService
+@inject IStringLocalizer<Localized> Localized
 @rendermode InteractiveServer
 
-<PageTitle>Doctor Dashboard</PageTitle>
+<PageTitle>@Localized["Title_DoctorDashboard"]</PageTitle>
 
 <AuthorizeView Roles="Doctor">
     <Authorized>
         <section class="box is-flex is-flex-direction-row is-justify-content-space-between">
             <div class="container">
-                <h1 class="title">Doctor Dashboard</h1>
+                <h1 class="title">@Localized["Title_DoctorDashboard"]</h1>
                 <p class="subtitle">@_authMessage</p>
             </div>
             
-            <button class="button" onclick="@OnLogout">Logout</button>
+            <button class="button" onclick="@OnLogout">@Localized["Button_Logout"]</button>
         </section>
         <section class="box">
             <div class="container">
-                <h2 class="title is-4">Patients</h2>
+                <h2 class="title is-4">@Localized["Title_Patients"]</h2>
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Email</th>
-                            <th>Name</th>
-                            <th>Gender</th>
-                            <th><abbr title="Date of Birth">DoB</abbr></th>
-                            <th>Email</th>
-                            <th>View Details</th>
+                            <th>@Localized["Label_ID"]</th>
+                            <th>@Localized["Label_Email"]</th>
+                            <th>@Localized["Label_Name"]</th>
+                            <th>@Localized["Label_Gender"]</th>
+                            <th>
+                                <abbr title="@Localized["Label_DateOfBirth"]">
+                                    @Localized["Label_DateOfBirth_Abbreviated"]
+                                </abbr>
+                            </th>
+                            <th>@Localized["Label_ViewDetails"]</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -40,11 +41,10 @@
                         <tr>
                             <td>@patient.Id</td>
                             <td>@patient.Email</td>
-                            <td>@patient.FirstName @patient.LastName</td>
+                            <td>@string.Format(Localized["Format_FullName"], patient.FirstName, patient.LastName)</td>
                             <td>@patient.Gender</td>
-                            <td>@patient.DateOfBirth</td>
-                            <td>@patient.Email</td>
-                            <td><button class="button" onclick="@(()=>ViewPatient(patient.Id))">View</button></td>
+                            <td>@patient.DateOfBirth.ToString(Localized["DateFormatting_Date"])</td>
+                            <td><button class="button" onclick="@(()=>ViewPatient(patient.Id))">@Localized["Button_View"]</button></td>
                         </tr>
                     }
                     </tbody>
@@ -53,19 +53,19 @@
         </section>
     </Authorized>
     <NotAuthorized>
-        <h5>You are not authorized! Redirecting...</h5>
+        <h5>@Localized["Message_UnauthorizedRedirect"]</h5>
     </NotAuthorized>
 </AuthorizeView>
 
 @code {
-    private string _authMessage = "The user is NOT authenticated.";
+    private string _authMessage = "";
     private List<Patient> _patients = new();
     
     protected override async Task OnInitializedAsync()
     {
         if (PatientAnalyticsAuthStateProvider.IsDoctor())
         {
-            _authMessage = "Welcome back, " + PatientAnalyticsAuthStateProvider.FetchCurrentUser().UserPrincipal?.FindFirst(ClaimTypes.Email)?.Value;
+            _authMessage = string.Format(Localized["Message_DashboardWelcome"], PatientAnalyticsAuthStateProvider.FetchCurrentUser().UserPrincipal?.FindFirst(ClaimTypes.Email)?.Value);
             _patients = PatientService.GetPatients(PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token, null, null, null);
         }
         else

@@ -1,11 +1,17 @@
-@using PatientAnalytics.Services
+@inject IJSRuntime JSRuntime
 @inject PatientAnalyticsAuthStateProvider PatientAnalyticsAuthStateProvider
+@inject IStringLocalizer<Localized> Localized
 @rendermode InteractiveServer
 
 <CascadingAuthenticationState>
     @if (_isCheckingUserCredentials)
     {
-        <h1>Loading...</h1>
+        <div class="anchor-center-container">
+            <div class="box container-body has-text-centered">
+                <h3 class="title is-3">@Localized["Label_Loading"]</h3>
+                <progress class="progress is-small is-primary" max="100"/>
+            </div>
+        </div>
     }
     else
     {

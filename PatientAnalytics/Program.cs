@@ -1,8 +1,10 @@
+using System.Globalization;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.JSInterop;
 using Microsoft.OpenApi.Models;
 using PatientAnalytics.Blazor;
 using PatientAnalytics.Hubs;
@@ -92,7 +94,10 @@ builder.Services.AddScoped<PatientAnalyticsUserService>();
 builder.Services.AddScoped<PatientAnalyticsAuthStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(provider =>
     provider.GetRequiredService<PatientAnalyticsAuthStateProvider>());
+
 builder.Services.AddAuthenticationCore();
+
+builder.Services.AddLocalization();
 
 var app = builder.Build();
 
@@ -112,6 +117,10 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseAntiforgery();
+
+app.UseRequestLocalization(new RequestLocalizationOptions()
+    .AddSupportedCultures(new[] { "en", "de", "zh" })
+    .AddSupportedUICultures(new[] { "en", "de", "zh" }));
 
 app.MapRazorPages();
 

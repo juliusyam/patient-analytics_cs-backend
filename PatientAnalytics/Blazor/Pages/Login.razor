@@ -1,28 +1,23 @@
 @page "/"
-@using PatientAnalytics.Utils
-@using PatientAnalytics.Models.Auth
-@using PatientAnalytics.Services
-@using Microsoft.AspNetCore.Antiforgery
-@using System.Security.Claims
-@using PatientAnalytics.Middleware
 @inject IServiceScopeFactory ScopeFactory
 @inject PatientAnalyticsAuthStateProvider PatientAnalyticsAuthStateProvider
 @inject NavigationManager NavigationManager
 @inject AuthService AuthService
+@inject IStringLocalizer<Localized> Localized
 @attribute [RequireAntiforgeryToken]
 @rendermode @(new InteractiveServerRenderMode(false))
 
-<PageTitle>Login</PageTitle>
+<PageTitle>@Localized["Title_Login"]</PageTitle>
 
 <section>
     <form method="post" @onsubmit="OnSubmit" @formname="LoginForm" class="box">
         <div class="field">
-            <label class="label">Username</label>
-            <InputText type="text" class="input is-primary" @bind-Value=Model.Username placeholder="e.g. doctor1" />
+            <label class="label">@Localized["Label_Username"]</label>
+            <InputText type="text" class="input is-primary" @bind-Value=Model.Username placeholder="@Localized["Placeholder_Username"]" />
         </div>
         <div class="field">
-            <label class="label">Password</label>
-            <InputText type="password" class="input is-primary" @bind-Value=Model.Password placeholder="********" />
+            <label class="label">@Localized["Label_Password"]</label>
+            <InputText type="password" class="input is-primary" @bind-Value=Model.Password placeholder="@Localized["Placeholder_Password"]" />
         </div>
         
         @if (_exception is not null)
@@ -32,7 +27,7 @@
             </div>
         }
         
-        <button type="submit" class="button">Submit</button>
+        <button type="submit" class="button">@Localized["Button_Submit"]</button>
         <AntiforgeryToken />
     </form>
 </section>
@@ -43,7 +38,7 @@
     
     private HttpStatusCodeException? _exception;
     
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         Model = new LoginPayload();
         

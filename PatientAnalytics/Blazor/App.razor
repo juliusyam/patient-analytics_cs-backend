@@ -1,3 +1,5 @@
+@inject IStringLocalizer<Localized> Localized
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,16 +11,27 @@
     <link rel="stylesheet" href="/css/PatientAnalytics.styles.css">
     <base href="/" />
     <HeadOutlet @rendermode="@InteractiveServer" />
-    <PageTitle>Patient Analytics</PageTitle>
+    <PageTitle>@Localized["AppTitle"]</PageTitle>
 </head>
 
 <body>
-    <section class="section">
-        <h1 class="title">Patient Analytics</h1>
-        <Routes />
-    </section>
-    <script src="_framework/blazor.web.js"></script>
+<section class="section">
+    <h1 class="title">@Localized["AppTitle"]</h1>
+    <Routes />
+</section>
+<script src="_framework/blazor.web.js" autostart="false"></script>
+<script>
+    const applicationCulture = (navigator.languages && navigator.languages.length) ? navigator.languages[0] :
+        navigator.userLanguage || navigator.language || navigator.browserLanguage || 'en';
+    
+    window.getBrowserLanguage = () => applicationCulture;
+    
+    Blazor.start({
+        webAssembly: {
+            applicationCulture,
+        }
+    });
+</script>
 </body>
 
 </html>
-
