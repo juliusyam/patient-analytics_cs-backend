@@ -6,7 +6,7 @@ namespace PatientAnalytics.Controllers;
 
 [Tags("Database (Development Only)")]
 [ApiController]
-[Route("/database")]
+[Route("/api/database")]
 public class DatabaseController
 {
     private readonly IHostEnvironment _hostEnvironment;

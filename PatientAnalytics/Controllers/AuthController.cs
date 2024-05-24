@@ -8,7 +8,7 @@ namespace PatientAnalytics.Controllers;
 [Tags("Authentication")]
 [ApiController]
 [AllowAnonymous]
-[Route("/auth")]
+[Route("/api/auth")]
 public class AuthController : Controller
 {
     private readonly AuthService _authService;

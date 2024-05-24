@@ -9,7 +9,7 @@ namespace PatientAnalytics.Controllers;
 [Tags("Registration")]
 [ApiController]
 [Authorize(Roles = "SuperAdmin, Admin")]
-[Route("/auth/register")]
+[Route("/api/auth/register")]
 public class RegistrationController
 {
     private readonly AuthService _authService;

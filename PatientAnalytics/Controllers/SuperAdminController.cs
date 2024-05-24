@@ -9,7 +9,7 @@ namespace PatientAnalytics.Controllers;
 [Tags("SuperAdmin")]
 [ApiController]
 [Authorize(Roles = "SuperAdmin")]
-[Route("/internal-only")]
+[Route("/api/internal-only")]
 public class SuperAdminController : Controller
 {
     private readonly AuthService _authService;

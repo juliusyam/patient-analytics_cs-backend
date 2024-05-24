@@ -1,3 +1,7 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
+using PatientAnalytics.Hubs;
 using PatientAnalytics.Middleware;
 using PatientAnalytics.Models;
 
@@ -7,48 +11,25 @@ public class PatientService
 {
     private readonly JwtService _jwtService;
     private readonly Context _context;
+    private readonly IHubContext<PatientHub> _hubContext;
 
-    public PatientService(JwtService jwtService, Context context)
+    public PatientService(JwtService jwtService, Context context, IHubContext<PatientHub> hubContext)
     {
         _jwtService = jwtService;
         _context = context;
+        _hubContext = hubContext;
     }
 
     public Patient GetPatientById(string token, int patientId)
     {
-        var user = _jwtService.GetUserWithJwt(token);
-
-        if (user.Role != "Doctor")
-        {
-            throw new HttpStatusCodeException(StatusCodes.Status401Unauthorized,
-                "You don't have the correct authorization");
-        }
-
-        var patient = _context.Patients.FirstOrDefault(p => p.Id == patientId);
-
-        if (patient is null)
-        {
-            throw new HttpStatusCodeException(StatusCodes.Status404NotFound, $"Unable to find patient with id: {patientId}");
-        }
-
-        if (patient.DoctorId != user.Id)
-        {
-            throw new HttpStatusCodeException(StatusCodes.Status401Unauthorized,
-                "You can only access patients registered to you");
-        }
+        ValidateCrudPermission(token, patientId, out var patient);
         
         return patient;
     }
 
     public List<Patient> GetPatients(string token, string? email, string? name, string? address)
     {
-        var user = _jwtService.GetUserWithJwt(token);
-
-        if (user.Role != "Doctor")
-        {
-            throw new HttpStatusCodeException(StatusCodes.Status401Unauthorized,
-                "You don't have the correct authorization");
-        }
+        ValidateIsDoctor(token, out var user);
 
         var query = _context.Patients.Where(p => p.DoctorId == user.Id);
         
@@ -73,28 +54,31 @@ public class PatientService
 
         return query.ToList();
     }
+    
+    public async Task<Patient?> CreatePatient(string token, Person payload)
+    {
+        ValidateIsDoctor(token, out var user);
+
+        if (_context.Patients.FirstOrDefault(p => p.Email == payload.Email) is not null)
+        {
+            throw new HttpStatusCodeException(StatusCodes.Status403Forbidden, 
+                $"Email address {payload.Email} already taken");
+        }
+        
+        var patient = Patient.CreatePatient(user.Id, payload);
+        
+        _context.Patients.Add(patient);
+
+        await _context.SaveChangesAsync();
+        
+        await _hubContext.Clients.All.SendAsync("ReceiveNewPatient", patient);
+
+        return patient;
+    }
 
     public async Task<Patient> EditPatient(string token, int patientId, Person payload)
     {
-        var user = _jwtService.GetUserWithJwt(token);
-
-        if (user.Role != "Doctor")
-        {
-            throw new HttpStatusCodeException(StatusCodes.Status401Unauthorized,
-                "You don't have the correct authorization");
-        }
-
-        var patient = _context.Patients.FirstOrDefault(p => p.Id == patientId);
-
-        if (patient is null)
-        {
-            throw new HttpStatusCodeException(StatusCodes.Status400BadRequest, $"Unable to locate patient with id: {patientId}");
-        }
-
-        if (patient.DoctorId != user.Id)
-        {
-            throw new HttpStatusCodeException(StatusCodes.Status403Forbidden, $"This user is forbidden from editing patient with id: {patientId}");
-        }
+        ValidateCrudPermission(token, patientId, out var patient);
 
         var patientWithIdenticalEmail = _context.Patients.FirstOrDefault(p => p.Email == payload.Email);
 
@@ -112,5 +96,50 @@ public class PatientService
 
         return patient;
     }
+    
+    public async Task<IActionResult> DeletePatient(string token, int patientId)
+    {
+        ValidateCrudPermission(token, patientId, out var patient);
 
+        // TODO: Delete Medical Records in Metrics API when Deleting Patient entirely
+        await _context.Patients.Where(p => p.Id == patientId).ExecuteDeleteAsync();
+
+        await _context.SaveChangesAsync();
+
+        await _hubContext.Clients.All.SendAsync("DeletedPatient", patient);
+
+        return new NoContentResult();
+    }
+
+    public void ValidateCrudPermission(string token, int patientId, out Patient verifiedPatient)
+    {
+        ValidateIsDoctor(token, out var user);
+        
+        var patient = _context.Patients.FirstOrDefault(p => p.Id == patientId);
+
+        if (patient is null)
+        {
+            throw new HttpStatusCodeException(StatusCodes.Status400BadRequest, $"Unable to locate patient with id: {patientId}");
+        }
+
+        if (patient.DoctorId != user.Id)
+        {
+            throw new HttpStatusCodeException(StatusCodes.Status403Forbidden, $"This user is forbidden from viewing and modifying patient with id: {patientId}");
+        }
+
+        verifiedPatient = patient;
+    }
+
+    public void ValidateIsDoctor(string token, out User verifiedUser)
+    {
+        var user = _jwtService.GetUserWithJwt(token);
+
+        if (user.Role != "Doctor")
+        {
+            throw new HttpStatusCodeException(StatusCodes.Status401Unauthorized,
+                "You don't have the correct authorization");
+        }
+
+        verifiedUser = user;
+    }
 }
