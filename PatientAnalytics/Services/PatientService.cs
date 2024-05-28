@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
+using PatientAnalytics.Blazor.Localization;
 using PatientAnalytics.Hubs;
 using PatientAnalytics.Middleware;
 using PatientAnalytics.Models;
+using PatientAnalytics.Utils.Localization;
 
 namespace PatientAnalytics.Services;
 
@@ -12,12 +15,14 @@ public class PatientService
     private readonly JwtService _jwtService;
     private readonly Context _context;
     private readonly IHubContext<PatientHub> _hubContext;
+    private IStringLocalizer<ApiResponseLocalized> _localized;
 
-    public PatientService(JwtService jwtService, Context context, IHubContext<PatientHub> hubContext)
+    public PatientService(JwtService jwtService, Context context, IHubContext<PatientHub> hubContext, IStringLocalizer<ApiResponseLocalized> localized)
     {
         _jwtService = jwtService;
         _context = context;
         _hubContext = hubContext;
+        _localized = localized;
     }
 
     public Patient GetPatientById(string token, int patientId)
@@ -62,7 +67,7 @@ public class PatientService
         if (_context.Patients.FirstOrDefault(p => p.Email == payload.Email) is not null)
         {
             throw new HttpStatusCodeException(StatusCodes.Status403Forbidden, 
-                $"Email address {payload.Email} already taken");
+                string.Format(_localized["RepeatedError_Email"], payload.Email));
         }
         
         var patient = Patient.CreatePatient(user.Id, payload);
@@ -84,7 +89,8 @@ public class PatientService
 
         if (patientWithIdenticalEmail is not null && patientWithIdenticalEmail != patient)
         {
-            throw new HttpStatusCodeException(StatusCodes.Status403Forbidden, $"Email address {payload.Email} already taken");
+            throw new HttpStatusCodeException(StatusCodes.Status403Forbidden, 
+                string.Format(_localized["RepeatedError_Email"], payload.Email));
         }
 
         patient.UpdatePatient(payload);
@@ -92,7 +98,7 @@ public class PatientService
         _context.Patients.Update(patient);
         await _context.SaveChangesAsync();
 
-        //await _hubContext.Clients.All.SendAsync("ReceiveUpdatedPatient", patient);
+        await _hubContext.Clients.All.SendAsync("ReceiveUpdatedPatient", patient);
 
         return patient;
     }
@@ -119,12 +125,14 @@ public class PatientService
 
         if (patient is null)
         {
-            throw new HttpStatusCodeException(StatusCodes.Status400BadRequest, $"Unable to locate patient with id: {patientId}");
+            throw new HttpStatusCodeException(StatusCodes.Status400BadRequest, 
+                string.Format(_localized["PatientError_NotFound"], patientId));
         }
 
         if (patient.DoctorId != user.Id)
         {
-            throw new HttpStatusCodeException(StatusCodes.Status403Forbidden, $"This user is forbidden from viewing and modifying patient with id: {patientId}");
+            throw new HttpStatusCodeException(StatusCodes.Status403Forbidden, 
+                string.Format(_localized["PatientError_Forbidden"], patientId));
         }
 
         verifiedPatient = patient;
@@ -136,8 +144,8 @@ public class PatientService
 
         if (user.Role != "Doctor")
         {
-            throw new HttpStatusCodeException(StatusCodes.Status401Unauthorized,
-                "You don't have the correct authorization");
+            throw new HttpStatusCodeException(StatusCodes.Status401Unauthorized, 
+                _localized["AuthError_Unauthorized"]);
         }
 
         verifiedUser = user;

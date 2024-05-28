@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using PatientAnalytics.Middleware;
 using PatientAnalytics.Models;
 using PatientAnalytics.Services;
+using PatientAnalytics.Utils.Localization;
 
 namespace PatientAnalytics.Controllers;
 
@@ -12,10 +14,12 @@ namespace PatientAnalytics.Controllers;
 public class PatientController
 {
     private readonly PatientService _patientService;
+    private readonly IStringLocalizer<ApiResponseLocalized> _localized;
 
-    public PatientController(PatientService patientService)
+    public PatientController(PatientService patientService, IStringLocalizer<ApiResponseLocalized> localized)
     {
         _patientService = patientService;
+        _localized = localized;
     }
     
     [HttpGet("{patientId:int}", Name = "GetPatient")]
@@ -65,7 +69,7 @@ public class PatientController
     private void ValidateAuthorization(IHttpContextAccessor httpContextAccessor, out string verifiedAuthorization)
     {
         var authorization = httpContextAccessor?.HttpContext?.Request.Headers["Authorization"].ToString() 
-                            ?? throw new HttpStatusCodeException(StatusCodes.Status401Unauthorized, "Unable to locate Authorization on the request headers");
+                            ?? throw new HttpStatusCodeException(StatusCodes.Status401Unauthorized, _localized["HeaderError_Authorization"]);
 
         verifiedAuthorization = authorization;
     }

@@ -2,10 +2,12 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using PatientAnalytics.Middleware;
 using PatientAnalytics.Models;
 using PatientAnalytics.Models.Auth;
 using PatientAnalytics.Utils;
+using PatientAnalytics.Utils.Localization;
 
 namespace PatientAnalytics.Services;
 
@@ -15,13 +17,15 @@ public class AuthService
     private readonly Context _context;
     private readonly JwtService _jwtService;
     private readonly UserService _userService;
+    private readonly IStringLocalizer<ApiResponseLocalized> _localized;
 
-    public AuthService([FromServices] Context context, JwtService jwtService, UserService userService, IConfiguration config)
+    public AuthService([FromServices] Context context, JwtService jwtService, UserService userService, IConfiguration config, IStringLocalizer<ApiResponseLocalized> localized)
     {
         _config = config;
         _context = context;
         _userService = userService;
         _jwtService = jwtService;
+        _localized = localized;
     }
 
     public LoginResponse Login(LoginPayload loginPayload)
@@ -37,14 +41,14 @@ public class AuthService
 
         if (currentUser == null)
         {
-            throw new HttpStatusCodeException(StatusCodes.Status404NotFound, "User not found"); 
+            throw new HttpStatusCodeException(StatusCodes.Status404NotFound, _localized["AuthError_UserNotFound"]); 
         }
 
         var passwordHash = Password.HashPassword(loginPayload.Password, _config);
 
         if (currentUser.PasswordHash != passwordHash) 
         { 
-            throw new HttpStatusCodeException(StatusCodes.Status401Unauthorized, "Wrong password"); 
+            throw new HttpStatusCodeException(StatusCodes.Status401Unauthorized, _localized["AuthError_WrongPassword"]); 
         } 
         return currentUser;
     }
@@ -58,15 +62,12 @@ public class AuthService
 
         if (isHashLeaked)
             throw new HttpStatusCodeException(StatusCodes.Status401Unauthorized,
-                "Weak password. \n" +
-                "This password has been leaked before. \n" +
-                "Choose a different password."
+                _localized["AuthError_WeakPassword_IsHashLeaked"]
             );
 
         if (!validPassword)
             throw new HttpStatusCodeException(StatusCodes.Status401Unauthorized,
-                "Weak password. \n" +
-                $"Password length must be more than {passwordLength} characters and contain special characters."
+                string.Format(_localized["AuthError_WeakPassword_Validation"], passwordLength)
             );
 
         var passwordHash = Password.HashPassword(password, _config);

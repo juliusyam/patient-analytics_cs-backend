@@ -43,6 +43,16 @@
         <AutoGen>True</AutoGen>
         <DependentUpon>Localized.zh.resx</DependentUpon>
       </Compile>
+      <Compile Update="Utils\Localization\ApiResponseLocalized.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>ApiResponseLocalized.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Utils\Localization\ApiResponseLocalized.de.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>ApiResponseLocalized.de.resx</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>
@@ -57,6 +67,14 @@
       <EmbeddedResource Update="Blazor\Localization\Localized.zh.resx">
         <Generator>ResXFileCodeGenerator</Generator>
         <LastGenOutput>Localized.zh.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Utils\Localization\ApiResponseLocalized.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>ApiResponseLocalized.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Utils\Localization\ApiResponseLocalized.de.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>ApiResponseLocalized.de.Designer.cs</LastGenOutput>
       </EmbeddedResource>
     </ItemGroup>
 

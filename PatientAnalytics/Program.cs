@@ -1,16 +1,15 @@
-using System.Globalization;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.JSInterop;
 using Microsoft.OpenApi.Models;
 using PatientAnalytics.Blazor;
 using PatientAnalytics.Hubs;
 using PatientAnalytics.Middleware;
 using PatientAnalytics.Models;
 using PatientAnalytics.Services;
+using PatientAnalytics.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
@@ -49,6 +48,7 @@ builder.Services.AddSwaggerGen(opt =>
             new string[]{}
         }
     });
+    opt.OperationFilter<AddRequiredHeaderParameter>();
 });
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddMvc();

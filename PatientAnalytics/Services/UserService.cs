@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
+using PatientAnalytics.Blazor.Localization;
 using PatientAnalytics.Middleware;
 using PatientAnalytics.Models;
 using PatientAnalytics.Models.Auth;
 using PatientAnalytics.Utils;
+using PatientAnalytics.Utils.Localization;
 
 namespace PatientAnalytics.Services;
 
@@ -10,11 +13,13 @@ public class UserService
 {
     private readonly IConfiguration _config;
     private readonly Context _context;
+    private readonly IStringLocalizer<ApiResponseLocalized> _localized;
 
-    public UserService([FromServices] Context context, IConfiguration config)
+    public UserService([FromServices] Context context, IConfiguration config, IStringLocalizer<ApiResponseLocalized> localized)
     {
         _context = context;
         _config = config;
+        _localized = localized;
     }
 
     public async Task<(User, string)> CreateInitialSuperAdmin()
@@ -46,13 +51,13 @@ public class UserService
         if (userWithIdenticalUsername is not null)
         {
             throw new HttpStatusCodeException(StatusCodes.Status403Forbidden, 
-                $"Username {payload.Username} already taken");
+                string.Format(_localized["RepeatedError_Username"], payload.Username));
         }
 
         if (userWithIdenticalEmail is not null)
         {
             throw new HttpStatusCodeException(StatusCodes.Status403Forbidden, 
-                $"Email address {payload.Email} already taken");
+                string.Format(_localized["RepeatedError_Email"], payload.Email));
         }
 
         var user = User.CreateUser(passwordHash, payload, role);

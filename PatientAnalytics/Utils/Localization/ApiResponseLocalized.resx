@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="RepeatedError_Email" xml:space="preserve">
+        <value>Email address {0} already taken</value>
+    </data>
+    <data name="RepeatedError_Username" xml:space="preserve">
+        <value>Benutzername {0} already taken</value>
+    </data>
+    <data name="HeaderError_Authorization" xml:space="preserve">
+        <value>Unable to locate Authorization on the request headers</value>
+    </data>
+    <data name="AuthError_Unauthorized" xml:space="preserve">
+        <value>You don't have the correct authorization</value>
+    </data>
+    <data name="AuthError_Unauthorized_SuperAdmin" xml:space="preserve">
+        <value>You don't have the correct Super Admin authorization</value>
+    </data>
+    <data name="AuthError_UserNotFound" xml:space="preserve">
+        <value>User not found</value>
+    </data>
+    <data name="AuthError_WrongPassword" xml:space="preserve">
+        <value>Wrong Password</value>
+    </data>
+    <data name="AuthError_WeakPassword_IsHashLeaked" xml:space="preserve">
+        <value>Weak password. This password has been leaked before. Choose a different password.</value>
+    </data>
+    <data name="AuthError_WeakPassword_Validation" xml:space="preserve">
+        <value>Weak password. Password length must be more than {0} characters and contain special characters.</value>
+    </data>
+    <data name="AuthError_DecodeJwt_Parse" xml:space="preserve">
+        <value>Unable to decode User ID from token</value>
+    </data>
+    <data name="AuthError_DecodeJwt_UserNotFound" xml:space="preserve">
+        <value>Unable to find user with id: {0}</value>
+    </data>
+    <data name="PatientError_NotFound" xml:space="preserve">
+        <value>Unable to locate patient with id: {0}</value>
+    </data>
+    <data name="PatientError_Forbidden" xml:space="preserve">
+        <value>This user is forbidden from viewing and modifying patient with id: {0}</value>
+    </data>
+</root>

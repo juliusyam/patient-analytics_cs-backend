@@ -2,9 +2,11 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using Microsoft.IdentityModel.Tokens;
 using PatientAnalytics.Middleware;
 using PatientAnalytics.Models;
+using PatientAnalytics.Utils.Localization;
 
 namespace PatientAnalytics.Services;
 
@@ -12,11 +14,13 @@ public class JwtService
 {
     private readonly IConfiguration _config;
     private readonly Context _context;
+    private readonly IStringLocalizer<ApiResponseLocalized> _localized;
 
-    public JwtService([FromServices] Context context, IConfiguration config)
+    public JwtService([FromServices] Context context, IConfiguration config, IStringLocalizer<ApiResponseLocalized> localized)
     {
         _config = config;
         _context = context;
+        _localized = localized;
     }
     
     public string GenerateJwt(User user)
@@ -69,14 +73,16 @@ public class JwtService
         
         if (userIdString is null || !int.TryParse(userIdString, out var userId))
         {
-            throw new HttpStatusCodeException(StatusCodes.Status400BadRequest, "Unable to decode User ID from token");
+            throw new HttpStatusCodeException(StatusCodes.Status400BadRequest, 
+                _localized["AuthError_DecodeJwt_Parse"]);
         }
 
         var user = _context.Users.FirstOrDefault(u => u.Id == userId);
 
         if (user is null)
         {
-            throw new HttpStatusCodeException(StatusCodes.Status400BadRequest, $"Unable to find user with id: {userId}");
+            throw new HttpStatusCodeException(StatusCodes.Status400BadRequest, 
+                string.Format(_localized["AuthError_DecodeJwt_UserNotFound"], userId));
         }
 
         return user;
