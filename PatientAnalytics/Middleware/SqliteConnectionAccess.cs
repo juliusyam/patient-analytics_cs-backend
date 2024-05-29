@@ -15,6 +15,10 @@ public static class SqliteConnectionAccess
 
         CreateUsersTable(sqliteCommand);
         CreatePatientsTable(sqliteCommand);
+        CreatePatientTemperaturesTable(sqliteCommand);
+        CreatePatientBloodPressuresTable(sqliteCommand);
+        CreatePatientHeightsTable(sqliteCommand);
+        CreatePatientWeightsTable(sqliteCommand);
     }
 
     public static async Task ResetDatabase(UserService userService, string? connectionString)
@@ -32,6 +36,18 @@ public static class SqliteConnectionAccess
 
         DropPatientsTable(sqliteCommand);
         CreatePatientsTable(sqliteCommand);
+        
+        DropPatientTemperaturesTable(sqliteCommand);
+        CreatePatientTemperaturesTable(sqliteCommand);
+        
+        DropPatientBloodPressuresTable(sqliteCommand);
+        CreatePatientBloodPressuresTable(sqliteCommand);
+        
+        DropPatientHeightsTable(sqliteCommand);
+        CreatePatientHeightsTable(sqliteCommand);
+        
+        DropPatientWeightsTable(sqliteCommand);
+        CreatePatientWeightsTable(sqliteCommand);
         
         Console.WriteLine($"Database Reset Successfully. New initial SuperAdmin account is - Username: { user.Username }, Password: { password }");
     }
@@ -87,6 +103,99 @@ public static class SqliteConnectionAccess
     private static void DropPatientsTable(SqliteCommand command)
     {
         command.CommandText = "DROP TABLE IF EXISTS Patients";
+        command.ExecuteNonQuery();
+    }
+
+    private static void CreatePatientTemperaturesTable(SqliteCommand command)
+    {
+        command.CommandText = 
+            "CREATE TABLE IF NOT EXISTS PatientTemperatures(" +
+            "Id INTEGER NOT NULL UNIQUE, " +
+            "PatientId INTEGER NOT NULL, " +
+            "DoctorId INTEGER NOT NULL, " +
+            "DateCreated DATETIME NOT NULL, " +
+            "TemperatureCelsius DOUBLE NOT NULL, " +
+            "PRIMARY KEY(Id AUTOINCREMENT)" +
+            "FOREIGN KEY(DoctorId) REFERENCES Users(Id)" +
+            "FOREIGN KEY(PatientId) REFERENCES Patients(Id)" +
+            ");";
+        
+        command.ExecuteNonQuery();
+    }
+    
+    private static void DropPatientTemperaturesTable(SqliteCommand command)
+    {
+        command.CommandText = "DROP TABLE IF EXISTS PatientTemperatures";
+        command.ExecuteNonQuery();
+    }
+    
+    private static void CreatePatientBloodPressuresTable(SqliteCommand command)
+    {
+        command.CommandText = 
+            "CREATE TABLE IF NOT EXISTS PatientBloodPressures(" +
+            "Id INTEGER NOT NULL UNIQUE, " +
+            "PatientId INTEGER NOT NULL, " +
+            "DoctorId INTEGER NOT NULL, " +
+            "DateCreated DATETIME NOT NULL, " +
+            "BloodPressureSystolic DOUBLE NOT NULL, " +
+            "BloodPressureDiastolic DOUBLE NOT NULL, " +
+            "PRIMARY KEY(Id AUTOINCREMENT)" +
+            "FOREIGN KEY(DoctorId) REFERENCES Users(Id)" +
+            "FOREIGN KEY(PatientId) REFERENCES Patients(Id)" +
+            ");";
+        
+        command.ExecuteNonQuery();
+    }
+    
+    private static void DropPatientBloodPressuresTable(SqliteCommand command)
+    {
+        command.CommandText = "DROP TABLE IF EXISTS PatientBloodPressures";
+        command.ExecuteNonQuery();
+    }
+    
+    private static void CreatePatientHeightsTable(SqliteCommand command)
+    {
+        command.CommandText = 
+            "CREATE TABLE IF NOT EXISTS PatientHeights(" +
+            "Id INTEGER NOT NULL UNIQUE, " +
+            "PatientId INTEGER NOT NULL, " +
+            "DoctorId INTEGER NOT NULL, " +
+            "DateCreated DATETIME NOT NULL, " +
+            "HeightCm DOUBLE NOT NULL, " +
+            "PRIMARY KEY(Id AUTOINCREMENT)" +
+            "FOREIGN KEY(DoctorId) REFERENCES Users(Id)" +
+            "FOREIGN KEY(PatientId) REFERENCES Patients(Id)" +
+            ");";
+        
+        command.ExecuteNonQuery();
+    }
+    
+    private static void DropPatientHeightsTable(SqliteCommand command)
+    {
+        command.CommandText = "DROP TABLE IF EXISTS PatientHeights";
+        command.ExecuteNonQuery();
+    }
+    
+    private static void CreatePatientWeightsTable(SqliteCommand command)
+    {
+        command.CommandText = 
+            "CREATE TABLE IF NOT EXISTS PatientWeights(" +
+            "Id INTEGER NOT NULL UNIQUE, " +
+            "PatientId INTEGER NOT NULL, " +
+            "DoctorId INTEGER NOT NULL, " +
+            "DateCreated DATETIME NOT NULL, " +
+            "WeightKg DOUBLE NOT NULL, " +
+            "PRIMARY KEY(Id AUTOINCREMENT)" +
+            "FOREIGN KEY(DoctorId) REFERENCES Users(Id)" +
+            "FOREIGN KEY(PatientId) REFERENCES Patients(Id)" +
+            ");";
+        
+        command.ExecuteNonQuery();
+    }
+    
+    private static void DropPatientWeightsTable(SqliteCommand command)
+    {
+        command.CommandText = "DROP TABLE IF EXISTS PatientWeights";
         command.ExecuteNonQuery();
     }
 }

@@ -9,6 +9,7 @@ using PatientAnalytics.Hubs;
 using PatientAnalytics.Middleware;
 using PatientAnalytics.Models;
 using PatientAnalytics.Services;
+using PatientAnalytics.Services.PatientMetrics;
 using PatientAnalytics.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -75,6 +76,10 @@ builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<PatientService>();
+builder.Services.AddScoped<PatientMetricsTemperatureService>();
+builder.Services.AddScoped<PatientMetricsBloodPressureService>();
+builder.Services.AddScoped<PatientMetricsHeightService>();
+builder.Services.AddScoped<PatientMetricsWeightService>();
 
 builder.Services.AddCors(options =>
 {

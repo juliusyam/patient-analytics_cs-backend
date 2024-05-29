@@ -122,5 +122,29 @@ namespace PatientAnalytics.Utils.Localization {
                 return ResourceManager.GetString("PatientError_Forbidden", resourceCulture);
             }
         }
+        
+        public static string PatientTemperatureError_NotFound {
+            get {
+                return ResourceManager.GetString("PatientTemperatureError_NotFound", resourceCulture);
+            }
+        }
+        
+        public static string PatientBloodPressureError_NotFound {
+            get {
+                return ResourceManager.GetString("PatientBloodPressureError_NotFound", resourceCulture);
+            }
+        }
+        
+        public static string PatientHeightError_NotFound {
+            get {
+                return ResourceManager.GetString("PatientHeightError_NotFound", resourceCulture);
+            }
+        }
+        
+        public static string PatientWeightError_NotFound {
+            get {
+                return ResourceManager.GetString("PatientWeightError_NotFound", resourceCulture);
+            }
+        }
     }
 }

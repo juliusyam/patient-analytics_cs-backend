@@ -27,7 +27,7 @@ public class PatientService
 
     public Patient GetPatientById(string token, int patientId)
     {
-        ValidateCrudPermission(token, patientId, out var patient);
+        ValidateCrudPermission(token, patientId, out var patient, out _);
         
         return patient;
     }
@@ -83,7 +83,7 @@ public class PatientService
 
     public async Task<Patient> EditPatient(string token, int patientId, Person payload)
     {
-        ValidateCrudPermission(token, patientId, out var patient);
+        ValidateCrudPermission(token, patientId, out var patient, out _);
 
         var patientWithIdenticalEmail = _context.Patients.FirstOrDefault(p => p.Email == payload.Email);
 
@@ -105,7 +105,7 @@ public class PatientService
     
     public async Task<IActionResult> DeletePatient(string token, int patientId)
     {
-        ValidateCrudPermission(token, patientId, out var patient);
+        ValidateCrudPermission(token, patientId, out var patient, out _);
 
         // TODO: Delete Medical Records in Metrics API when Deleting Patient entirely
         await _context.Patients.Where(p => p.Id == patientId).ExecuteDeleteAsync();
@@ -117,7 +117,7 @@ public class PatientService
         return new NoContentResult();
     }
 
-    public void ValidateCrudPermission(string token, int patientId, out Patient verifiedPatient)
+    public void ValidateCrudPermission(string token, int patientId, out Patient verifiedPatient, out User verifiedDoctor)
     {
         ValidateIsDoctor(token, out var user);
         
@@ -136,6 +136,7 @@ public class PatientService
         }
 
         verifiedPatient = patient;
+        verifiedDoctor = user;
     }
 
     public void ValidateIsDoctor(string token, out User verifiedUser)

@@ -56,5 +56,17 @@
     </data>
     <data name="PatientError_Forbidden" xml:space="preserve">
         <value>This user is forbidden from viewing and modifying patient with id: {0}</value>
+    </data> 
+    <data name="PatientTemperatureError_NotFound" xml:space="preserve">
+        <value>Unable to locate temperature record with id: {0}</value>
+    </data>
+    <data name="PatientBloodPressureError_NotFound" xml:space="preserve">
+        <value>Unable to locate blood pressure record with id: {0}</value>
+    </data>
+    <data name="PatientHeightError_NotFound" xml:space="preserve">
+        <value>Unable to locate height record with id: {0}</value>
+    </data>
+    <data name="PatientWeightError_NotFound" xml:space="preserve">
+        <value>Unable to locate weight record with id: {0}</value>
     </data>
 </root>

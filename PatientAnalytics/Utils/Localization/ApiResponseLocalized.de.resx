@@ -54,4 +54,16 @@
     <data name="PatientError_Forbidden" xml:space="preserve">
         <value>Diesem Benutzer ist es untersagt, den Patienten mit der ID {0} anzuzeigen und zu ändern.</value>
     </data>
+    <data name="PatientTemperatureError_NotFound" xml:space="preserve">
+        <value>Der Temperaturdatensatz mit der ID: {0} konnte nicht gefunden werden.</value>
+    </data>
+    <data name="PatientBloodPressureError_NotFound" xml:space="preserve">
+        <value>Der Blutdruckdatensatz mit der ID: {0} konnte nicht gefunden werden.</value>
+    </data>
+    <data name="PatientHeightError_NotFound" xml:space="preserve">
+        <value>Der Höhendatensatz mit der ID: {0} konnte nicht gefunden werden.</value>
+    </data>
+    <data name="PatientWeightError_NotFound" xml:space="preserve">
+        <value>Der Gewichtsdatensatz mit der ID: {0} konnte nicht gefunden werden.</value>
+    </data>
 </root>
