@@ -31,7 +31,7 @@
         <value>病人介面</value>
     </data>
     <data name="Title_PatientDashboard_WithPatientName" xml:space="preserve">
-        <value>{0} {1} - 病人介面</value>
+        <value> {1}, {0} - 病人介面</value>
     </data>
     <data name="Title_Login" xml:space="preserve">
         <value>登入</value>
@@ -73,13 +73,13 @@
         <value>地址</value>
     </data>
     <data name="Label_ViewDetails" xml:space="preserve">
-        <value>詳細觀看</value>
+        <value>觀看詳情</value>
     </data>
     <data name="Label_Loading" xml:space="preserve">
         <value>準備中...</value>
     </data>
     <data name="Placeholder_Username" xml:space="preserve">
-        <value>例如 patient_analytics_doctor1</value>
+        <value>例如：patient_analytics_doctor1</value>
     </data>
     <data name="Placeholder_Password" xml:space="preserve">
         <value>********</value>
@@ -145,22 +145,22 @@
         <value>姓</value>
     </data>
     <data name="Placeholder_Address" xml:space="preserve">
-        <value>例如福佑街2號, 西城區, 北京, 中國, 100017</value>
+        <value>例如：中國北京市西城區福佑街2號</value>
     </data>
     <data name="Placeholder_DateOfBirth" xml:space="preserve">
-        <value>例如2000年2月15日</value>
+        <value>例如：2000年2月15日</value>
     </data>
     <data name="Placeholder_Email" xml:space="preserve">
-        <value>例如x.wang@email.com</value>
+        <value>例如：x.wang@email.com</value>
     </data>
     <data name="Placeholder_First_Name" xml:space="preserve">
-        <value>例如翔</value>
+        <value>例如：翔</value>
     </data>
     <data name="Placeholder_Gender" xml:space="preserve">
-        <value>例如男/女</value>
+        <value>男 / 女</value>
     </data>
     <data name="Placeholder_Last_Name" xml:space="preserve">
-        <value>例如王</value>
+        <value>例如：王</value>
     </data>
     <data name="Title_Delete_Patient" xml:space="preserve">
         <value>刪除患者</value>

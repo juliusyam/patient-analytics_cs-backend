@@ -30,7 +30,7 @@
         <value>您沒有正確的授權</value>
     </data>
     <data name="AuthError_Unauthorized_SuperAdmin" xml:space="preserve">
-        <value>您沒有正確的超級管理員權限</value>
+        <value>您沒有超級管理員權限</value>
     </data>
     <data name="AuthError_UserNotFound" xml:space="preserve">
         <value>未找到用戶</value>
@@ -39,13 +39,13 @@
         <value>密碼錯誤</value>
     </data>
     <data name="AuthError_WeakPassword_IsHashLeaked" xml:space="preserve">
-        <value>密碼強度低。該密碼之前曾被洩漏過。選擇不同的密碼。</value>
+        <value>密碼強度低。該密碼之前曾被洩漏過。請嘗試另一組密碼。</value>
     </data>
     <data name="AuthError_WeakPassword_Validation" xml:space="preserve">
         <value>密碼強度低。密碼長度必須超過 {0} 個字元並包含特殊字元。</value>
     </data>
     <data name="AuthError_DecodeJwt_Parse" xml:space="preserve">
-        <value>無法從令牌中解碼使用者 ID</value>
+        <value>無法從加密代幣中解碼使用者 ID</value>
     </data>
     <data name="AuthError_DecodeJwt_UserNotFound" xml:space="preserve">
         <value>無法找到 ID 為 {0} 的用戶</value>
@@ -54,7 +54,7 @@
         <value>無法找到 ID 為 {0} 的患者</value>
     </data>
     <data name="PatientError_Forbidden" xml:space="preserve">
-        <value>禁止該使用者檢視和修改 ID 為：{0} 的患者</value>
+        <value>此使用者沒有檢視和修改 ID 為：{0} 的患者的授權</value>
     </data>
     <data name="PatientTemperatureError_NotFound" xml:space="preserve">
         <value>無法找到 ID 為 {0} 的溫度記錄</value>
