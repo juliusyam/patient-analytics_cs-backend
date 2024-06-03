@@ -10,6 +10,17 @@
     <Authorized>
         @if (_patient is not null)
         {
+            <section class="box is-flex is-flex-direction-row is-justify-content-space-between">
+                <div class="is-flex">
+                    <button class="button" @onclick="GoBack">@Localized["Button_Back"]</button>
+                </div>
+                <div class ="is-flex is-gap-3">
+                    <button class="button is-success" @onclick="ToggleUpdateDetails">@(_updateDetails ? Localized["Button_Cancel"] : Localized["Button_Edit"])</button>
+                    <button class="button is-danger is-outlined" @onclick="ShowDeleteConfirmation">@Localized["Button_Delete"]</button>
+                </div>
+                
+            </section>
+            
             <section class="box">
                 <div class="container">
                     <h1 class="title">@Localized["Title_PatientDashboard"]</h1>
@@ -37,9 +48,12 @@
                         @_patient.DateEdited?.ToString(Localized["DateFormatting_DateTime"])
                     </ContentWithLabel>
                 </div>
+                
             </section>
-        }
         
+            <PatientCreateEditModal Patient="_patient" @bind-IsModalOpen="_updateDetails" OnClose="HandleModalClose" />
+        }
+
         <HttpStatusExceptionIndicator Exception="@_exception" />
     </Authorized>
     <NotAuthorized>
@@ -47,17 +61,28 @@
     </NotAuthorized>
 </AuthorizeView>
 
+<ConfirmationModal 
+    Title="@Localized["Title_Delete_Patient"]"
+    ConfirmButtonText="@Localized["Button_Delete"]"
+    CancelButtonText="@Localized["Button_Cancel"]"
+    IsVisible="@_isDeleteConfirmationVisible" 
+    OnConfirm="ConfirmDelete" 
+    OnCancel="HideDeleteConfirmation" />
+
 @code {
-    [Parameter] public int Id { get; set; }
+    [Parameter] 
+    public int Id { get; set; }
     private string _pageTitle = "";
     private string _authMessage = "";
     
     private Patient? _patient;
+    private bool _updateDetails = false;
+    private bool _isDeleteConfirmationVisible = false;
     private HttpStatusCodeException? _exception;
     
     protected override async Task OnInitializedAsync()
     {
-        _pageTitle = Localized["Patienten-Dashboard"];
+        _pageTitle = Localized["Title_PatientDashboard"];
         
         if (PatientAnalyticsAuthStateProvider.IsDoctor())
         {
@@ -79,5 +104,50 @@
             await PatientAnalyticsAuthStateProvider.Logout();
             NavigationManager.NavigateTo("/");
         }
+    }
+
+    private void ToggleUpdateDetails()
+    {
+        _updateDetails = !_updateDetails;
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/dashboard/doctor");
+    }
+
+    private void ShowDeleteConfirmation()
+    {
+        _isDeleteConfirmationVisible = true;
+    }
+
+    private void HideDeleteConfirmation()
+    {
+        _isDeleteConfirmationVisible = false;
+    }
+
+    private async Task ConfirmDelete()
+    {
+        var token = PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token;
+        try
+        {
+            await PatientService.DeletePatient(token, _patient.Id);
+
+            NavigationManager.NavigateTo("/dashboard/doctor");
+        }
+        catch (HttpStatusCodeException exception)
+        {
+            _exception = exception;
+        }
+        finally
+        {
+            _isDeleteConfirmationVisible = false;
+        }
+    }
+
+    private void HandleModalClose()
+    {
+        _updateDetails = false;
+        StateHasChanged();
     }
 }

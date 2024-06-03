@@ -51,6 +51,12 @@
                 </table>
             </div>
         </section>
+        <section class="box is-flex is-flex-direction-row is-justify-content-space-between">
+            <button class="button is-success" @onclick="ToggleCreatePatient">@Localized["Button_Create_New_Patient"]</button>
+        </section>
+        
+        <PatientCreateEditModal @bind-IsModalOpen="_createPatient" OnClose="HandleModalClose" OnPatientCreated="HandlePatientCreated" />
+        <HttpStatusExceptionIndicator Exception="@_exception" />
     </Authorized>
     <NotAuthorized>
         <h5>@Localized["Message_UnauthorizedRedirect"]</h5>
@@ -60,13 +66,15 @@
 @code {
     private string _authMessage = "";
     private List<Patient> _patients = new();
-    
+    private bool _createPatient = false;
+    private HttpStatusCodeException? _exception;
+
     protected override async Task OnInitializedAsync()
     {
         if (PatientAnalyticsAuthStateProvider.IsDoctor())
         {
             _authMessage = string.Format(Localized["Message_DashboardWelcome"], PatientAnalyticsAuthStateProvider.FetchCurrentUser().UserPrincipal?.FindFirst(ClaimTypes.Email)?.Value);
-            _patients = PatientService.GetPatients(PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token, null, null, null);
+            FetchPatients();
         }
         else
         {
@@ -76,9 +84,38 @@
 
     private void ViewPatient(int id) => NavigationManager.NavigateTo($"/dashboard/doctor/patients/{id}");
 
+    private void FetchPatients()
+    {
+        try
+        {
+            _patients = PatientService.GetPatients(PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token, null, null, null);
+        }
+        catch (HttpStatusCodeException exception)
+        {
+            _exception = exception;
+        }
+    }
+
     private async Task OnLogout()
     {
         await PatientAnalyticsAuthStateProvider.Logout();
         NavigationManager.NavigateTo("/");
+    }
+
+    private void ToggleCreatePatient()
+    {
+        _createPatient = !_createPatient;
+    }
+
+    private void HandleModalClose()
+    {
+        _createPatient = false;
+        StateHasChanged();
+    }
+
+    private void HandlePatientCreated(Patient newPatient)
+    {
+        _patients.Add(newPatient);
+        StateHasChanged();
     }
 }

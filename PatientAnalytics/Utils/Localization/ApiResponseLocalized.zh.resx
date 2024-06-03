@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-    
 <root>
     <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
         <xsd:element name="root" msdata:IsDataSet="true">
@@ -19,54 +18,54 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="RepeatedError_Email" xml:space="preserve">
-        <value>Email address {0} already taken</value>
+        <value>電子郵件地址 {0} 已被佔用</value>
     </data>
     <data name="RepeatedError_Username" xml:space="preserve">
-        <value>Username {0} already taken</value>
+        <value>使用者名稱 {0} 已被佔用</value>
     </data>
     <data name="HeaderError_Authorization" xml:space="preserve">
-        <value>Unable to locate Authorization on the request headers</value>
+        <value>無法在請求標頭中找到授權</value>
     </data>
     <data name="AuthError_Unauthorized" xml:space="preserve">
-        <value>You don't have the correct authorization</value>
+        <value>您沒有正確的授權</value>
     </data>
     <data name="AuthError_Unauthorized_SuperAdmin" xml:space="preserve">
-        <value>You don't have the correct Super Admin authorization</value>
+        <value>您沒有正確的超級管理員權限</value>
     </data>
     <data name="AuthError_UserNotFound" xml:space="preserve">
-        <value>User not found</value>
+        <value>未找到用戶</value>
     </data>
     <data name="AuthError_WrongPassword" xml:space="preserve">
-        <value>Wrong Password</value>
+        <value>密碼錯誤</value>
     </data>
     <data name="AuthError_WeakPassword_IsHashLeaked" xml:space="preserve">
-        <value>Weak password. This password has been leaked before. Choose a different password.</value>
+        <value>密碼強度低。該密碼之前曾被洩漏過。選擇不同的密碼。</value>
     </data>
     <data name="AuthError_WeakPassword_Validation" xml:space="preserve">
-        <value>Weak password. Password length must be more than {0} characters and contain special characters.</value>
+        <value>密碼強度低。密碼長度必須超過 {0} 個字元並包含特殊字元。</value>
     </data>
     <data name="AuthError_DecodeJwt_Parse" xml:space="preserve">
-        <value>Unable to decode User ID from token</value>
+        <value>無法從令牌中解碼使用者 ID</value>
     </data>
     <data name="AuthError_DecodeJwt_UserNotFound" xml:space="preserve">
-        <value>Unable to find user with id: {0}</value>
+        <value>無法找到 ID 為 {0} 的用戶</value>
     </data>
     <data name="PatientError_NotFound" xml:space="preserve">
-        <value>Unable to locate patient with id: {0}</value>
+        <value>無法找到 ID 為 {0} 的患者</value>
     </data>
     <data name="PatientError_Forbidden" xml:space="preserve">
-        <value>This user is forbidden from viewing and modifying patient with id: {0}</value>
+        <value>禁止該使用者檢視和修改 ID 為：{0} 的患者</value>
     </data>
     <data name="PatientTemperatureError_NotFound" xml:space="preserve">
-        <value>Unable to locate temperature record with id: {0}</value>
+        <value>無法找到 ID 為 {0} 的溫度記錄</value>
     </data>
     <data name="PatientBloodPressureError_NotFound" xml:space="preserve">
-        <value>Unable to locate blood pressure record with id: {0}</value>
+        <value>無法找到 ID 為 {0} 的血壓記錄</value>
     </data>
     <data name="PatientHeightError_NotFound" xml:space="preserve">
-        <value>Unable to locate height record with id: {0}</value>
+        <value>無法找到 ID 為 {0} 的高度記錄</value>
     </data>
     <data name="PatientWeightError_NotFound" xml:space="preserve">
-        <value>Unable to locate weight record with id: {0}</value>
+        <value>無法找到 ID 為 {0} 的體重記錄</value>
     </data>
 </root>

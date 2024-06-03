@@ -3,7 +3,7 @@
 <root>
     <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
         <xsd:element name="root" msdata:IsDataSet="true">
-            
+
         </xsd:element>
     </xsd:schema>
     <resheader name="resmimetype">
@@ -18,26 +18,26 @@
     <resheader name="writer">
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
-    <data name="AppTitle" xml:space="preserve">  
-        <value>Patientenanalyse</value>  
+    <data name="AppTitle" xml:space="preserve">
+        <value>Patientenanalyse</value>
     </data>
-    <data name="Title_DoctorDashboard" xml:space="preserve">  
-        <value>Arzt-Dashboard</value>  
+    <data name="Title_DoctorDashboard" xml:space="preserve">
+        <value>Arzt-Dashboard</value>
     </data>
-    <data name="Title_AdminDashboard" xml:space="preserve">  
-        <value>Admin-Dashboard</value>  
+    <data name="Title_AdminDashboard" xml:space="preserve">
+        <value>Admin-Dashboard</value>
     </data>
-    <data name="Title_PatientDashboard" xml:space="preserve">  
-        <value>Patienten-Dashboard</value>  
+    <data name="Title_PatientDashboard" xml:space="preserve">
+        <value>Patienten-Dashboard</value>
     </data>
-    <data name="Title_PatientDashboard_WithPatientName" xml:space="preserve">  
-        <value>{0} {1} - Patienten-Dashboard</value>  
+    <data name="Title_PatientDashboard_WithPatientName" xml:space="preserve">
+        <value>{0} {1} - Patienten-Dashboard</value>
     </data>
-    <data name="Title_Login" xml:space="preserve">  
-        <value>Anmeldung</value>  
+    <data name="Title_Login" xml:space="preserve">
+        <value>Anmeldung</value>
     </data>
-    <data name="Title_Patients" xml:space="preserve">  
-        <value>Patient(in)</value>  
+    <data name="Title_Patients" xml:space="preserve">
+        <value>Patient(in)</value>
     </data>
     <data name="Label_Username" xml:space="preserve">
         <value>Nutzername</value>
@@ -88,7 +88,7 @@
         <value>{0}: </value>
     </data>
     <data name="Format_FullName" xml:space="preserve">
-        {0} {1}
+        <value>{0} {1}</value>
     </data>
     <data name="Button_Submit" xml:space="preserve">
         <value>Einreichen</value>
@@ -103,12 +103,66 @@
         <value>Sie sind nicht berechtigt, diese Seite anzuzeigen. Weiterleitung...</value>
     </data>
     <data name="Message_DashboardWelcome" xml:space="preserve">
-        <value>Willkommen zurück, {0}</value>
+        <value>Willkommen, {0}</value>
     </data>
     <data name="DateFormatting_Date" xml:space="preserve">
         <value>dd MMM yyyy</value>
     </data>
     <data name="DateFormatting_DateTime" xml:space="preserve">
         <value>dd MMM yyyy - HH:mm:ss</value>
+    </data>
+    <data name="Button_Back" xml:space="preserve">
+        <value>Zurück</value>
+    </data>
+    <data name="Button_Cancel" xml:space="preserve">
+        <value>Stornieren</value>
+    </data>
+    <data name="Button_Confirm" xml:space="preserve">
+        <value>Bestätigen</value>
+    </data>
+    <data name="Button_Create" xml:space="preserve">
+        <value>Erstellen</value>
+    </data>
+    <data name="Button_Create_New_Patient" xml:space="preserve">
+        <value>Neuen Patienten erstellen</value>
+    </data>
+    <data name="Button_Create_Patient" xml:space="preserve">
+        <value>Patienten anlegen</value>
+    </data>
+    <data name="Button_Delete" xml:space="preserve">
+        <value>Löschen</value>
+    </data>
+    <data name="Button_Edit" xml:space="preserve">
+        <value>Patient Bearbeiten</value>
+    </data>
+    <data name="Button_Update" xml:space="preserve">
+        <value>Aktualisieren</value>
+    </data>
+    <data name="Label_First_Name" xml:space="preserve">
+        <value>Vorname</value>
+    </data>
+    <data name="Label_Last_Name" xml:space="preserve">
+        <value>Nachname</value>
+    </data>
+    <data name="Placeholder_Address" xml:space="preserve">
+        <value>e.g. 1 Willy Brandt Avenue Tiergarten</value>
+    </data>
+    <data name="Placeholder_DateOfBirth" xml:space="preserve">
+        <value>e.g. 15/05/2000</value>
+    </data>
+    <data name="Placeholder_Email" xml:space="preserve">
+        <value>e.g. e.schmidt@hotmail.com</value>
+    </data>
+    <data name="Placeholder_First_Name" xml:space="preserve">
+        <value>e.g. Emilia</value>
+    </data>
+    <data name="Placeholder_Gender" xml:space="preserve">
+        <value>e.g. Männlich / Weiblich</value>
+    </data>
+    <data name="Placeholder_Last_Name" xml:space="preserve">
+      <value>e.g. Schmidt</value>
+    </data>
+    <data name="Title_Delete_Patient" xml:space="preserve">
+        <value>Patient Löschen</value>
     </data>
 </root>

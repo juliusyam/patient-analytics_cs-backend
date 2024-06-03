@@ -30,6 +30,9 @@
     <data name="AuthError_Unauthorized" xml:space="preserve">
         <value>Sie verfügen nicht über die entsprechende Berechtigung</value>
     </data>
+    <data name="AuthError_Unauthorized_SuperAdmin" xml:space="preserve">
+        <value>You don't have the correct Super Admin authorization</value>
+    </data>
     <data name="AuthError_UserNotFound" xml:space="preserve">
         <value>Benutzer nicht gefunden</value>
     </data>

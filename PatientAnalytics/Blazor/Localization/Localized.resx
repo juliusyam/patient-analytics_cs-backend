@@ -3,7 +3,7 @@
 <root>
     <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
         <xsd:element name="root" msdata:IsDataSet="true">
-            
+
         </xsd:element>
     </xsd:schema>
     <resheader name="resmimetype">
@@ -88,7 +88,7 @@
         <value>{0}: </value>
     </data>
     <data name="Format_FullName" xml:space="preserve">
-        {0} {1}
+        <value>{0} {1}</value>
     </data>
     <data name="Button_Submit" xml:space="preserve">
         <value>Submit</value>
@@ -110,5 +110,59 @@
     </data>
     <data name="DateFormatting_DateTime" xml:space="preserve">
         <value>dd MMM yyyy - HH:mm:ss</value>
+    </data>
+    <data name="Button_Back" xml:space="preserve">
+        <value>Back</value>
+    </data>
+    <data name="Button_Cancel" xml:space="preserve">
+        <value>Cancel</value>
+    </data>
+    <data name="Button_Confirm" xml:space="preserve">
+        <value>Confirm</value>
+    </data>
+    <data name="Button_Create" xml:space="preserve">
+        <value>Create</value>
+    </data>
+    <data name="Button_Create_New_Patient" xml:space="preserve">
+        <value>Create New Patient</value>
+    </data>
+    <data name="Button_Create_Patient" xml:space="preserve">
+        <value>Create Patient</value>
+    </data>
+    <data name="Button_Delete" xml:space="preserve">
+        <value>Delete</value>
+    </data>
+    <data name="Button_Edit" xml:space="preserve">
+        <value>Edit Patient</value>
+    </data>
+    <data name="Button_Update" xml:space="preserve">
+        <value>Update</value>
+    </data>
+    <data name="Label_First_Name" xml:space="preserve">
+        <value>First Name</value>
+    </data>
+    <data name="Label_Last_Name" xml:space="preserve">
+        <value>Last Name</value>
+    </data>
+    <data name="Placeholder_Address" xml:space="preserve">
+        <value>e.g. 10 Downing Street</value>
+    </data>
+    <data name="Placeholder_DateOfBirth" xml:space="preserve">
+        <value>e.g. 15/05/2000</value>
+    </data>
+    <data name="Placeholder_Email" xml:space="preserve">
+        <value>e.g. b.jones@hotmail.com</value>
+    </data>
+    <data name="Placeholder_First_Name" xml:space="preserve">
+        <value>e.g. Bob</value>
+    </data>
+    <data name="Placeholder_Gender" xml:space="preserve">
+        <value>e.g. Male / Female</value>
+    </data>
+    <data name="Placeholder_Last_Name" xml:space="preserve">
+        <value>e.g. Smith</value>
+    </data>
+    <data name="Title_Delete_Patient" xml:space="preserve">
+        <value>Delete Patient</value>
     </data>
 </root>

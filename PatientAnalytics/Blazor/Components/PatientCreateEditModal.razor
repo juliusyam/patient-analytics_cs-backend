@@ -1,0 +1,150 @@
+﻿@inject NavigationManager NavigationManager
+@inject PatientService PatientService
+@inject PatientAnalyticsAuthStateProvider PatientAnalyticsAuthStateProvider
+@inject IStringLocalizer<Localized> Localized
+
+@if (IsModalOpen)
+{
+    <div class="modal is-active">
+        <div class="modal-background" />
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">@(IsEditMode ? @Localized["Button_Edit"] : @Localized["Button_Create_Patient"])</p>
+                <button class="delete" aria-label="close" @onclick="CloseModal"></button>
+            </header>
+            <section class="modal-card-body">
+                <EditForm method="post" Model="_patientDto" OnValidSubmit="HandleSubmit" Enhance>
+                    <DataAnnotationsValidator />
+                    <ValidationSummary class="text-danger" />
+                    <div class="field">
+                        <label class="label">@Localized["Label_Gender"]</label>
+                        <InputText class="input" placeholder=@Localized["Placeholder_Gender"] @bind-Value="_patientDto.Gender" />
+                        <ValidationMessage For="() => _patientDto.Gender" class="text-danger" />
+                    </div>
+                    <div class="field">
+                        <label class="label">@Localized["Label_First_Name"]</label>
+                        <InputText class="input" placeholder=@Localized["Placeholder_First_Name"] @bind-Value="_patientDto.FirstName" />
+                        <ValidationMessage For="() => _patientDto.FirstName" class="text-danger" />
+                    </div>
+                    <div class="field">
+                        <label class="label">@Localized["Label_Last_Name"]</label>
+                        <InputText class="input" placeholder=@Localized["Placeholder_Last_Name"] @bind-Value="_patientDto.LastName" />
+                        <ValidationMessage For="() => _patientDto.LastName" class="text-danger" />
+                    </div>
+                    <div class="field">
+                        <label class="label">@Localized["Label_Email"]</label>
+                        <InputText class="input" placeholder=@Localized["Placeholder_Email"] @bind-Value="_patientDto.Email" />
+                        <ValidationMessage For="() => _patientDto.Email" class="text-danger" />
+                    </div>
+                    <div class="field">
+                        <label class="label">@Localized["Label_Address"]</label>
+                        <InputText class="input" placeholder=@Localized["Placeholder_Address"] @bind-Value="_patientDto.Address" />
+                        <ValidationMessage For="() => _patientDto.Address" class="text-danger" />
+                    </div>
+                    <div class="field">
+                        <label class="label">@Localized["Label_DateOfBirth"]</label>
+                        <InputDate class="input" placeholder=@Localized["Placeholder_DateOfBirth"] @bind-Value="_patientDto.DateOfBirth" />
+                        <ValidationMessage For="() => _patientDto.DateOfBirth" class="text-danger" />
+                    </div>
+                    <button type="submit" class="button is-primary">@(IsEditMode ? @Localized["Button_Update"] : @Localized["Button_Create"])</button>
+                    <p class="has-text-danger">@ErrorMessage</p>
+                </EditForm>
+            </section>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] 
+    public bool IsModalOpen { get; set; }
+    [Parameter] 
+    public EventCallback<bool> IsModalOpenChanged { get; set; }
+    [Parameter] 
+    public EventCallback OnClose { get; set; }
+    [Parameter]
+    public EventCallback<Patient> OnPatientCreated { get; set; }
+    [Parameter]
+    public Patient? Patient { get; set; }
+
+    private Patient? _patient;
+    private PersonDTO _patientDto = new();
+
+    private bool IsEditMode => Patient is not null;
+    private string ErrorMessage { get; set; } = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        if (IsModalOpen && Patient is not null)
+        {
+            InitializePatientDto(Patient);
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (Patient != _patient)
+        {
+            InitializePatientDto(Patient);
+        }
+    }
+
+    private void InitializePatientDto(Patient? patient)
+    {
+        _patient = patient;
+        if (patient is not null)
+        {
+            _patientDto = new PersonDTO
+            {
+                Gender = patient.Gender,
+                FirstName = patient.FirstName ?? "",
+                LastName = patient.LastName ?? "",
+                Email = patient.Email,
+                Address = patient.Address ?? "",
+                DateOfBirth = patient.DateOfBirth
+            };
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        var token = PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token;
+        ErrorMessage = string.Empty;
+
+        var patient = new Person(
+                    _patientDto.DateOfBirth,
+                    _patientDto.Gender,
+                    _patientDto.Email,
+                    _patientDto.Address,
+                    _patientDto.FirstName,
+                    _patientDto.LastName,
+                    Patient?.DateCreated ?? DateTime.Now,
+                    DateTime.Now
+                );
+
+        try
+        {
+            if (IsEditMode)
+            {
+                await PatientService.EditPatient(token, Patient.Id, patient);
+            }
+            else
+            {
+                var newPatient = await PatientService.CreatePatient(token, patient);
+                await OnPatientCreated.InvokeAsync(newPatient);
+            }
+            CloseModal();
+        }
+        catch (HttpStatusCodeException exception)
+        {
+            ErrorMessage = exception.Message;
+        }
+    }
+
+    private void CloseModal()
+    {
+        IsModalOpenChanged.InvokeAsync(false);
+        OnClose.InvokeAsync();
+        _patientDto = new();
+        _patient = null;
+    }
+}

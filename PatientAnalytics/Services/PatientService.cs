@@ -96,6 +96,7 @@ public class PatientService
         patient.UpdatePatient(payload);
 
         _context.Patients.Update(patient);
+        
         await _context.SaveChangesAsync();
 
         await _hubContext.Clients.All.SendAsync("ReceiveUpdatedPatient", patient);

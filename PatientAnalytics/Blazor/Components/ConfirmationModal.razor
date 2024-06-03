@@ -1,0 +1,37 @@
+﻿@inject IStringLocalizer<Localized> Localized
+
+<div class="modal @ModalClass">
+    <div class="modal-background" />
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">@Title</p>
+            <button class="delete" aria-label="close" @onclick="Close"></button>
+        </header>
+        <footer class="modal-card-foot">
+            <button class="button is-danger mr-3" @onclick="OnConfirm">@ConfirmButtonText</button>
+            <button class="button" @onclick="Close">@CancelButtonText</button>
+        </footer>
+    </div>
+</div>
+
+@code {
+    [Parameter] 
+    public string Title { get; set; }
+    [Parameter] 
+    public string ConfirmButtonText { get; set; }
+    [Parameter] 
+    public string CancelButtonText { get; set; }
+    [Parameter]
+    public EventCallback OnConfirm { get; set; }
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+    [Parameter]
+    public bool IsVisible { get; set; }
+
+    private string ModalClass => IsVisible ? "is-active" : string.Empty;
+
+    private void Close()
+    {
+        OnCancel.InvokeAsync();
+    }
+}

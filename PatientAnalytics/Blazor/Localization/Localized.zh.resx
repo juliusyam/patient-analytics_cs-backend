@@ -3,7 +3,7 @@
 <root>
     <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
         <xsd:element name="root" msdata:IsDataSet="true">
-            
+
         </xsd:element>
     </xsd:schema>
     <resheader name="resmimetype">
@@ -18,26 +18,26 @@
     <resheader name="writer">
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
-    <data name="AppTitle" xml:space="preserve">  
-        <value>患者分析</value>  
+    <data name="AppTitle" xml:space="preserve">
+        <value>患者分析</value>
     </data>
-    <data name="Title_DoctorDashboard" xml:space="preserve">  
-        <value>醫生介面</value>  
+    <data name="Title_DoctorDashboard" xml:space="preserve">
+        <value>醫生介面</value>
     </data>
-    <data name="Title_AdminDashboard" xml:space="preserve">  
-        <value>行政介面</value>  
+    <data name="Title_AdminDashboard" xml:space="preserve">
+        <value>行政介面</value>
     </data>
-    <data name="Title_PatientDashboard" xml:space="preserve">  
-        <value>病人介面</value>  
+    <data name="Title_PatientDashboard" xml:space="preserve">
+        <value>病人介面</value>
     </data>
-    <data name="Title_PatientDashboard_WithPatientName" xml:space="preserve">  
-        <value>{0} {1} - 病人介面</value>  
+    <data name="Title_PatientDashboard_WithPatientName" xml:space="preserve">
+        <value>{0} {1} - 病人介面</value>
     </data>
-    <data name="Title_Login" xml:space="preserve">  
-        <value>登入</value>  
+    <data name="Title_Login" xml:space="preserve">
+        <value>登入</value>
     </data>
-    <data name="Title_Patients" xml:space="preserve">  
-        <value>你的病人</value>  
+    <data name="Title_Patients" xml:space="preserve">
+        <value>你的病人</value>
     </data>
     <data name="Label_Username" xml:space="preserve">
         <value>賬戶名</value>
@@ -88,7 +88,7 @@
         <value>{0}：</value>
     </data>
     <data name="Format_FullName" xml:space="preserve">
-        {1}, {0} 
+        <value>{1}, {0}</value>
     </data>
     <data name="Button_Submit" xml:space="preserve">
         <value>提交</value>
@@ -110,5 +110,59 @@
     </data>
     <data name="DateFormatting_DateTime" xml:space="preserve">
         <value>yyyy年MM月dd日 - HH:mm:ss</value>
+    </data>
+    <data name="Button_Back" xml:space="preserve">
+        <value>後退</value>
+    </data>
+    <data name="Button_Cancel" xml:space="preserve">
+        <value>取消</value>
+    </data>
+    <data name="Button_Confirm" xml:space="preserve">
+        <value>確認</value>
+    </data>
+    <data name="Button_Create" xml:space="preserve">
+        <value>創造</value>
+    </data>
+    <data name="Button_Create_New_Patient" xml:space="preserve">
+        <value>建立新患者</value>
+    </data>
+    <data name="Button_Create_Patient" xml:space="preserve">
+        <value>創建病人</value>
+    </data>
+    <data name="Button_Delete" xml:space="preserve">
+        <value>刪除</value>
+    </data>
+    <data name="Button_Edit" xml:space="preserve">
+        <value>編輯詳細信息</value>
+    </data>
+    <data name="Button_Update" xml:space="preserve">
+        <value>更新</value>
+    </data>
+    <data name="Label_First_Name" xml:space="preserve">
+        <value>名</value>
+    </data>
+    <data name="Label_Last_Name" xml:space="preserve">
+        <value>姓</value>
+    </data>
+    <data name="Placeholder_Address" xml:space="preserve">
+        <value>例如福佑街2號, 西城區, 北京, 中國, 100017</value>
+    </data>
+    <data name="Placeholder_DateOfBirth" xml:space="preserve">
+        <value>例如2000年2月15日</value>
+    </data>
+    <data name="Placeholder_Email" xml:space="preserve">
+        <value>例如x.wang@email.com</value>
+    </data>
+    <data name="Placeholder_First_Name" xml:space="preserve">
+        <value>例如翔</value>
+    </data>
+    <data name="Placeholder_Gender" xml:space="preserve">
+        <value>例如男/女</value>
+    </data>
+    <data name="Placeholder_Last_Name" xml:space="preserve">
+        <value>例如王</value>
+    </data>
+    <data name="Title_Delete_Patient" xml:space="preserve">
+        <value>刪除患者</value>
     </data>
 </root>
