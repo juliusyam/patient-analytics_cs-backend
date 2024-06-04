@@ -1,0 +1,10 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;
+  &lt;Assembly Path="/usr/local/share/dotnet/packs/Microsoft.AspNetCore.App.Ref/8.0.4/ref/net8.0/Microsoft.AspNetCore.Components.Server.dll" /&gt;
+&lt;/AssemblyExplorer&gt;</s:String>
+	<s:Boolean x:Key="/Default/ResxEditorPersonal/CheckedGroups/=Miscellaneous_0020Files_002FGegidas/@EntryIndexedValue">False</s:Boolean>
+	<s:Boolean x:Key="/Default/ResxEditorPersonal/CheckedGroups/=Miscellaneous_0020Files_002FGegidas/@EntryIndexRemoved">True</s:Boolean>
+	
+	<s:Boolean x:Key="/Default/ResxEditorPersonal/CheckedGroups/=PatientAnalytics_002FBlazor_002FLocalization_002FLocalized/@EntryIndexedValue">False</s:Boolean>
+	<s:Boolean x:Key="/Default/ResxEditorPersonal/CheckedGroups/=PatientAnalytics_002FUtils_002FLocalization_002FApiResponseLocalized/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/ResxEditorPersonal/Initialized/@EntryValue">True</s:Boolean></wpf:ResourceDictionary>
