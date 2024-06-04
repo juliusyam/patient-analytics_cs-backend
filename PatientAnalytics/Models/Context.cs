@@ -24,69 +24,52 @@ public class Context : DbContext
             user.HasKey(e => e.Id);
         });
 
-        modelBuilder.Entity<Patient>(patient =>
-        {
-            patient.HasKey(e => e.Id);
-        });
-
-        modelBuilder.Entity<PatientTemperature>(temperature =>
-        {
-            temperature.HasKey(e => e.Id);
-
-            temperature
-                .HasOne(e => e.Doctor)
-                .WithMany()
-                .HasForeignKey(e => e.DoctorId);
-
-            temperature
-                .HasOne(e => e.Patient)
-                .WithMany()
-                .HasForeignKey(e => e.PatientId);
-        });
+        modelBuilder.Entity<Patient>()
+            .HasMany(e => e.BloodPressures)
+            .WithOne(e => e.Patient)
+            .HasForeignKey(e => e.PatientId)
+            .IsRequired(false);
         
-        modelBuilder.Entity<PatientBloodPressure>(bloodPressure =>
-        {
-            bloodPressure.HasKey(e => e.Id);
-
-            bloodPressure
-                .HasOne(e => e.Doctor)
-                .WithMany()
-                .HasForeignKey(e => e.DoctorId);
-
-            bloodPressure
-                .HasOne(e => e.Patient)
-                .WithMany()
-                .HasForeignKey(e => e.PatientId);
-        });
+        modelBuilder.Entity<Patient>()
+            .HasMany(e => e.Temperatures)
+            .WithOne(e => e.Patient)
+            .HasForeignKey(e => e.PatientId)
+            .IsRequired(false);
         
-        modelBuilder.Entity<PatientHeight>(height =>
-        {
-            height.HasKey(e => e.Id);
+        modelBuilder.Entity<Patient>()
+            .HasMany(e => e.Heights)
+            .WithOne(e => e.Patient)
+            .HasForeignKey(e => e.PatientId)
+            .IsRequired(false);
+      
+        modelBuilder.Entity<Patient>()
+            .HasMany(e => e.Weights)
+            .WithOne(e => e.Patient)
+            .HasForeignKey(e => e.PatientId)
+            .IsRequired(false);
 
-            height
-                .HasOne(e => e.Doctor)
-                .WithMany()
-                .HasForeignKey(e => e.DoctorId);
+        modelBuilder.Entity<PatientBloodPressure>()
+            .Ignore(e => e.Patient)
+            .HasOne(e => e.Doctor)
+            .WithMany()
+            .HasForeignKey(e => e.DoctorId);
 
-            height
-                .HasOne(e => e.Patient)
-                .WithMany()
-                .HasForeignKey(e => e.PatientId);
-        });
+        modelBuilder.Entity<PatientTemperature>()
+            .Ignore(e => e.Patient)
+            .HasOne(e => e.Doctor)
+            .WithMany()
+            .HasForeignKey(e => e.DoctorId);
         
-        modelBuilder.Entity<PatientWeight>(weight =>
-        {
-            weight.HasKey(e => e.Id);
-
-            weight
-                .HasOne(e => e.Doctor)
-                .WithMany()
-                .HasForeignKey(e => e.DoctorId);
-
-            weight
-                .HasOne(e => e.Patient)
-                .WithMany()
-                .HasForeignKey(e => e.PatientId);
-        });
+        modelBuilder.Entity<PatientHeight>()
+            .Ignore(e => e.Patient)
+            .HasOne(e => e.Doctor)
+            .WithMany()
+            .HasForeignKey(e => e.DoctorId);
+        
+        modelBuilder.Entity<PatientWeight>()
+            .Ignore(e => e.Patient)
+            .HasOne(e => e.Doctor)
+            .WithMany()
+            .HasForeignKey(e => e.DoctorId);
     }
 }

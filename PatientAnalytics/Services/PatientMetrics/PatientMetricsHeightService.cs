@@ -41,7 +41,9 @@ public class PatientMetricsHeightService
     {
         _patientService.ValidateCrudPermission(authorization, patientId, out _, out _);
 
-        var heightRecords = _context.PatientHeights.Where(ph => ph.PatientId == patientId);
+        var heightRecords = _context.Patients
+            .Where(p => p.Id == patientId)
+            .SelectMany(p => p.Heights);
 
         await heightRecords.ForEachAsync(ph => ph.Formatted());
 

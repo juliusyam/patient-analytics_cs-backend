@@ -41,7 +41,9 @@ public class PatientMetricsTemperatureService
     {
         _patientService.ValidateCrudPermission(authorization, patientId, out _, out _);
 
-        var temperatures = _context.PatientTemperatures.Where(pt => pt.PatientId == patientId);
+        var temperatures = _context.Patients
+            .Where(p => p.Id == patientId)
+            .SelectMany(p => p.Temperatures);
 
         await temperatures.ForEachAsync(pt => pt.Formatted());
         

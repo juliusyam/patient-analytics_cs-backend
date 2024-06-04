@@ -41,7 +41,9 @@ public class PatientMetricsWeightService
     {
         _patientService.ValidateCrudPermission(authorization, patientId, out _, out _);
 
-        var weightRecords = _context.PatientWeights.Where(pw => pw.PatientId == patientId);
+        var weightRecords = _context.Patients
+            .Where(p => p.Id == patientId)
+            .SelectMany(p => p.Weights);
 
         await weightRecords.ForEachAsync(pw => pw.Formatted());
 

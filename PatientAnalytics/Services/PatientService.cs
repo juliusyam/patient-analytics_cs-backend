@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
-using PatientAnalytics.Blazor.Localization;
 using PatientAnalytics.Hubs;
 using PatientAnalytics.Middleware;
 using PatientAnalytics.Models;
@@ -12,22 +11,46 @@ namespace PatientAnalytics.Services;
 
 public class PatientService
 {
-    private readonly JwtService _jwtService;
     private readonly Context _context;
+    private readonly JwtService _jwtService;
     private readonly IHubContext<PatientHub> _hubContext;
-    private IStringLocalizer<ApiResponseLocalized> _localized;
+    private readonly IStringLocalizer<ApiResponseLocalized> _localized;
 
-    public PatientService(JwtService jwtService, Context context, IHubContext<PatientHub> hubContext, IStringLocalizer<ApiResponseLocalized> localized)
+    public PatientService(
+        Context context,
+        JwtService jwtService,
+        IHubContext<PatientHub> hubContext, 
+        IStringLocalizer<ApiResponseLocalized> localized)
     {
-        _jwtService = jwtService;
         _context = context;
+        _jwtService = jwtService;
         _hubContext = hubContext;
         _localized = localized;
     }
 
     public Patient GetPatientById(string token, int patientId)
     {
-        ValidateCrudPermission(token, patientId, out var patient, out _);
+        ValidateIsDoctor(token, out var user);
+        
+        var patient = _context
+            .Patients
+            .Include(p => p.BloodPressures)
+            .Include(p => p.Temperatures)
+            .Include(p => p.Heights)
+            .Include(p => p.Weights)
+            .FirstOrDefault(p => p.Id == patientId);
+
+        if (patient is null)
+        {
+            throw new HttpStatusCodeException(StatusCodes.Status400BadRequest, 
+                string.Format(_localized["PatientError_NotFound"], patientId));
+        }
+
+        if (patient.DoctorId != user.Id)
+        {
+            throw new HttpStatusCodeException(StatusCodes.Status403Forbidden, 
+                string.Format(_localized["PatientError_Forbidden"], patientId));
+        }
         
         return patient;
     }

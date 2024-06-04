@@ -16,7 +16,9 @@ public class PatientController
     private readonly PatientService _patientService;
     private readonly IStringLocalizer<ApiResponseLocalized> _localized;
 
-    public PatientController(PatientService patientService, IStringLocalizer<ApiResponseLocalized> localized)
+    public PatientController(
+        PatientService patientService,
+        IStringLocalizer<ApiResponseLocalized> localized)
     {
         _patientService = patientService;
         _localized = localized;

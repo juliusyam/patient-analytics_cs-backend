@@ -44,7 +44,9 @@ public class PatientMetricsBloodPressureService
     {
         _patientService.ValidateCrudPermission(authorization, patientId, out _, out _);
 
-        var bloodPressureRecords = _context.PatientBloodPressures.Where(pbp => pbp.PatientId == patientId);
+        var bloodPressureRecords = _context.Patients
+            .Where(p => p.Id == patientId)
+            .SelectMany(p => p.BloodPressures);
 
         await bloodPressureRecords.ForEachAsync(pbp => pbp.Formatted());
 

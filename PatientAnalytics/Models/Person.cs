@@ -18,6 +18,7 @@ public class Person
         LastName = lastName;
     }
 
+    [Key]
     public int Id { get; protected set; }
     public DateTime DateOfBirth { get; protected set; }
     public string Gender { get; protected set; }
