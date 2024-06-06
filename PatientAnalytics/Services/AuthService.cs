@@ -53,7 +53,7 @@ public class AuthService
         return currentUser;
     }
     
-    public async Task<RegisterResponse> RegisterUser(RegistrationPayload payload, string role)
+    public async Task<RegisterResponse> RegisterUser(string authorization, RegistrationPayload payload, string role)
     {
         var passwordLength = int.Parse(_config["Auth:PasswordLength"] ?? "10");
         var password = payload.Password;
@@ -71,7 +71,7 @@ public class AuthService
             );
 
         var passwordHash = Password.HashPassword(password, _config);
-        var user = await _userService.CreateUser(passwordHash, payload, role);
+        var user = await _userService.CreateUser(authorization, passwordHash, payload, role);
         var token = _jwtService.GenerateJwt(user);
 
         return new RegisterResponse(user, token);

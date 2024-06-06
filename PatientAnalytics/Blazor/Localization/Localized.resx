@@ -33,6 +33,33 @@
     <data name="Title_PatientDashboard_WithPatientName" xml:space="preserve">  
         <value>{0} {1} - Patient Dashboard</value>  
     </data>
+    <data name="Title_UserManagement_Doctors" xml:space="preserve">  
+        <value>User Management - Doctors</value>  
+    </data>
+    <data name="Title_UserManagement_Admins" xml:space="preserve">  
+        <value>User Management - Admins</value>  
+    </data>
+    <data name="Title_UserManagement_SuperAdmins" xml:space="preserve">  
+        <value>User Management - Super Admins</value>  
+    </data>
+    <data name="Title_Doctors" xml:space="preserve">  
+        <value>Doctors</value>  
+    </data>
+    <data name="Title_Admins" xml:space="preserve">  
+        <value>Admins</value>  
+    </data>
+    <data name="Title_SuperAdmins" xml:space="preserve">  
+        <value>Super Admins</value>  
+    </data>
+    <data name="Title_DoctorCreate" xml:space="preserve">  
+        <value>Create New Doctor</value>  
+    </data>
+    <data name="Title_AdminCreate" xml:space="preserve">  
+        <value>Create New Admin</value>  
+    </data>
+    <data name="Title_SuperAdminCreate" xml:space="preserve">  
+        <value>Create New Super Admin</value>  
+    </data>
     <data name="Title_Login" xml:space="preserve">  
         <value>Login</value>  
     </data>
@@ -98,6 +125,9 @@
     </data>
     <data name="Button_Logout" xml:space="preserve">
         <value>Logout</value>
+    </data>
+    <data name="Button_UserCreate" xml:space="preserve">  
+        <value>Create User</value>  
     </data>
     <data name="Message_UnauthorizedRedirect" xml:space="preserve">
         <value>You are not authorized to view this page. Redirecting...</value>

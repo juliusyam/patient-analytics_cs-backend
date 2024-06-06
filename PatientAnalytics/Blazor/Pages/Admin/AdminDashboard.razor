@@ -1,44 +1,21 @@
 @page "/dashboard/admin"
 @inject IStringLocalizer<Localized> Localized
-@inject PatientAnalyticsAuthStateProvider PatientAnalyticsAuthStateProvider
 @inject NavigationManager NavigationManager
 
 <PageTitle>@Localized["Title_AdminDashboard"]</PageTitle>
 
-<AuthorizeView Roles="SuperAdmin, Admin">
-    <Authorized>
-        <section class="box is-flex is-flex-direction-row is-justify-content-space-between">
-            <div class="container">
-                <h1 class="title">@Localized["Title_AdminDashboard"]</h1>
-                <p class="subtitle">@authMessage</p>
-            </div>
-            
-            <button class="button" onclick="@OnLogout">@Localized["Button_Logout"]</button>
-        </section>
-    </Authorized>
-    <NotAuthorized>
-        <h5>@Localized["Message_UnauthorizedRedirect"]</h5>
-    </NotAuthorized>
-</AuthorizeView>
-
-@code {
-    private string authMessage = "";
-
-    protected override async Task OnInitializedAsync()
-    {
-        if (PatientAnalyticsAuthStateProvider.HasAdminPrivileges())
-        {
-            authMessage = string.Format(Localized["Message_DashboardWelcome"], PatientAnalyticsAuthStateProvider.FetchCurrentUser().UserPrincipal?.FindFirst(ClaimTypes.Email)?.Value);
-        }
-        else
-        {
-            await OnLogout();
-        }
-    }
-
-    private async Task OnLogout()
-    {
-        await PatientAnalyticsAuthStateProvider.Logout();
-        NavigationManager.NavigateTo("/");
-    }
-}
+<AdminDashboardWrapper>
+    <section class="box columns">
+        <AuthorizeView Roles="SuperAdmin" Context="innerContext">
+            <button class="column" onclick="@(() => NavigationManager.NavigateTo("/user-management/super-admins"))">
+                @Localized["Title_UserManagement_SuperAdmins"]
+            </button>
+        </AuthorizeView>
+        <button class="column" onclick="@(() => NavigationManager.NavigateTo("/user-management/admins"))">
+            @Localized["Title_UserManagement_Admins"]
+        </button>
+        <button class="column" onclick="@(() => NavigationManager.NavigateTo("/user-management/doctors"))">
+            @Localized["Title_UserManagement_Doctors"]
+        </button>
+    </section>
+</AdminDashboardWrapper>

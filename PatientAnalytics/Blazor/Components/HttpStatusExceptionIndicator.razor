@@ -1,13 +1,30 @@
-@using PatientAnalytics.Middleware
+@using System.ComponentModel.DataAnnotations;
+
 @if (Exception is not null)
 {
-    <section class="box has-background-danger has-text-centered">
-        <h3 class="title is-1 has-text-black">@Exception.StatusCode</h3>
-        <h5 class="has-text-black has-text-weight-semibold">@Exception.Message</h5>
-    </section>
+    switch (Size)
+    {
+        case "Sm":
+            <div class="box has-background-danger p-2">
+                <h5 class="has-text-black has-text-weight-semibold">@Exception.StatusCode: @Exception.Message</h5>
+            </div>
+            break;
+        case "Md":
+            <section class="box has-background-danger has-text-centered">
+                <h3 class="title is-1 has-text-black">@Exception.StatusCode</h3>
+                <h5 class="has-text-black has-text-weight-semibold">@Exception.Message</h5>
+            </section>
+            break;
+        default:
+            <div />
+            break;
+    }
 }
 
 @code {
     [Parameter]
     public HttpStatusCodeException? Exception { private get; set; }
+
+    [Parameter, RegularExpression("^Sm$|^Lg$", ErrorMessage = "Invalid Unit Value. Unit must be either Sm or Md.")]
+    public string Size { private get; set; } = "Md";
 }

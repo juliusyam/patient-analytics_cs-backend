@@ -1,0 +1,36 @@
+@inject IStringLocalizer<Localized> Localized
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>@Localized["Label_ID"]</th>
+        <th>@Localized["Label_Username"]</th>
+        <th>@Localized["Label_Email"]</th>
+        <th>@Localized["Label_Name"]</th>
+        <th>@Localized["Label_Gender"]</th>
+        <th>
+            <abbr title="@Localized["Label_DateOfBirth"]">
+                @Localized["Label_DateOfBirth_Abbreviated"]
+            </abbr>
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var user in Users)
+    {
+        <tr>
+            <td>@user.Id</td>
+            <td>@user.Username</td>
+            <td>@user.Email</td>
+            <td>@string.Format(Localized["Format_FullName"], user.FirstName, user.LastName)</td>
+            <td>@user.Gender</td>
+            <td>@user.DateOfBirth.ToString(Localized["DateFormatting_Date"])</td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+@code {
+    [Parameter]
+    public List<User> Users { private get; set; }
+}

@@ -1,0 +1,65 @@
+@page "/user-management/doctors"
+@inject IStringLocalizer<Localized> Localized
+@inject PatientAnalyticsAuthStateProvider PatientAnalyticsAuthStateProvider
+@inject UserService UserService
+@inject AuthService AuthService
+
+<PageTitle>@Localized["Title_UserManagement_Doctors"]</PageTitle>
+
+<AdminDashboardWrapper>
+    <HttpStatusExceptionIndicator Exception="@_exception" />
+    
+    <div class="columns">
+        <div class="column">
+            <h2 class="title is-4">@Localized["Title_Doctors"]</h2>
+            <UsersTable Users="_doctors" />
+        </div>
+        <div class="column">
+            <h2 class="title is-4">@Localized["Title_DoctorCreate"]</h2>
+            <UserForm OnSubmit="CreateDoctor" Exception="_createDoctorException" />
+        </div>
+    </div>
+</AdminDashboardWrapper>
+
+@code {
+    private List<User> _doctors = new();
+    private HttpStatusCodeException? _exception;
+    private HttpStatusCodeException? _createDoctorException;
+    
+    protected override void OnInitialized()
+    {
+        if (PatientAnalyticsAuthStateProvider.HasAdminPrivileges())
+        {
+            try
+            {
+                _doctors = UserService.GetDoctors(PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token);
+            }
+            catch (HttpStatusCodeException exception)
+            {
+                _exception = exception;
+            }
+        }
+    }
+
+    private async void CreateDoctor((RegistrationPayload, Action)args)
+    {
+        try
+        {
+            var registerResponse = await AuthService.RegisterUser(
+                PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token,
+                    args.Item1,
+                    "Doctor"
+                );
+
+            _createDoctorException = null;
+            
+            _doctors.Add(registerResponse.User);
+            
+            args.Item2();
+        }
+        catch (HttpStatusCodeException exception)
+        {
+            _createDoctorException = exception;
+        }
+    }
+}

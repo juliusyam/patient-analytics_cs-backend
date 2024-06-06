@@ -1,3 +1,4 @@
+using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
@@ -29,12 +30,12 @@ public class SuperAdminController : Controller
     [HttpPost("register-super-admin", Name = "RegisterSuperAdmin")]
     public async Task<RegisterResponse> RegisterSuperAdmin([FromServices] IHttpContextAccessor httpContextAccessor, [FromBody] RegistrationPayload payload)
     {
-        ValidateAdmin(httpContextAccessor, out _);
+        ValidateAdmin(httpContextAccessor, out var authorization, out _);
 
-        return await _authService.RegisterUser(payload, "SuperAdmin");
+        return await _authService.RegisterUser(authorization, payload, "SuperAdmin");
     }
 
-    private void ValidateAdmin(IHttpContextAccessor httpContextAccessor, out User verifiedUser)
+    private void ValidateAdmin(IHttpContextAccessor httpContextAccessor, out string verifiedToken, out User verifiedUser)
     {
         var authorization = httpContextAccessor?.HttpContext?.Request.Headers["Authorization"].ToString() 
                             ?? throw new HttpStatusCodeException(StatusCodes.Status401Unauthorized, _localized["HeaderError_Authorization"]);
@@ -47,6 +48,7 @@ public class SuperAdminController : Controller
                 _localized["AuthError_Unauthorized_SuperAdmin"]);
         }
 
+        verifiedToken = authorization;
         verifiedUser = user;
     }
 }

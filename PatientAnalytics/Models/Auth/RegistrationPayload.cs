@@ -1,25 +1,29 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace PatientAnalytics.Models.Auth;
 
 public class RegistrationPayload
 {
-    public RegistrationPayload(DateTime dateOfBirth, string gender, string email, string username, string password, string? address = null, string? firstName = null, string? lastName = null)
-    {
-        DateOfBirth = dateOfBirth;
-        Gender = gender;
-        Email = email;
-        Username = username;
-        Password = password;
-        Address = address;
-        FirstName = firstName;
-        LastName = lastName;
-    }
-        
-    public DateTime DateOfBirth { get; private set; }
-    public string Gender { get; private set; }
-    public string Username { get; private set; }
-    public string? FirstName { get; private set; }
-    public string? LastName { get; private set; }
+    [Required(ErrorMessage = "Date of Birth is required.")]
+    public DateTime DateOfBirth { get; set; } = DateTime.Now;
+    
+    [Required(ErrorMessage = "Gender is required.")]
+    public string Gender { get; set; }
+    
+    [Required(ErrorMessage = "Username is required.")]
+    public string Username { get; set; }
+    
+    [Required(ErrorMessage = "First Name is required.")]
+    public string? FirstName { get; set; }
+    
+    [Required(ErrorMessage = "Last Name is required.")]
+    public string? LastName { get; set; }
+    
+    [Required(ErrorMessage = "Password is required.")]
     public string Password { get; set; }
-    public string Email { get; private set; }
-    public string? Address { get; private set; }
+    
+    [Required(ErrorMessage = "Email is required.")]
+    public string Email { get; set; }
+    
+    public string? Address { get; set; }
 }

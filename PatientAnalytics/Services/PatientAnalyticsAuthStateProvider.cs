@@ -84,6 +84,14 @@ public class PatientAnalyticsAuthStateProvider : AuthenticationStateProvider, ID
 
         return userPrincipal is not null && userPrincipal.HasClaim(ClaimTypes.Role, "Doctor");
     }
+    
+    
+    public bool IsSuperAdmin()
+    {
+        var userPrincipal = _patientAnalyticsUserService.GetAuthenticationDataMemoryStorage().UserPrincipal;
+
+        return userPrincipal is not null && userPrincipal.HasClaim(ClaimTypes.Role, "SuperAdmin");
+    }
 
     public void Dispose()
     {

@@ -33,6 +33,33 @@
     <data name="Title_PatientDashboard_WithPatientName" xml:space="preserve">
         <value> {1}, {0} - 病人介面</value>
     </data>
+    <data name="Title_UserManagement_Doctors" xml:space="preserve">  
+        <value>用戶管理 - 醫生</value>  
+    </data>
+    <data name="Title_UserManagement_Admins" xml:space="preserve">  
+        <value>用戶管理 - 管理員</value>  
+    </data>
+    <data name="Title_UserManagement_SuperAdmins" xml:space="preserve">  
+        <value>用戶管理 - 超級管理員</value>  
+    </data>
+    <data name="Title_Doctors" xml:space="preserve">  
+        <value>醫生名單</value>  
+    </data>
+    <data name="Title_Admins" xml:space="preserve">  
+        <value>管理員名單</value>  
+    </data>
+    <data name="Title_SuperAdmins" xml:space="preserve">  
+        <value>超級管理員名單</value>  
+    </data>
+    <data name="Title_DoctorCreate" xml:space="preserve">  
+        <value>建立醫生</value>  
+    </data>
+    <data name="Title_AdminCreate" xml:space="preserve">  
+        <value>建立管理員</value>  
+    </data>
+    <data name="Title_SuperAdminCreate" xml:space="preserve">  
+        <value>建立超級管理員</value>  
+    </data>
     <data name="Title_Login" xml:space="preserve">
         <value>登入</value>
     </data>
@@ -98,6 +125,9 @@
     </data>
     <data name="Button_Logout" xml:space="preserve">
         <value>登出</value>
+    </data>
+    <data name="Button_UserCreate" xml:space="preserve">  
+        <value>建立用戶</value>  
     </data>
     <data name="Message_UnauthorizedRedirect" xml:space="preserve">
         <value>您沒有充足權力查看此頁面。重新定向中。</value>

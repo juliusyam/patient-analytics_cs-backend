@@ -1,0 +1,65 @@
+@page "/user-management/admins"
+@inject IStringLocalizer<Localized> Localized
+@inject PatientAnalyticsAuthStateProvider PatientAnalyticsAuthStateProvider
+@inject UserService UserService
+@inject AuthService AuthService
+
+<PageTitle>@Localized["Title_UserManagement_Admins"]</PageTitle>
+
+<AdminDashboardWrapper>
+    <HttpStatusExceptionIndicator Exception="@_exception" />
+
+    <div class="columns">
+        <div class="column">
+            <h2 class="title is-4">@Localized["Title_Admins"]</h2>
+            <UsersTable Users="_admins" />
+        </div>
+        <div class="column">
+            <h2 class="title is-4">@Localized["Title_AdminCreate"]</h2>
+            <UserForm OnSubmit="CreateAdmin" Exception="_createAdminException" />
+        </div>
+    </div>
+</AdminDashboardWrapper>
+
+@code {
+    private List<User> _admins = new();
+    private HttpStatusCodeException? _exception;
+    private HttpStatusCodeException? _createAdminException;
+    
+    protected override void OnInitialized()
+    {
+        if (PatientAnalyticsAuthStateProvider.HasAdminPrivileges())
+        {
+            try
+            {
+                _admins = UserService.GetAdmins(PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token);
+            }
+            catch (HttpStatusCodeException exception)
+            {
+                _exception = exception;
+            }
+        }
+    }
+    
+    private async void CreateAdmin((RegistrationPayload, Action)args)
+    {
+        try
+        {
+            var registerResponse = await AuthService.RegisterUser(
+                PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token,
+                args.Item1,
+                "Admin"
+            );
+
+            _createAdminException = null;
+            
+            _admins.Add(registerResponse.User);
+            
+            args.Item2();
+        }
+        catch (HttpStatusCodeException exception)
+        {
+            _createAdminException = exception;
+        }
+    }
+}

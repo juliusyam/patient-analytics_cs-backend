@@ -75,6 +75,60 @@ namespace PatientAnalytics.Blazor.Localization {
             }
         }
         
+        internal static string Title_UserManagement_Doctors {
+            get {
+                return ResourceManager.GetString("Title_UserManagement_Doctors", resourceCulture);
+            }
+        }
+        
+        internal static string Title_UserManagement_Admins {
+            get {
+                return ResourceManager.GetString("Title_UserManagement_Admins", resourceCulture);
+            }
+        }
+        
+        internal static string Title_UserManagement_SuperAdmins {
+            get {
+                return ResourceManager.GetString("Title_UserManagement_SuperAdmins", resourceCulture);
+            }
+        }
+        
+        internal static string Title_Doctors {
+            get {
+                return ResourceManager.GetString("Title_Doctors", resourceCulture);
+            }
+        }
+        
+        internal static string Title_Admins {
+            get {
+                return ResourceManager.GetString("Title_Admins", resourceCulture);
+            }
+        }
+        
+        internal static string Title_SuperAdmins {
+            get {
+                return ResourceManager.GetString("Title_SuperAdmins", resourceCulture);
+            }
+        }
+        
+        internal static string Title_DoctorCreate {
+            get {
+                return ResourceManager.GetString("Title_DoctorCreate", resourceCulture);
+            }
+        }
+        
+        internal static string Title_AdminCreate {
+            get {
+                return ResourceManager.GetString("Title_AdminCreate", resourceCulture);
+            }
+        }
+        
+        internal static string Title_SuperAdminCreate {
+            get {
+                return ResourceManager.GetString("Title_SuperAdminCreate", resourceCulture);
+            }
+        }
+        
         internal static string Title_Login {
             get {
                 return ResourceManager.GetString("Title_Login", resourceCulture);
@@ -204,6 +258,12 @@ namespace PatientAnalytics.Blazor.Localization {
         internal static string Button_Logout {
             get {
                 return ResourceManager.GetString("Button_Logout", resourceCulture);
+            }
+        }
+        
+        internal static string Button_UserCreate {
+            get {
+                return ResourceManager.GetString("Button_UserCreate", resourceCulture);
             }
         }
         

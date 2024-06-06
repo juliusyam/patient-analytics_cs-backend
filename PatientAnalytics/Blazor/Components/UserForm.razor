@@ -1,0 +1,67 @@
+@inject IStringLocalizer<Localized> Localized
+
+<EditForm method="post" Model="_payload" OnValidSubmit="OnValidSubmit" Enhance>
+    <DataAnnotationsValidator />
+    <ValidationSummary class="text-danger" />
+    
+    <div class="field">
+        <label class="label">@Localized["Label_Gender"]</label>
+        <InputText class="input" placeholder=@Localized["Placeholder_Gender"] @bind-Value="_payload.Gender" />
+        <ValidationMessage For="() => _payload.Gender" class="text-danger" />
+    </div>
+    <div class="field">
+        <label class="label">@Localized["Label_Username"]</label>
+        <InputText class="input" placeholder=@Localized["Placeholder_Username"] @bind-Value="_payload.Username" />
+        <ValidationMessage For="() => _payload.Username" class="text-danger" />
+    </div>
+    <div class="field">
+        <label class="label">@Localized["Label_Password"]</label>
+        <InputText class="input" type="password" placeholder=@Localized["Placeholder_Password"] @bind-Value="_payload.Password" />
+        <ValidationMessage For="() => _payload.Password" class="text-danger" />
+    </div>
+    <div class="field">
+        <label class="label">@Localized["Label_First_Name"]</label>
+        <InputText class="input" placeholder=@Localized["Placeholder_First_Name"] @bind-Value="_payload.FirstName" />
+        <ValidationMessage For="() => _payload.FirstName" class="text-danger" />
+    </div>
+    <div class="field">
+        <label class="label">@Localized["Label_Last_Name"]</label>
+        <InputText class="input" placeholder=@Localized["Placeholder_Last_Name"] @bind-Value="_payload.LastName" />
+        <ValidationMessage For="() => _payload.LastName" class="text-danger" />
+    </div>
+    <div class="field">
+        <label class="label">@Localized["Label_Email"]</label>
+        <InputText class="input" placeholder=@Localized["Placeholder_Email"] @bind-Value="_payload.Email" />
+        <ValidationMessage For="() => _payload.Email" class="text-danger" />
+    </div>
+    <div class="field">
+        <label class="label">@Localized["Label_Address"]</label>
+        <InputText class="input" placeholder=@Localized["Placeholder_Address"] @bind-Value="_payload.Address" />
+        <ValidationMessage For="() => _payload.Address" class="text-danger" />
+    </div>
+    <div class="field">
+        <label class="label">@Localized["Label_DateOfBirth"]</label>
+        <InputDate class="input" placeholder=@Localized["Placeholder_DateOfBirth"] @bind-Value="_payload.DateOfBirth" />
+        <ValidationMessage For="() => _payload.DateOfBirth" class="text-danger" />
+    </div>
+    <div class="field">
+        <HttpStatusExceptionIndicator Exception="Exception" Size="Sm" />
+    </div>
+    <button type="submit" class="button is-primary">@Localized["Button_UserCreate"]</button>
+</EditForm>
+
+@code {
+
+    [Parameter, EditorRequired]
+    public EventCallback<(RegistrationPayload, Action)> OnSubmit { get; set; }
+    
+    [Parameter]
+    public HttpStatusCodeException? Exception { private get; set; }
+
+    private RegistrationPayload _payload = new();
+
+    private async Task OnValidSubmit()
+    {
+        await OnSubmit.InvokeAsync((_payload, () => _payload = new RegistrationPayload()));
+    }
+}

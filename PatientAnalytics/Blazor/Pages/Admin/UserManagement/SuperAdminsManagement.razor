@@ -1,0 +1,65 @@
+@page "/user-management/super-admins"
+@inject IStringLocalizer<Localized> Localized
+@inject PatientAnalyticsAuthStateProvider PatientAnalyticsAuthStateProvider
+@inject UserService UserService
+@inject AuthService AuthService
+
+<PageTitle>@Localized["Title_UserManagement_SuperAdmins"]</PageTitle>
+
+<SuperAdminDashboardWrapper>
+    <HttpStatusExceptionIndicator Exception="@_exception" />
+
+    <div class="columns">
+        <div class="column">
+            <h2 class="title is-4">@Localized["Title_SuperAdmins"]</h2>
+            <UsersTable Users="_superAdmins" />
+        </div>
+        <div class="column">
+            <h2 class="title is-4">@Localized["Title_SuperAdminCreate"]</h2>
+            <UserForm OnSubmit="CreateSuperAdmin" Exception="_createSuperAdminException" />
+        </div>
+    </div>
+</SuperAdminDashboardWrapper>
+
+@code {
+    private List<User> _superAdmins = new();
+    private HttpStatusCodeException? _exception;
+    private HttpStatusCodeException? _createSuperAdminException;
+    
+    protected override void OnInitialized()
+    {
+        if (PatientAnalyticsAuthStateProvider.IsSuperAdmin())
+        {
+            try
+            {
+                _superAdmins = UserService.GetSuperAdmins(PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token);
+            }
+            catch (HttpStatusCodeException exception)
+            {
+                _exception = exception;
+            }
+        }
+    }
+    
+    private async void CreateSuperAdmin((RegistrationPayload, Action)args)
+    {
+        try
+        {
+            var registerResponse = await AuthService.RegisterUser(
+                PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token,
+                args.Item1,
+                "SuperAdmin"
+            );
+
+            _createSuperAdminException = null;
+            
+            _superAdmins.Add(registerResponse.User);
+            
+            args.Item2();
+        }
+        catch (HttpStatusCodeException exception)
+        {
+            _createSuperAdminException = exception;
+        }
+    }
+}

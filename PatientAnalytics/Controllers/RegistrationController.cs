@@ -29,20 +29,20 @@ public class RegistrationController
     [HttpPost("admin", Name = "RegisterAdmin")]
     public async Task<RegisterResponse> RegisterAdmin([FromServices] IHttpContextAccessor httpContextAccessor, [FromBody] RegistrationPayload payload)
     {
-        ValidateAdmin(httpContextAccessor, out _);
+        ValidateAdmin(httpContextAccessor, out var authorization, out _);
         
-        return await _authService.RegisterUser(payload, "Admin");
+        return await _authService.RegisterUser(authorization, payload, "Admin");
     }
     
     [HttpPost("doctor", Name = "RegisterDoctor")]
     public async Task<RegisterResponse> RegisterDoctor([FromServices] IHttpContextAccessor httpContextAccessor, [FromBody] RegistrationPayload payload)
     {
-        ValidateAdmin(httpContextAccessor, out _);
+        ValidateAdmin(httpContextAccessor, out var authorization, out _);
         
-        return await _authService.RegisterUser(payload, "Doctor");
+        return await _authService.RegisterUser(authorization, payload, "Doctor");
     }
 
-    private void ValidateAdmin(IHttpContextAccessor httpContextAccessor, out User verifiedUser)
+    private void ValidateAdmin(IHttpContextAccessor httpContextAccessor, out string verifiedToken, out User verifiedUser)
     {
         var authorization = httpContextAccessor?.HttpContext?.Request.Headers["Authorization"].ToString() 
                             ?? throw new HttpStatusCodeException(StatusCodes.Status401Unauthorized, _localized["HeaderError_Authorization"]);
@@ -55,6 +55,7 @@ public class RegistrationController
                 _localized["AuthError_Unauthorized"]);
         }
 
+        verifiedToken = authorization;
         verifiedUser = user;
     }
 }

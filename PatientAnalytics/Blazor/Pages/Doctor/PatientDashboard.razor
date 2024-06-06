@@ -6,87 +6,73 @@
 
 <PageTitle>@_pageTitle</PageTitle>
 
-<AuthorizeView Roles="Doctor">
-    <Authorized>
-        @if (_patient is not null)
-        {
-            <section class="box is-flex is-flex-direction-row is-justify-content-space-between">
-                <div class="is-flex">
-                    <button class="button" @onclick="GoBack">@Localized["Button_Back"]</button>
-                </div>
-                <div class ="is-flex is-gap-3">
-                    <button class="button is-success" @onclick="ToggleUpdateDetails">@(_updateDetails ? Localized["Button_Cancel"] : Localized["Button_Edit"])</button>
-                    <button class="button is-danger is-outlined" @onclick="ShowDeleteConfirmation">@Localized["Button_Delete"]</button>
-                </div>
-                
-            </section>
-            
-            <section class="box">
-                <div class="container">
-                    <h1 class="title">@Localized["Title_PatientDashboard"]</h1>
-                    <p class="subtitle">@_authMessage</p>
-                </div>
-            </section>
-            <section class="box">
-                <div class="container">
-                    <h2 class="title is-4">
-                        @string.Format(Localized["Format_FullName"], _patient.FirstName, _patient.LastName)
-                    </h2>
-                    <ContentWithLabel Label="@Localized["Label_Email"]">@_patient.Email</ContentWithLabel>
-                    <ContentWithLabel Label="@Localized["Label_Gender"]">@_patient.Gender</ContentWithLabel>
-                    <ContentWithLabel Label="@Localized["Label_DateOfBirth"]">
-                        @_patient.DateOfBirth.ToString(Localized["DateFormatting_Date"])
-                    </ContentWithLabel>
-                    <ContentWithLabel Label="@Localized["Label_Address"]">@_patient.Address</ContentWithLabel>
-                   
-                    <div class="divider" />
-                    
-                    <ContentWithLabel Label="@Localized["Label_DateCreated"]">
-                        @_patient.DateCreated.ToString(Localized["DateFormatting_DateTime"])
-                    </ContentWithLabel>
-                    <ContentWithLabel Label="@Localized["Label_DateEdited"]">
-                        @_patient.DateEdited?.ToString(Localized["DateFormatting_DateTime"])
-                    </ContentWithLabel>
-                </div>
-                
-            </section>
+<DoctorDashboardWrapper>
+    @if (_patient is not null)
+    {
+        <section class="box is-flex is-flex-direction-row is-justify-content-space-between">
+            <div class="is-flex">
+                <button class="button" @onclick="GoBack">@Localized["Button_Back"]</button>
+            </div>
+            <div class ="is-flex is-gap-3">
+                <button class="button is-success" @onclick="ToggleUpdateDetails">@(_updateDetails ? Localized["Button_Cancel"] : Localized["Button_Edit"])</button>
+                <button class="button is-danger is-outlined" @onclick="ShowDeleteConfirmation">@Localized["Button_Delete"]</button>
+            </div>
+        </section>
         
-            <PatientCreateEditModal Patient="_patient" @bind-IsModalOpen="_updateDetails" OnClose="HandleModalClose" />
-        }
+        <section class="box">
+            <div class="container">
+                <h1 class="title">@Localized["Title_PatientDashboard"]</h1>
+                <h2 class="title is-4">
+                    @string.Format(Localized["Format_FullName"], _patient.FirstName, _patient.LastName)
+                </h2>
+                <ContentWithLabel Label="@Localized["Label_Email"]">@_patient.Email</ContentWithLabel>
+                <ContentWithLabel Label="@Localized["Label_Gender"]">@_patient.Gender</ContentWithLabel>
+                <ContentWithLabel Label="@Localized["Label_DateOfBirth"]">
+                    @_patient.DateOfBirth.ToString(Localized["DateFormatting_Date"])
+                </ContentWithLabel>
+                <ContentWithLabel Label="@Localized["Label_Address"]">@_patient.Address</ContentWithLabel>
 
-        <HttpStatusExceptionIndicator Exception="@_exception" />
-    </Authorized>
-    <NotAuthorized>
-        <h5>@Localized["Message_UnauthorizedRedirect"]</h5>
-    </NotAuthorized>
-</AuthorizeView>
+                <div class="divider"/>
 
-<ConfirmationModal 
-    Title="@Localized["Title_Delete_Patient"]"
-    ConfirmButtonText="@Localized["Button_Delete"]"
-    CancelButtonText="@Localized["Button_Cancel"]"
-    IsVisible="@_isDeleteConfirmationVisible" 
-    OnConfirm="ConfirmDelete" 
-    OnCancel="HideDeleteConfirmation" />
+                <ContentWithLabel Label="@Localized["Label_DateCreated"]">
+                    @_patient.DateCreated.ToString(Localized["DateFormatting_DateTime"])
+                </ContentWithLabel>
+                <ContentWithLabel Label="@Localized["Label_DateEdited"]">
+                    @_patient.DateEdited?.ToString(Localized["DateFormatting_DateTime"])
+                </ContentWithLabel>
+            </div>
+        </section>
+
+        <PatientCreateEditModal Patient="_patient" @bind-IsModalOpen="_updateDetails" OnClose="HandleModalClose" />
+    }
+
+    <HttpStatusExceptionIndicator Exception="@_exception" />
+    
+    <ConfirmationModal
+        Title="@Localized["Title_Delete_Patient"]"
+        ConfirmButtonText="@Localized["Button_Delete"]"
+        CancelButtonText="@Localized["Button_Cancel"]"
+        IsVisible="@_isDeleteConfirmationVisible"
+        OnConfirm="ConfirmDelete"
+        OnCancel="HideDeleteConfirmation" />
+</DoctorDashboardWrapper>
 
 @code {
     [Parameter] 
     public int Id { get; set; }
     private string _pageTitle = "";
-    private string _authMessage = "";
     
     private Patient? _patient;
     private bool _updateDetails = false;
     private bool _isDeleteConfirmationVisible = false;
     private HttpStatusCodeException? _exception;
     
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         _pageTitle = Localized["Title_PatientDashboard"];
         
         if (PatientAnalyticsAuthStateProvider.IsDoctor())
         {
-            _authMessage = string.Format(Localized["Message_DashboardWelcome"], PatientAnalyticsAuthStateProvider.FetchCurrentUser().UserPrincipal?.FindFirst(ClaimTypes.Email)?.Value);
             var token = PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token;
 
             try
@@ -98,11 +84,6 @@
             {
                 _exception = exception;
             }
-        }
-        else
-        {
-            await PatientAnalyticsAuthStateProvider.Logout();
-            NavigationManager.NavigateTo("/");
         }
     }
 

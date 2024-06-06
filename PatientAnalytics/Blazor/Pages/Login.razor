@@ -10,25 +10,25 @@
 <PageTitle>@Localized["Title_Login"]</PageTitle>
 
 <section>
+    <h1 class="title">@Localized["AppTitle"]</h1>
+    
     <form method="post" @onsubmit="OnSubmit" @formname="LoginForm" class="box">
         <div class="field">
             <label class="label">@Localized["Label_Username"]</label>
-            <InputText type="text" class="input is-primary" @bind-Value=Model.Username placeholder="@Localized["Placeholder_Username"]" />
+            <InputText type="text" class="input is-primary" @bind-Value=Model.Username placeholder="@Localized["Placeholder_Username"]"/>
         </div>
         <div class="field">
             <label class="label">@Localized["Label_Password"]</label>
-            <InputText type="password" class="input is-primary" @bind-Value=Model.Password placeholder="@Localized["Placeholder_Password"]" />
+            <InputText type="password" class="input is-primary" @bind-Value=Model.Password placeholder="@Localized["Placeholder_Password"]"/>
         </div>
-        
+
         @if (_exception is not null)
         {
-            <div class="box has-background-danger p-2">
-                <h5 class="has-text-black has-text-weight-semibold">@_exception.StatusCode: @_exception.Message</h5>
-            </div>
+            <HttpStatusExceptionIndicator Exception="_exception" Size="Sm"/>
         }
-        
+
         <button type="submit" class="button">@Localized["Button_Submit"]</button>
-        <AntiforgeryToken />
+        <AntiforgeryToken/>
     </form>
 </section>
 

@@ -13,24 +13,31 @@ public class UserService
 {
     private readonly IConfiguration _config;
     private readonly Context _context;
+    private readonly JwtService _jwtService;
     private readonly IStringLocalizer<ApiResponseLocalized> _localized;
 
-    public UserService([FromServices] Context context, IConfiguration config, IStringLocalizer<ApiResponseLocalized> localized)
+    public UserService(
+        [FromServices] Context context, 
+        IConfiguration config, 
+        JwtService jwtService,
+        IStringLocalizer<ApiResponseLocalized> localized)
     {
         _context = context;
         _config = config;
+        _jwtService = jwtService;
         _localized = localized;
     }
 
     public async Task<(User, string)> CreateInitialSuperAdmin()
     {
-        var payload = new RegistrationPayload(
-            DateTime.Parse("1990-02-17T06:10:35.950Z"),
-            "Male",
-            "superadmin@patient-analytics.co.uk",
-            "superadmin",
-            Password.GeneratePassword()
-        );
+        var payload = new RegistrationPayload
+        {
+            DateOfBirth = DateTime.Parse("1990-02-17T06:10:35.950Z"),
+            Gender = "Male",
+            Email = "superadmin@patient-analytics.co.uk",
+            Username = "superadmin",
+            Password = Password.GeneratePassword()
+        };
         
         var passwordHash = Password.HashPassword(payload.Password, _config);
         
@@ -43,8 +50,17 @@ public class UserService
         return (user, payload.Password);
     }
 
-    public async Task<User> CreateUser(string passwordHash, RegistrationPayload payload, string role)
+    public async Task<User> CreateUser(string authorization, string passwordHash, RegistrationPayload payload, string role)
     {
+        if (role == "SuperAdmin")
+        {
+            ValidateIsSuperAdmin(authorization, out _);
+        }
+        else
+        {
+            ValidateIsAdmin(authorization, out _);
+        }
+        
         var userWithIdenticalEmail = _context.Users.FirstOrDefault(u => u.Email == payload.Email);
         var userWithIdenticalUsername = _context.Users.FirstOrDefault(u => u.Username == payload.Username);
         
@@ -66,5 +82,52 @@ public class UserService
         await _context.SaveChangesAsync();
         
         return user;
+    }
+
+    public List<User> GetDoctors(string token)
+    {
+        ValidateIsAdmin(token, out _);
+
+        return _context.Users.Where(u => u.Role == "Doctor").ToList();
+    }
+
+    public List<User> GetAdmins(string token)
+    {
+        ValidateIsAdmin(token, out _);
+
+        return _context.Users.Where(u => u.Role == "Admin").ToList();
+    }
+
+    public List<User> GetSuperAdmins(string token)
+    {
+        ValidateIsSuperAdmin(token, out _);
+        
+        return _context.Users.Where(u => u.Role == "SuperAdmin").ToList();
+    }
+
+    private void ValidateIsAdmin(string token, out User verifiedUser)
+    {
+        var user = _jwtService.GetUserWithJwt(token);
+
+        if (user.Role != "SuperAdmin" && user.Role != "Admin")
+        {
+            throw new HttpStatusCodeException(StatusCodes.Status401Unauthorized, 
+                _localized["AuthError_Unauthorized"]);
+        }
+
+        verifiedUser = user;
+    }
+    
+    private void ValidateIsSuperAdmin(string token, out User verifiedUser)
+    {
+        var user = _jwtService.GetUserWithJwt(token);
+
+        if (user.Role != "SuperAdmin")
+        {
+            throw new HttpStatusCodeException(StatusCodes.Status401Unauthorized, 
+                _localized["AuthError_Unauthorized"]);
+        }
+
+        verifiedUser = user;
     }
 }

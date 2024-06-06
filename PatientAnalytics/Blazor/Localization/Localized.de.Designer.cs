@@ -75,6 +75,60 @@ namespace PatientAnalytics.Blazor.Localization {
             }
         }
         
+        internal static string Title_UserManagement_Doctors {
+            get {
+                return ResourceManager.GetString("Title_UserManagement_Doctors", resourceCulture);
+            }
+        }
+        
+        internal static string Title_UserManagement_Admins {
+            get {
+                return ResourceManager.GetString("Title_UserManagement_Admins", resourceCulture);
+            }
+        }
+        
+        internal static string Title_UserManagement_SuperAdmins {
+            get {
+                return ResourceManager.GetString("Title_UserManagement_SuperAdmins", resourceCulture);
+            }
+        }
+        
+        internal static string Title_Doctors {
+            get {
+                return ResourceManager.GetString("Title_Doctors", resourceCulture);
+            }
+        }
+        
+        internal static string Title_Admins {
+            get {
+                return ResourceManager.GetString("Title_Admins", resourceCulture);
+            }
+        }
+        
+        internal static string Title_SuperAdmins {
+            get {
+                return ResourceManager.GetString("Title_SuperAdmins", resourceCulture);
+            }
+        }
+        
+        internal static string Title_DoctorCreate {
+            get {
+                return ResourceManager.GetString("Title_DoctorCreate", resourceCulture);
+            }
+        }
+        
+        internal static string Title_AdminCreate {
+            get {
+                return ResourceManager.GetString("Title_AdminCreate", resourceCulture);
+            }
+        }
+        
+        internal static string Title_SuperAdminCreate {
+            get {
+                return ResourceManager.GetString("Title_SuperAdminCreate", resourceCulture);
+            }
+        }
+        
         internal static string Title_Login {
             get {
                 return ResourceManager.GetString("Title_Login", resourceCulture);
@@ -207,6 +261,12 @@ namespace PatientAnalytics.Blazor.Localization {
             }
         }
         
+        internal static string Button_UserCreate {
+            get {
+                return ResourceManager.GetString("Button_UserCreate", resourceCulture);
+            }
+        }
+        
         internal static string Message_UnauthorizedRedirect {
             get {
                 return ResourceManager.GetString("Message_UnauthorizedRedirect", resourceCulture);
@@ -228,6 +288,114 @@ namespace PatientAnalytics.Blazor.Localization {
         internal static string DateFormatting_DateTime {
             get {
                 return ResourceManager.GetString("DateFormatting_DateTime", resourceCulture);
+            }
+        }
+        
+        internal static string Button_Back {
+            get {
+                return ResourceManager.GetString("Button_Back", resourceCulture);
+            }
+        }
+        
+        internal static string Button_Cancel {
+            get {
+                return ResourceManager.GetString("Button_Cancel", resourceCulture);
+            }
+        }
+        
+        internal static string Button_Confirm {
+            get {
+                return ResourceManager.GetString("Button_Confirm", resourceCulture);
+            }
+        }
+        
+        internal static string Button_Create {
+            get {
+                return ResourceManager.GetString("Button_Create", resourceCulture);
+            }
+        }
+        
+        internal static string Button_Create_New_Patient {
+            get {
+                return ResourceManager.GetString("Button_Create_New_Patient", resourceCulture);
+            }
+        }
+        
+        internal static string Button_Create_Patient {
+            get {
+                return ResourceManager.GetString("Button_Create_Patient", resourceCulture);
+            }
+        }
+        
+        internal static string Button_Delete {
+            get {
+                return ResourceManager.GetString("Button_Delete", resourceCulture);
+            }
+        }
+        
+        internal static string Button_Edit {
+            get {
+                return ResourceManager.GetString("Button_Edit", resourceCulture);
+            }
+        }
+        
+        internal static string Button_Update {
+            get {
+                return ResourceManager.GetString("Button_Update", resourceCulture);
+            }
+        }
+        
+        internal static string Label_First_Name {
+            get {
+                return ResourceManager.GetString("Label_First_Name", resourceCulture);
+            }
+        }
+        
+        internal static string Label_Last_Name {
+            get {
+                return ResourceManager.GetString("Label_Last_Name", resourceCulture);
+            }
+        }
+        
+        internal static string Placeholder_Address {
+            get {
+                return ResourceManager.GetString("Placeholder_Address", resourceCulture);
+            }
+        }
+        
+        internal static string Placeholder_DateOfBirth {
+            get {
+                return ResourceManager.GetString("Placeholder_DateOfBirth", resourceCulture);
+            }
+        }
+        
+        internal static string Placeholder_Email {
+            get {
+                return ResourceManager.GetString("Placeholder_Email", resourceCulture);
+            }
+        }
+        
+        internal static string Placeholder_First_Name {
+            get {
+                return ResourceManager.GetString("Placeholder_First_Name", resourceCulture);
+            }
+        }
+        
+        internal static string Placeholder_Gender {
+            get {
+                return ResourceManager.GetString("Placeholder_Gender", resourceCulture);
+            }
+        }
+        
+        internal static string Placeholder_Last_Name {
+            get {
+                return ResourceManager.GetString("Placeholder_Last_Name", resourceCulture);
+            }
+        }
+        
+        internal static string Title_Delete_Patient {
+            get {
+                return ResourceManager.GetString("Title_Delete_Patient", resourceCulture);
             }
         }
     }

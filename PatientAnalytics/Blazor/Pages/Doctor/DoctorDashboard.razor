@@ -7,78 +7,59 @@
 
 <PageTitle>@Localized["Title_DoctorDashboard"]</PageTitle>
 
-<AuthorizeView Roles="Doctor">
-    <Authorized>
-        <section class="box is-flex is-flex-direction-row is-justify-content-space-between">
-            <div class="container">
-                <h1 class="title">@Localized["Title_DoctorDashboard"]</h1>
-                <p class="subtitle">@_authMessage</p>
-            </div>
-            
-            <button class="button" onclick="@OnLogout">@Localized["Button_Logout"]</button>
-        </section>
-        <section class="box">
-            <div class="container">
-                <h2 class="title is-4">@Localized["Title_Patients"]</h2>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>@Localized["Label_ID"]</th>
-                            <th>@Localized["Label_Email"]</th>
-                            <th>@Localized["Label_Name"]</th>
-                            <th>@Localized["Label_Gender"]</th>
-                            <th>
-                                <abbr title="@Localized["Label_DateOfBirth"]">
-                                    @Localized["Label_DateOfBirth_Abbreviated"]
-                                </abbr>
-                            </th>
-                            <th>@Localized["Label_ViewDetails"]</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    @foreach (var patient in _patients)
-                    {
-                        <tr>
-                            <td>@patient.Id</td>
-                            <td>@patient.Email</td>
-                            <td>@string.Format(Localized["Format_FullName"], patient.FirstName, patient.LastName)</td>
-                            <td>@patient.Gender</td>
-                            <td>@patient.DateOfBirth.ToString(Localized["DateFormatting_Date"])</td>
-                            <td><button class="button" onclick="@(()=>ViewPatient(patient.Id))">@Localized["Button_View"]</button></td>
-                        </tr>
-                    }
-                    </tbody>
-                </table>
-            </div>
-        </section>
-        <section class="box is-flex is-flex-direction-row is-justify-content-space-between">
-            <button class="button is-success" @onclick="ToggleCreatePatient">@Localized["Button_Create_New_Patient"]</button>
-        </section>
-        
-        <PatientCreateEditModal @bind-IsModalOpen="_createPatient" OnClose="HandleModalClose" OnPatientCreated="HandlePatientCreated" />
-        <HttpStatusExceptionIndicator Exception="@_exception" />
-    </Authorized>
-    <NotAuthorized>
-        <h5>@Localized["Message_UnauthorizedRedirect"]</h5>
-    </NotAuthorized>
-</AuthorizeView>
+<DoctorDashboardWrapper>
+    <section class="box">
+        <div class="container">
+            <h2 class="title is-4">@Localized["Title_Patients"]</h2>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>@Localized["Label_ID"]</th>
+                    <th>@Localized["Label_Email"]</th>
+                    <th>@Localized["Label_Name"]</th>
+                    <th>@Localized["Label_Gender"]</th>
+                    <th>
+                        <abbr title="@Localized["Label_DateOfBirth"]">
+                            @Localized["Label_DateOfBirth_Abbreviated"]
+                        </abbr>
+                    </th>
+                    <th>@Localized["Label_ViewDetails"]</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var patient in _patients)
+                {
+                    <tr>
+                        <td>@patient.Id</td>
+                        <td>@patient.Email</td>
+                        <td>@string.Format(Localized["Format_FullName"], patient.FirstName, patient.LastName)</td>
+                        <td>@patient.Gender</td>
+                        <td>@patient.DateOfBirth.ToString(Localized["DateFormatting_Date"])</td>
+                        <td><button class="button" onclick="@(()=>ViewPatient(patient.Id))">@Localized["Button_View"]</button></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </section>
+    <section class="box is-flex is-flex-direction-row is-justify-content-space-between">
+        <button class="button is-success" @onclick="ToggleCreatePatient">@Localized["Button_Create_New_Patient"]</button>
+    </section>
+
+    <PatientCreateEditModal @bind-IsModalOpen="_createPatient" OnClose="HandleModalClose" OnPatientCreated="HandlePatientCreated" />
+    <HttpStatusExceptionIndicator Exception="@_exception" />
+</DoctorDashboardWrapper>
 
 @code {
-    private string _authMessage = "";
     private List<Patient> _patients = new();
     private bool _createPatient = false;
     private HttpStatusCodeException? _exception;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         if (PatientAnalyticsAuthStateProvider.IsDoctor())
         {
-            _authMessage = string.Format(Localized["Message_DashboardWelcome"], PatientAnalyticsAuthStateProvider.FetchCurrentUser().UserPrincipal?.FindFirst(ClaimTypes.Email)?.Value);
             FetchPatients();
-        }
-        else
-        {
-            await OnLogout();
         }
     }
 
@@ -94,12 +75,6 @@
         {
             _exception = exception;
         }
-    }
-
-    private async Task OnLogout()
-    {
-        await PatientAnalyticsAuthStateProvider.Logout();
-        NavigationManager.NavigateTo("/");
     }
 
     private void ToggleCreatePatient()
