@@ -2,7 +2,7 @@
 @inject IStringLocalizer<Localized> Localized
 @inject PatientAnalyticsAuthStateProvider PatientAnalyticsAuthStateProvider
 @inject UserService UserService
-@inject AuthService AuthService
+@inject RegistrationService RegistrationService
 
 <PageTitle>@Localized["Title_UserManagement_Doctors"]</PageTitle>
 
@@ -45,7 +45,7 @@
     {
         try
         {
-            var registerResponse = await AuthService.RegisterUser(
+            var registerResponse = await RegistrationService.RegisterUser(
                 PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token,
                     args.Item1,
                     "Doctor"

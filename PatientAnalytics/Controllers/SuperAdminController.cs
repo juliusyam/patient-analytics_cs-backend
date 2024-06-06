@@ -1,9 +1,7 @@
-using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using PatientAnalytics.Middleware;
-using PatientAnalytics.Models;
 using PatientAnalytics.Models.Auth;
 using PatientAnalytics.Services;
 using PatientAnalytics.Utils.Localization;
@@ -16,39 +14,33 @@ namespace PatientAnalytics.Controllers;
 [Route("/api/internal-only")]
 public class SuperAdminController : Controller
 {
-    private readonly AuthService _authService;
+    private readonly RegistrationService _registrationService;
     private readonly JwtService _jwtService;
     private readonly IStringLocalizer<ApiResponseLocalized> _localized;
 
-    public SuperAdminController(AuthService authService, JwtService jwtService, IStringLocalizer<ApiResponseLocalized> localized)
+    public SuperAdminController(
+        RegistrationService registrationService,
+        IStringLocalizer<ApiResponseLocalized> localized)
     {
-        _authService = authService;
-        _jwtService = jwtService;
+        _registrationService = registrationService;
         _localized = localized;
     }
     
     [HttpPost("register-super-admin", Name = "RegisterSuperAdmin")]
-    public async Task<RegisterResponse> RegisterSuperAdmin([FromServices] IHttpContextAccessor httpContextAccessor, [FromBody] RegistrationPayload payload)
+    public async Task<RegisterResponse> RegisterSuperAdmin(
+        [FromServices] IHttpContextAccessor httpContextAccessor,
+        [FromBody] RegistrationPayload payload)
     {
-        ValidateAdmin(httpContextAccessor, out var authorization, out _);
+        ValidateAuthorization(httpContextAccessor, out var authorization);
 
-        return await _authService.RegisterUser(authorization, payload, "SuperAdmin");
+        return await _registrationService.RegisterUser(authorization, payload, "SuperAdmin");
     }
 
-    private void ValidateAdmin(IHttpContextAccessor httpContextAccessor, out string verifiedToken, out User verifiedUser)
+    private void ValidateAuthorization(IHttpContextAccessor httpContextAccessor, out string verifiedAuthorization)
     {
         var authorization = httpContextAccessor?.HttpContext?.Request.Headers["Authorization"].ToString() 
                             ?? throw new HttpStatusCodeException(StatusCodes.Status401Unauthorized, _localized["HeaderError_Authorization"]);
-        
-        var user = _jwtService.GetUserWithJwt(authorization);
 
-        if (user.Role != "SuperAdmin")
-        {
-            throw new HttpStatusCodeException(StatusCodes.Status401Unauthorized,
-                _localized["AuthError_Unauthorized_SuperAdmin"]);
-        }
-
-        verifiedToken = authorization;
-        verifiedUser = user;
+        verifiedAuthorization = authorization;
     }
 }

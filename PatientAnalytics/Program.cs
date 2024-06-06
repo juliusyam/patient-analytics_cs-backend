@@ -76,6 +76,7 @@ builder.Services.AddDbContext<Context>(opt =>
     opt.UseSqlite(connectionString));
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<RegistrationService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<PatientService>();
 builder.Services.AddScoped<PatientMetricsTemperatureService>();
