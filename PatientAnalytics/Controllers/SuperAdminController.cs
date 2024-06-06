@@ -15,7 +15,6 @@ namespace PatientAnalytics.Controllers;
 public class SuperAdminController : Controller
 {
     private readonly RegistrationService _registrationService;
-    private readonly JwtService _jwtService;
     private readonly IStringLocalizer<ApiResponseLocalized> _localized;
 
     public SuperAdminController(
