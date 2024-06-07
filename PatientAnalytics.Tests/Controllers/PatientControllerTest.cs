@@ -1,75 +1,44 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using NUnit.Framework;
 using PatientAnalytics.Middleware;
-using PatientAnalytics.Services;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace PatientAnalytics.Tests.Controllers;
 
 [TestFixture]
 public class PatientControllerTest : PatientBaseTest
 {
-    [SetUp]
-    public void SetUp()
-    {
-        _superUser = CreateSuperUserForTest();
-        AddSaveChanges(_superUser);
-
-        _adminUser = CreateAdminUserForTest();
-        AddSaveChanges(_adminUser);
-
-        _doctorUser = CreateDoctorUserForTest();
-        AddSaveChanges(_doctorUser);
-
-        _patientZero = CreateNonUserPatientForTest();
-        AddPatientSaveChanges(_patientZero);
-    }
-
-    [TearDown]
-    public void TearDown()
-    {
-        ClearUsers();
-        ClearPatients();
-    }
-
     [Test]
-    public async Task CreatePatient_WithLoggedInDoctor_SuccessfullCreation()
+    public async Task CreatePatient_WithLoggedInDoctor_SuccessfulCreation()
     {
-        var token = JwtService.GenerateJwt(_doctorUser);
-
         var prePatientCount = DbContext.Patients.Count();
-        var response = await _controller.CreatePatient(token, PersonPayload);
+        var response = await PatientController.CreatePatient(DoctorHttpContextAccessor, PersonPayload);
         var postPatientCount = DbContext.Patients.Count();
 
         Assert.That(postPatientCount, Is.EqualTo(prePatientCount + 1));
-        Assert.That(response.FirstName, Is.EqualTo(PersonPayload.FirstName));
+        Assert.That(response!.FirstName, Is.EqualTo(PersonPayload.FirstName));
         Assert.That(response.LastName, Is.EqualTo(PersonPayload.LastName));
     }
 
     [Test]
     public void CreatePatient_WithLoggedInSuperAdmin_ThrowException()
     {
-        var token = JwtService.GenerateJwt(_superUser);
+        async Task Action() => await PatientController.CreatePatient(SuperAdminHttpContextAccessor, PersonPayload);
+        var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
 
-        async Task Action() => await _controller.CreatePatient(token, PersonPayload);
-        HttpStatusCodeException exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
-
-        Assert.That(exception.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
+        Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
         Assert.That(exception.Message, Is.EqualTo("You don't have the correct authorization"));
     }
 
     [Test]
     public void CreatePatient_WithLoggedInAdmin_ThrowException()
     {
-        var token = JwtService.GenerateJwt(_adminUser);
+        async Task Action() => await PatientController.CreatePatient(AdminHttpContextAccessor, PersonPayload);
+        var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
 
-        async Task Action() => await _controller.CreatePatient(token, PersonPayload);
-        HttpStatusCodeException exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
-
-        Assert.That(exception.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
+        Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
         Assert.That(exception.Message, Is.EqualTo("You don't have the correct authorization"));
     }
 
@@ -78,19 +47,18 @@ public class PatientControllerTest : PatientBaseTest
     {        
         var exception = Assert.ThrowsAsync<SecurityTokenMalformedException>(async () =>
         {
-            await _controller.CreatePatient("Bob", PersonPayload);
+            await PatientController.CreatePatient(CreateHttpContextAccessor("Bob"), PersonPayload);
         });
 
-        Assert.That(exception.Message, Is.EqualTo(_expectedTokenMessage));
+        Assert.That(exception!.Message, Is.EqualTo(ExpectedTokenMessage));
     }
 
     [Test]
     public async Task EditPatient_WithLoggedInDoctor_SuccessfullyEditPatient()
     {
-        var token = JwtService.GenerateJwt(_doctorUser);
-        var response = await _controller.CreatePatient(token, PersonPayload);
+        var response = await PatientController.CreatePatient(DoctorHttpContextAccessor, PersonPayload);
 
-        await _controller.EditPatient(token, response.Id, UpdatedPersonPayload);
+        await PatientController.EditPatient(DoctorHttpContextAccessor, response!.Id, UpdatedPersonPayload);
 
         Assert.That(response.Address, Is.Not.EqualTo(PersonPayload.Address));
         Assert.That(response.Address, Is.EqualTo(UpdatedPersonPayload.Address));
@@ -99,99 +67,86 @@ public class PatientControllerTest : PatientBaseTest
     [Test]
     public async Task EditPatient_WrongPatientId_ThrowException()
     {
-        var token = JwtService.GenerateJwt(_doctorUser);
-
-        await _controller.CreatePatient(token, PersonPayload);
+        await PatientController.CreatePatient(DoctorHttpContextAccessor, PersonPayload);
         
-        async Task Action() => await _controller.EditPatient(token, _fakePatientId, UpdatedPersonPayload);
-        HttpStatusCodeException exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
+        async Task Action() => await PatientController.EditPatient(DoctorHttpContextAccessor, FakePatientId, UpdatedPersonPayload);
+        var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
 
-        Assert.That(exception.StatusCode, Is.EqualTo(StatusCodes.Status400BadRequest));
-        Assert.That(exception.Message, Is.EqualTo($"Unable to locate patient with id: {_fakePatientId}"));
+        Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status400BadRequest));
+        Assert.That(exception.Message, Is.EqualTo($"Unable to locate patient with id: {FakePatientId}"));
     }
 
     [Test]
     public async Task EditPatient_NotDoctorsPatient_ThrowException()
     {
-        var token = JwtService.GenerateJwt(_doctorUser);
-        await _controller.CreatePatient(token, PersonPayload);
+        await PatientController.CreatePatient(DoctorHttpContextAccessor, PersonPayload);
 
         var patients = DbContext.Patients.ToList();
 
-        async Task Action() => await _controller.EditPatient(token, patients[0].Id, UpdatedPersonPayload);
-        HttpStatusCodeException exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
+        async Task Action() => await PatientController.EditPatient(DoctorHttpContextAccessor, patients[0].Id, UpdatedPersonPayload);
+        var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
 
-        Assert.That(exception.StatusCode, Is.EqualTo(StatusCodes.Status403Forbidden));
-        Assert.That(exception.Message, Is.EqualTo($"This user is forbidden from editing patient with id: {patients[0].Id}"));
+        Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status403Forbidden));
+        Assert.That(exception.Message, Is.EqualTo($"This user is forbidden from viewing and modifying patient with id: {patients[0].Id}"));
     }
 
     [Test]
     public async Task EditPatient_EmailAlreadyTaken_ThrowException()
     {
-        var token = JwtService.GenerateJwt(_doctorUser);
-
-        await _controller.CreatePatient(token, PersonPayload);
+        await PatientController.CreatePatient(DoctorHttpContextAccessor, PersonPayload);
 
         var patients = DbContext.Patients.ToList();
 
-        async Task Action() => await _controller.EditPatient(token, patients[1].Id, UpdatedPersonPayload02);
-        HttpStatusCodeException exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
+        async Task Action() => await PatientController.EditPatient(DoctorHttpContextAccessor, patients[1].Id, UpdatedPersonPayload02);
+        var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
 
-        Assert.That(exception.StatusCode, Is.EqualTo(StatusCodes.Status403Forbidden));
+        Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status403Forbidden));
         Assert.That(exception.Message, Is.EqualTo($"Email address {UpdatedPersonPayload02.Email} already taken"));
     }
 
     [Test]
     public void EditPatient_WithNotLoggedInUser_ThrowsMessage()
     {
-        var token = JwtService.GenerateJwt(_superUser);
-
         var patients = DbContext.Patients.ToList();
 
         var exception = Assert.ThrowsAsync<SecurityTokenMalformedException>(async () =>
         {
-            await _controller.DeletePatient("Bob", patients[0].Id);
+            await PatientController.DeletePatient(CreateHttpContextAccessor("Bob"), patients[0].Id);
         });
 
-        Assert.That(exception.Message, Is.EqualTo(_expectedTokenMessage));
+        Assert.That(exception!.Message, Is.EqualTo(ExpectedTokenMessage));
     }
 
     [Test]
     public void EditPatient_SuperUser_ThrowsException()
     {
-        var token = JwtService.GenerateJwt(_superUser);
-
         var patients = DbContext.Patients.ToList();
 
-        async Task Action() => await _controller.EditPatient(token, patients[0].Id, UpdatedPersonPayload); 
-        HttpStatusCodeException exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
+        async Task Action() => await PatientController.EditPatient(SuperAdminHttpContextAccessor, patients[0].Id, UpdatedPersonPayload); 
+        var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
 
-        Assert.That(exception.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
+        Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
         Assert.That(exception.Message, Is.EqualTo($"You don't have the correct authorization"));
     }
 
     [Test]
     public void EditPatient_AdminUser_ThrowsException()
     {
-        var token = JwtService.GenerateJwt(_adminUser);
-
         var patients = DbContext.Patients.ToList();
 
-        async Task Action() => await _controller.EditPatient(token, patients[0].Id, UpdatedPersonPayload); 
-        HttpStatusCodeException exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
+        async Task Action() => await PatientController.EditPatient(SuperAdminHttpContextAccessor, patients[0].Id, UpdatedPersonPayload); 
+        var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
 
-        Assert.That(exception.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
+        Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
         Assert.That(exception.Message, Is.EqualTo($"You don't have the correct authorization"));
     }
 
     [Test]
     public async Task GetPatientById_WithLoggedInDoctor_SuccessfullyRetrievePatient()
     {
-        var token = JwtService.GenerateJwt(_doctorUser);
+        var response = await PatientController.CreatePatient(DoctorHttpContextAccessor, PersonPayload);
         
-        var response = await _controller.CreatePatient(token, PersonPayload);
-        
-        var patient = _controller.GetPatientById(response.Id, token);
+        var patient = PatientController.GetPatientById(DoctorHttpContextAccessor, response!.Id);
 
         Assert.That(patient, Is.EqualTo(response));
     }
@@ -199,135 +154,117 @@ public class PatientControllerTest : PatientBaseTest
     [Test]
     public void GetPatientById_NotDoctorsPatient_ThrowException()
     {
-        var token = JwtService.GenerateJwt(_doctorUser);
-
         var patients = DbContext.Patients.ToList();
 
-        Task Action() { _controller.GetPatientById(patients[0].Id, token); return Task.CompletedTask; }
-        HttpStatusCodeException exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
+        Task Action() { PatientController.GetPatientById(DoctorHttpContextAccessor, patients[0].Id); return Task.CompletedTask; }
+        var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
 
-        Assert.That(exception.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
-        Assert.That(exception.Message, Is.EqualTo($"You can only access patients registered to you"));
+        Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status403Forbidden));
+        Assert.That(exception.Message, Is.EqualTo($"This user is forbidden from viewing and modifying patient with id: {patients[0].Id}"));
     }
 
     [Test]
     public void GetPatientById_WithNotLoggedInUser_ThrowsMessage()
     {
-        var token = JwtService.GenerateJwt(_doctorUser);
-
         var patients = DbContext.Patients.ToList();
 
         var exception = Assert.ThrowsAsync<SecurityTokenMalformedException>(() => {
-            _controller.GetPatientById(patients[0].Id, "Bob");
+            PatientController.GetPatientById(CreateHttpContextAccessor("Bob"), patients[0].Id);
             return Task.CompletedTask;
         });
 
-        Assert.That(exception.Message, Is.EqualTo(_expectedTokenMessage));
+        Assert.That(exception!.Message, Is.EqualTo(ExpectedTokenMessage));
     }
 
     [Test]
     public void GetPatientById_SuperUser_ThrowsException()
     {
-        var token = JwtService.GenerateJwt(_superUser);
-
         var patients = DbContext.Patients.ToList();
 
-        Task Action() { _controller.GetPatientById(patients[0].Id, token); return Task.CompletedTask; }
-        HttpStatusCodeException exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
+        Task Action() { PatientController.GetPatientById(SuperAdminHttpContextAccessor, patients[0].Id); return Task.CompletedTask; }
+        var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
 
-        Assert.That(exception.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
+        Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
         Assert.That(exception.Message, Is.EqualTo($"You don't have the correct authorization"));
     }
 
     [Test]
     public void GetPatientById_AdminUser_ThrowsException()
     {
-        var token = JwtService.GenerateJwt(_adminUser);
-
         var patients = DbContext.Patients.ToList();
 
-        Task Action() { _controller.GetPatientById(patients[0].Id, token); return Task.CompletedTask; }
-        HttpStatusCodeException exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
+        Task Action() { PatientController.GetPatientById(AdminHttpContextAccessor, patients[0].Id); return Task.CompletedTask; }
+        var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
 
-        Assert.That(exception.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
+        Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
         Assert.That(exception.Message, Is.EqualTo($"You don't have the correct authorization"));
     }
 
     [Test]
-    public async Task DeletePatient_NotDoctorsPatient_ThrowException()
+    public void DeletePatient_NotDoctorsPatient_ThrowException()
     {
-        var token = JwtService.GenerateJwt(_doctorUser);
-
-        var response = await _controller.CreatePatient(token, PersonPayload);
         var patients = DbContext.Patients.ToList();
 
-        async Task Action() => await _controller.DeletePatient(token, patients[0].Id);
-        HttpStatusCodeException exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
+        async Task Action() => await PatientController.DeletePatient(DoctorHttpContextAccessor, patients[0].Id);
+        var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
 
-        Assert.That(exception.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
-        Assert.That(exception.Message, Is.EqualTo($"This user is not allowed to delete patient with id: {patients[0].Id}"));
+        Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status403Forbidden));
+        Assert.That(exception.Message, Is.EqualTo($"This user is forbidden from viewing and modifying patient with id: {patients[0].Id}"));
     }
 
     [Test]
-    public async Task DeletePatient_WrongPatientId_ThrowException()
+    public void DeletePatient_WrongPatientId_ThrowException()
     {
-        var token = JwtService.GenerateJwt(_doctorUser);
-        await _controller.CreatePatient(token, PersonPayload);
+        async Task Action() => await PatientController.DeletePatient(DoctorHttpContextAccessor, FakePatientId);
+        var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
 
-        async Task Action() => await _controller.DeletePatient(token, _fakePatientId);
-        HttpStatusCodeException exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
-
-        Assert.That(exception.StatusCode, Is.EqualTo(StatusCodes.Status404NotFound));
-        Assert.That(exception.Message, Is.EqualTo($"Unable to locate patient with id: {_fakePatientId}"));
+        Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status400BadRequest));
+        Assert.That(exception.Message, Is.EqualTo($"Unable to locate patient with id: {FakePatientId}"));
     }
 
     [Test]
     public void DeletePatient_WithNotLoggedInUser_ThrowsMessage()
     {
-        var token = JwtService.GenerateJwt(_doctorUser);
         var patients = DbContext.Patients.ToList();
         
         var exception = Assert.ThrowsAsync<SecurityTokenMalformedException>(async () =>
         {
-            await _controller.DeletePatient("Bob", patients[0].Id);
+            await PatientController.DeletePatient(CreateHttpContextAccessor("Bob"), patients[0].Id);
         });
 
-        Assert.That(exception.Message, Is.EqualTo(_expectedTokenMessage));
+        Assert.That(exception!.Message, Is.EqualTo(ExpectedTokenMessage));
     }
 
     [Test]
     public void DeletePatient_SuperUser_ThrowsException()
     {
-        var token = JwtService.GenerateJwt(_superUser);
         var patients = DbContext.Patients.ToList();
 
-        async Task Action() => await _controller.DeletePatient(token, patients[0].Id);  
-        HttpStatusCodeException exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
+        async Task Action() => await PatientController.DeletePatient(SuperAdminHttpContextAccessor, patients[0].Id);  
+        var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
 
-        Assert.That(exception.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
+        Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
         Assert.That(exception.Message, Is.EqualTo($"You don't have the correct authorization"));
     }
 
     [Test]
     public void DeletePatient_AdminUser_ThrowsException()
     {
-        var token = JwtService.GenerateJwt(_adminUser);
         var patients = DbContext.Patients.ToList();
 
-        async Task Action() => await _controller.DeletePatient(token, patients[0].Id);
-        HttpStatusCodeException exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
+        async Task Action() => await PatientController.DeletePatient(AdminHttpContextAccessor, patients[0].Id);
+        var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
 
-        Assert.That(exception.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
+        Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
         Assert.That(exception.Message, Is.EqualTo($"You don't have the correct authorization"));
     }
 
     [Test]
-    public async Task GetPatients_WithLoggedInDoctor_SuccessfullFindPatient()
+    public async Task GetPatients_WithLoggedInDoctor_SuccessfulFindPatient()
     {
-        var token = JwtService.GenerateJwt(_doctorUser);
-        var response = await _controller.CreatePatient(token, PersonPayload);
+        var response = await PatientController.CreatePatient(DoctorHttpContextAccessor, PersonPayload);
 
-        var results = _controller.GetPatients(token, response.Email, response.FirstName + " " + response.LastName, response.Address);
+        var results = PatientController.GetPatients(DoctorHttpContextAccessor, response!.Email, response.FirstName + " " + response.LastName, response.Address);
         
         Assert.That(results.Count, Is.EqualTo(1));
         Assert.That(results[0].Email, Is.EqualTo(response.Email));
@@ -336,69 +273,58 @@ public class PatientControllerTest : PatientBaseTest
     }
 
     [Test]
-    public async Task GetPatients_UsingOnlyToken_SuccessfullListPatients()
+    public async Task GetPatients_UsingOnlyToken_SuccessfulListPatients()
     {
-        var token = JwtService.GenerateJwt(_doctorUser);
+        await PatientController.CreatePatient(DoctorHttpContextAccessor, PersonPayload);
+        await PatientController.CreatePatient(DoctorHttpContextAccessor, PersonPayload02);
 
-        await _controller.CreatePatient(token, PersonPayload);
-        await _controller.CreatePatient(token, PersonPayload02);
-
-        var results = _controller.GetPatients(token, null, null, null);
-        for (int i = 0; i < results.Count; i++)
+        var results = PatientController.GetPatients(DoctorHttpContextAccessor, null, null, null);
+        foreach (var result in results)
         {
-            Console.WriteLine($"Name of doc patient {i + 1} = {results[i].LastName}");
-            Assert.That(results[i].DoctorId, Is.EqualTo(_doctorUser.Id));
+            Assert.That(result.DoctorId, Is.EqualTo(DoctorUser.Id));
         }
     }
 
     [Test]
     public void GetPatients_WithNotLoggedInUser_ThrowsMessage()
     {
-        var token = JwtService.GenerateJwt(_doctorUser);
-
         var patients = DbContext.Patients.ToList();
 
         var exception = Assert.ThrowsAsync<SecurityTokenMalformedException>(() => {
-            _controller.GetPatientById(patients[0].Id, "Bob");
+            PatientController.GetPatientById(CreateHttpContextAccessor("Bob"), patients[0].Id);
             return Task.CompletedTask;
         });
 
-        Assert.That(exception.Message, Is.EqualTo(_expectedTokenMessage));
+        Assert.That(exception!.Message, Is.EqualTo(ExpectedTokenMessage));
     }
 
     [Test]
     public async Task GetPatients_DoctorsPatientsOnly_SuccessfullCreation()
     {
-        var token = JwtService.GenerateJwt(_doctorUser);
+        var response = await PatientController.CreatePatient(DoctorHttpContextAccessor, PersonPayload);
 
-        var response = await _controller.CreatePatient(token, PersonPayload);
-
-        var results = _controller.GetPatients(token, response.Email, $"{response.FirstName} {response.LastName}", response.Address);
+        var results = PatientController.GetPatients(DoctorHttpContextAccessor, response!.Email, $"{response.FirstName} {response.LastName}", response.Address);
         
-        Assert.That(results[0].DoctorId, Is.EqualTo(_doctorUser.Id));
+        Assert.That(results[0].DoctorId, Is.EqualTo(DoctorUser.Id));
     }
 
     [Test]
     public void GetPatients_SuperUser_ThrowsException()
     {
-        var token = JwtService.GenerateJwt(_superUser);
+        Task Action() { PatientController.GetPatients(SuperAdminHttpContextAccessor, null, null, null); return Task.CompletedTask; }
+        var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
 
-        Task Action() { _controller.GetPatients(token, null, null, null); return Task.CompletedTask; }
-        HttpStatusCodeException exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
-
-        Assert.That(exception.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
+        Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
         Assert.That(exception.Message, Is.EqualTo($"You don't have the correct authorization"));
     }
 
     [Test]
     public void GetPatients_AdminUser_ThrowsException()
     {
-        var token = JwtService.GenerateJwt(_adminUser);
+        Task Action() { PatientController.GetPatients(AdminHttpContextAccessor, null, null, null); return Task.CompletedTask; }
+        var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
 
-        Task Action() { _controller.GetPatients(token, null, null, null); return Task.CompletedTask; }
-        HttpStatusCodeException exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
-
-        Assert.That(exception.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
+        Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
         Assert.That(exception.Message, Is.EqualTo($"You don't have the correct authorization"));
     }
 
