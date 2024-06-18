@@ -33,7 +33,8 @@
     {
         if (PatientAnalyticsAuthStateProvider.IsSuperAdmin())
         {
-            _authMessage = string.Format(Localized["Message_DashboardWelcome"], PatientAnalyticsAuthStateProvider.FetchCurrentUser().UserPrincipal?.FindFirst(ClaimTypes.Email)?.Value);
+            var email = PatientAnalyticsAuthStateProvider.FetchCurrentUser().UserPrincipal?.FindFirst(ClaimTypes.Email)?.Value;
+            _authMessage = email ?? string.Format(Localized["Message_No_Email"]);
         }
         else
         {

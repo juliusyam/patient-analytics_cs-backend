@@ -1,0 +1,221 @@
+﻿@page "/patients/{id:int}/temperature"
+@inject IStringLocalizer<Localized> Localized
+@using PatientAnalytics.Services.PatientMetrics
+@using PatientAnalytics.Models.PatientMetrics
+@inject PatientAnalyticsAuthStateProvider PatientAnalyticsAuthStateProvider
+@inject NavigationManager NavigationManager
+@inject PatientService PatientService
+@inject PatientMetricsTemperatureService PatientMetricsTemperatureService
+
+<PageTitle>@_pageTitle</PageTitle>
+
+<DoctorDashboardWrapper>
+    @if (_patient is not null)
+    {
+        <PatientDashboardWrapper Patient="@_patient"
+                                 MetricTitle=@Localized["Button_Temperature"]
+                                 Id="@Id">
+            <section class="box is-flex is-flex-direction-row">
+                <div class="container">
+                    <div class="field">
+                        <label class="label">@Localized["Label_Selected_Unit"]</label>
+                        <div class="control">
+                            <label class="radio-button">
+                                <input type="radio"
+                                        value="@Localized["Label_Celsius"]"
+                                        @onchange="(e) => _selectedDisplayUnit = e.Value.ToString()" 
+                                        checked="@IsSelectedUnit(@Localized["Label_Celsius"])">
+                                <span>@Localized["Label_Celsius"]</span>
+                            </label>
+                            <label class="radio-button">
+                                <input type="radio" 
+                                        value="@Localized["Label_Fahrenheit"]"
+                                        @onchange="(e) => _selectedDisplayUnit = e.Value.ToString()" 
+                                        checked="@IsSelectedUnit(@Localized["Label_Fahrenheit"])">
+                                <span>@Localized["Label_Fahrenheit"]</span>
+                            </label>
+                        </div>
+                    </div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>@Localized["Label_ID"]</th>
+                                <th>@Localized["Button_Temperature"]</th>
+                                <th>@Localized["Label_Doctor"]</th>
+                                <th>@Localized["Label_DateCreated"]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var patient in _patientsTemperature)
+                            {
+                                <tr>
+                                    <td>@patient.Id</td>
+                                    <td>@GetTemperatureDisplay(patient)</td>
+                                    <td>@patient.Doctor.FirstName @patient.Doctor.LastName</td>
+                                    <td>@patient.DateCreated</td>
+                                    <td><button class="button" @onclick="() => ShowDeleteConfirmation(patient.Id)">@Localized["Button_Delete"]</button></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="container">
+                    <EditForm Model="_patientTemperaturePayload" OnValidSubmit="HandleSubmit" Context="editFormContext">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary class="text-danger" />
+                        <div class="field">
+                            <label class="label">@Localized["Button_Weight"]</label>
+                            <InputNumber class="input" placeholder=37 @bind-Value="_temperatureValue" />
+                        </div>
+                        <div class="field">
+                            <label class="label">@Localized["Label_Unit"]</label>
+                            <select class="input" placeholder=cm @bind="_selectedUnit">
+                                <option value=@Localized["Label_Celsius"]>@Localized["Label_Celsius"]</option>
+                                <option value=@Localized["Label_Fahrenheit"]>@Localized["Label_Fahrenheit"]</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="button is-primary">@Localized["Button_Create"]</button>
+                        <p class="has-text-danger">@ErrorMessage</p>
+                    </EditForm>
+                </div>
+            </section>
+        </PatientDashboardWrapper>
+    }
+
+    <HttpStatusExceptionIndicator Exception="@_exception" />
+</DoctorDashboardWrapper>
+
+<ConfirmationModal Title="@($"{Localized["Title_Delete_Patient"]} {Localized["Button_Temperature"]}")"
+                   ConfirmButtonText="@Localized["Button_Delete"]"
+                   CancelButtonText="@Localized["Button_Cancel"]"
+                   IsVisible="@_isDeleteConfirmationVisible"
+                   OnConfirm="ConfirmDelete"
+                   OnCancel="HideDeleteConfirmation" />
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    private string _pageTitle = "";
+    private Patient? _patient;
+    private List<PatientTemperature> _patientsTemperature = new();
+    private PatientTemperaturePayload _patientTemperaturePayload = new PatientTemperaturePayload();
+    private HttpStatusCodeException? _exception;
+    private bool _isDeleteConfirmationVisible = false;
+    private string ErrorMessage { get; set; } = string.Empty;
+
+    private double? _temperatureValue;
+    private string _selectedUnit;
+    private string _selectedDisplayUnit;
+    private int _temperatureID;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _selectedUnit = @Localized["Unit_Celsius"];
+        _selectedDisplayUnit = @Localized["Unit_Celsius"];
+
+        if (PatientAnalyticsAuthStateProvider.IsDoctor())
+        {
+            var token = PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token;
+
+            try
+            {
+                _patient = PatientService.GetPatientById(token, Id);
+                if (_patient is not null)
+                {
+                    _pageTitle = string.Format(Localized["Title_PatientDashboard_WithPatientName"], _patient.FirstName, _patient.LastName);
+
+                    _patientsTemperature = await PatientMetricsTemperatureService.GetPatientTemperatures(token, Id);
+                }
+            }
+            catch (HttpStatusCodeException exception)
+            {
+                _exception = exception;
+            }
+        }
+        else
+        {
+            await PatientAnalyticsAuthStateProvider.Logout();
+            NavigationManager.NavigateTo("/");
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        var token = PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token;
+        ErrorMessage = string.Empty;
+
+        if (!_temperatureValue.HasValue)
+        {
+            ErrorMessage = Localized["Error_TemperatureRequired"];
+            return;
+        }
+
+        if (string.IsNullOrEmpty(_selectedUnit))
+        {
+            ErrorMessage = Localized["Error_UnitRequired"];
+            return;
+        }
+
+        _patientTemperaturePayload.SetTemperature(_temperatureValue.Value, _selectedUnit);
+
+        try
+        {
+            var newTemperatureEntry = await PatientMetricsTemperatureService.CreateEntry(token, _patient.Id, _patientTemperaturePayload);
+            newTemperatureEntry = newTemperatureEntry.Formatted();
+            _patientsTemperature.Add(newTemperatureEntry);
+        }
+        catch (HttpStatusCodeException exception)
+        {
+            ErrorMessage = exception.Message;
+        }
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo($"/dashboard/doctor/patients/{Id}");
+    }
+
+    private void ShowDeleteConfirmation(int id)
+    {
+        _temperatureID = id;
+        _isDeleteConfirmationVisible = true;
+    }
+
+    private void HideDeleteConfirmation()
+    {
+        _isDeleteConfirmationVisible = false;
+    }
+
+    private async Task ConfirmDelete()
+    {
+        var token = PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token;
+        try
+        {
+            await PatientMetricsTemperatureService.DeleteEntryById(token, _temperatureID);
+            _patientsTemperature.RemoveAll(bp => bp.Id == _temperatureID);
+        }
+        catch (HttpStatusCodeException exception)
+        {
+            _exception = exception;
+        }
+        finally
+        {
+            _isDeleteConfirmationVisible = false;
+        }
+    }
+
+    private string GetTemperatureDisplay(PatientTemperature patientTemperature)
+    {
+        return _selectedDisplayUnit switch
+        {
+            var unit when unit == $"{Localized["Unit_Celsius"]}" => $"{patientTemperature.TemperatureCelsius:F1} {Localized["Unit_Celsius"]}",
+            var unit when unit == $"{Localized["Unit_Fahrenheit"]}" => $"{patientTemperature.TemperatureFahrenheit:F1} {Localized["Unit_Fahrenheit"]}",
+            _ => $"{patientTemperature.TemperatureCelsius:F1} {Localized["Unit_Celsius"]}"
+        };
+    }
+
+    private bool IsSelectedUnit(string unit)
+    {
+        return _selectedDisplayUnit == unit;
+    }
+}

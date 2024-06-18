@@ -21,3 +21,26 @@ h1.title {
         width: 90%;
     }
 }
+
+.radio-button {
+    display: inline-block;
+    margin-right: 20px;
+}
+
+.radio-button input[type="radio"] {
+    display: none;
+}
+
+.radio-button span {
+    display: inline-block;
+    padding: 10px 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.radio-button input[type="radio"]:checked + span {
+    background-color: #3298dc;
+    color: white;
+    border-color: #3298dc;
+}

@@ -43,6 +43,15 @@
             </div>
         </section>
 
+        <section class="box is-flex is-flex-direction-row is-justify-content-space-between">
+            <div class="buttons">
+                <button class="button is-info" @onclick="ShowBloodPressure">@Localized["Button_BloodPressure"]</button>
+                <button class="button is-info" @onclick="ShowHeight">@Localized["Button_Height"]</button>
+                <button class="button is-info" @onclick="ShowWeight">@Localized["Button_Weight"]</button>
+                <button class="button is-info" @onclick="ShowTemperature">@Localized["Button_Temperature"]</button>
+            </div>
+        </section>
+
         <PatientCreateEditModal Patient="_patient" @bind-IsModalOpen="_updateDetails" OnClose="HandleModalClose" />
     }
 
@@ -130,5 +139,22 @@
     {
         _updateDetails = false;
         StateHasChanged();
+    }
+
+    private void ShowBloodPressure()
+    {
+        NavigationManager.NavigateTo($"/patients/{_patient.Id}/bloodpressure");
+    }
+    private void ShowHeight()
+    {
+        NavigationManager.NavigateTo($"/patients/{_patient.Id}/height");
+    }
+    private void ShowWeight()
+    {
+        NavigationManager.NavigateTo($"/patients/{_patient.Id}/weight");
+    }
+    private void ShowTemperature()
+    {
+        NavigationManager.NavigateTo($"/patients/{_patient.Id}/temperature");
     }
 }

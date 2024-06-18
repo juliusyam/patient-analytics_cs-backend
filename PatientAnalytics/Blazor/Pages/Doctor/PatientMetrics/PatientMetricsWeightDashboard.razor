@@ -1,0 +1,230 @@
+﻿@page "/patients/{id:int}/weight"
+@inject IStringLocalizer<Localized> Localized
+@using PatientAnalytics.Services.PatientMetrics
+@using PatientAnalytics.Models.PatientMetrics
+@inject PatientAnalyticsAuthStateProvider PatientAnalyticsAuthStateProvider
+@inject NavigationManager NavigationManager
+@inject PatientService PatientService
+@inject PatientMetricsWeightService PatientMetricsWeightService
+
+<PageTitle>@_pageTitle</PageTitle>
+
+<DoctorDashboardWrapper>
+    @if (_patient is not null)
+    {
+        <PatientDashboardWrapper Patient="@_patient"
+                                 MetricTitle=@Localized["Button_Weight"]
+                                 Id="@Id">
+            <section class="box is-flex is-flex-direction-row">
+                <div class="container">
+                    <div class="field">
+                        <label class="label">@Localized["Label_Selected_Unit"]</label>
+                        <div class="control">
+                            <label class="radio-button">
+                                <input type="radio" 
+                                        value="@Localized[$"Unit_Kg"]"
+                                        @onchange="(e) => _selectedDisplayUnit = e.Value.ToString()" 
+                                        checked="@IsSelectedUnit(@Localized[$"Unit_Kg"])">
+                                <span>@Localized[$"Unit_Kg"]</span>
+                            </label>
+                            <label class="radio-button">
+                                <input type="radio" 
+                                        value="@Localized[$"Unit_St"]" 
+                                        @onchange="(e) => _selectedDisplayUnit = e.Value.ToString()" 
+                                        checked="@IsSelectedUnit(@Localized[$"Unit_St"])">
+                                <span>@Localized[$"Unit_St"]</span>
+                            </label>
+                            <label class="radio-button">
+                                <input type="radio" 
+                                        value="@Localized[$"Unit_Lb"]"
+                                        @onchange="(e) => _selectedDisplayUnit = e.Value.ToString()" 
+                                        checked="@IsSelectedUnit(@Localized[$"Unit_Lb"])">
+                                <span>@Localized[$"Unit_Lb"]</span>
+                            </label>
+                        </div>
+                    </div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>@Localized["Label_ID"]</th>
+                                <th>@Localized["Button_Weight"]</th>
+                                <th>@Localized["Label_Doctor"]</th>
+                                <th>@Localized["Label_DateCreated"]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var patient in _patientsWeight)
+                            {
+                                <tr>
+                                    <td>@patient.Id</td>
+                                    <td>@GetWeightDisplay(patient)</td>
+                                    <td>@patient.Doctor.FirstName @patient.Doctor.LastName</td>
+                                    <td>@patient.DateCreated</td>
+                                    <td><button class="button" @onclick="() => ShowDeleteConfirmation(patient.Id)">@Localized["Button_Delete"]</button></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="container">
+                    <EditForm Model="_patientWeightPayload" OnValidSubmit="HandleSubmit" Context="editFormContext">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary class="text-danger" />
+                        <div class="field">
+                            <label class="label">@Localized["Button_Weight"]</label>
+                            <InputNumber class="input" placeholder=60 @bind-Value="_weightValue" />
+                        </div>
+                        <div class="field">
+                            <label class="label">@Localized["Label_Unit"]</label>
+                            <select class="input" placeholder=cm @bind="_selectedUnit">
+                                <option value=@Localized[$"Unit_Kg"]>@Localized[$"Unit_Kg"]</option>
+                                <option value=@Localized[$"Unit_St"]>@Localized[$"Unit_St"]</option>
+                                <option value=@Localized[$"Unit_Lb"]>@Localized[$"Unit_Lb"]</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="button is-primary">@Localized["Button_Create"]</button>
+                        <p class="has-text-danger">@ErrorMessage</p>
+                    </EditForm>
+                </div>
+            </section>
+        </PatientDashboardWrapper>
+    }
+
+    <HttpStatusExceptionIndicator Exception="@_exception"/>
+</DoctorDashboardWrapper>
+
+<ConfirmationModal Title="@($"{Localized["Title_Delete_Patient"]} {Localized["Button_Weight"]}")"
+                   ConfirmButtonText="@Localized["Button_Delete"]"
+                   CancelButtonText="@Localized["Button_Cancel"]"
+                   IsVisible="@_isDeleteConfirmationVisible"
+                   OnConfirm="ConfirmDelete"
+                   OnCancel="HideDeleteConfirmation" />
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    private string _pageTitle = "";
+    private Patient? _patient;
+    private List<PatientWeight> _patientsWeight = new();
+    private PatientWeightPayload _patientWeightPayload = new PatientWeightPayload();
+    private HttpStatusCodeException? _exception;
+    private bool _isDeleteConfirmationVisible = false;
+    private string ErrorMessage { get; set; } = string.Empty;
+
+    private double? _weightValue;
+    private string _selectedUnit;
+    private string _selectedDisplayUnit;
+    private int _weightID;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _selectedUnit = @Localized["Unit_Kg"];
+        _selectedDisplayUnit = @Localized["Unit_Kg"];
+
+        if (PatientAnalyticsAuthStateProvider.IsDoctor())
+        {
+            var token = PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token;
+
+            try
+            {
+                _patient = PatientService.GetPatientById(token, Id);
+                if (_patient is not null)
+                {
+                    _pageTitle = string.Format(Localized["Title_PatientDashboard_WithPatientName"], _patient.FirstName, _patient.LastName);
+
+                    _patientsWeight = await PatientMetricsWeightService.GetPatientWeights(token, Id);
+                }
+            }
+            catch (HttpStatusCodeException exception)
+            {
+                _exception = exception;
+            }
+        }
+        else
+        {
+            await PatientAnalyticsAuthStateProvider.Logout();
+            NavigationManager.NavigateTo("/");
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        var token = PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token;
+        ErrorMessage = string.Empty;
+
+        if (!_weightValue.HasValue)
+        {
+            ErrorMessage = Localized["Error_WeightRequired"];
+            return;
+        }
+
+        if (string.IsNullOrEmpty(_selectedUnit))
+        {
+            ErrorMessage = Localized["Error_UnitRequired"];
+            return;
+        }
+
+        _patientWeightPayload.SetWeight(_weightValue.Value, _selectedUnit);
+
+        try
+        {
+            var newWeightEntry = await PatientMetricsWeightService.CreateEntry(token, _patient.Id, _patientWeightPayload);
+            newWeightEntry = newWeightEntry.Formatted();
+            _patientsWeight.Add(newWeightEntry);
+        }
+        catch (HttpStatusCodeException exception)
+        {
+            ErrorMessage = exception.Message;
+        }
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo($"/dashboard/doctor/patients/{Id}");
+    }
+
+    private void ShowDeleteConfirmation(int id)
+    {
+        _weightID = id;
+        _isDeleteConfirmationVisible = true;
+    }
+
+    private void HideDeleteConfirmation()
+    {
+        _isDeleteConfirmationVisible = false;
+    }
+
+    private async Task ConfirmDelete()
+    {
+        var token = PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token;
+        try
+        {
+            await PatientMetricsWeightService.DeleteEntryById(token, _weightID);
+            _patientsWeight.RemoveAll(bp => bp.Id == _weightID);
+        }
+        catch (HttpStatusCodeException exception)
+        {
+            _exception = exception;
+        }
+        finally
+        {
+            _isDeleteConfirmationVisible = false;
+        }
+    }
+
+    private string GetWeightDisplay(PatientWeight patientWeight)
+    {
+        return _selectedDisplayUnit switch
+        {
+            var unit when unit == $"{Localized["Unit_Kg"]}" => $"{patientWeight.WeightKg:F1} {Localized["Unit_Kg"]}",
+            var unit when unit == $"{Localized["Unit_St"]}" => $"{patientWeight.WeightSt:F1} {Localized["Unit_St"]}",
+            var unit when unit == $"{Localized["Unit_Lb"]}" => $"{patientWeight.WeightLb:F1} {Localized["Unit_Lb"]}",
+            _ => $"{patientWeight.WeightKg:F1} {Localized["Unit_Kg"]}"
+        };
+    }
+
+    private bool IsSelectedUnit(string unit)
+    {
+        return _selectedDisplayUnit == unit;
+    }
+}

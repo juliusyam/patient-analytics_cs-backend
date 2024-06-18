@@ -1,0 +1,37 @@
+﻿@inject IStringLocalizer<Localized> Localized
+@inject PatientAnalyticsAuthStateProvider PatientAnalyticsAuthStateProvider
+@inject NavigationManager NavigationManager
+@using PatientAnalytics.Services.PatientMetrics
+@using PatientAnalytics.Models.PatientMetrics
+@inject PatientMetricsBloodPressureService PatientMetricsBloodPressureService
+@inject PatientMetricsHeightService PatientMetricsHeightService
+@inject PatientMetricsWeightService PatientMetricsWeightService
+@inject PatientMetricsTemperatureService PatientMetricsTemperatureService
+
+<section class="box">
+    <div class="is-flex is-gap-8">
+        <button class="button" @onclick="GoBack">@Localized["Button_Back"]</button>
+    </div>
+    <div class="container">
+        <h1 class="title">@string.Format(Localized["Format_FullName"], Patient?.FirstName, Patient?.LastName)</h1>
+        <p class="subtitle">@MetricTitle</p>
+    </div>
+</section>
+
+<section>@ChildContent</section>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    [Parameter, EditorRequired]
+    public RenderFragment? ChildContent { private get; set; } = null;
+    [Parameter]
+    public Patient? Patient { get; set; }
+    [Parameter]
+    public string? MetricTitle { get; set; }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo($"/dashboard/doctor/patients/{Id}");
+    }
+}

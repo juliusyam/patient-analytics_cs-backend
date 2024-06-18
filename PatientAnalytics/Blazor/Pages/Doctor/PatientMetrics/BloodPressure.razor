@@ -1,0 +1,184 @@
+﻿@page "/patients/{id:int}/bloodpressure"
+@inject IStringLocalizer<Localized> Localized
+@using PatientAnalytics.Services.PatientMetrics
+@using PatientAnalytics.Models.PatientMetrics
+@inject PatientAnalyticsAuthStateProvider PatientAnalyticsAuthStateProvider
+@inject NavigationManager NavigationManager
+@inject PatientService PatientService
+@inject PatientMetricsBloodPressureService PatientMetricsBloodPressureService
+
+<PageTitle>@_pageTitle</PageTitle>
+
+<DoctorDashboardWrapper>
+    @if (_patient is not null)
+    {
+        <PatientDashboardWrapper Patient="@_patient" 
+                                 MetricTitle=@Localized["Button_BloodPressure"]
+                                 Id="@Id">
+            <section class="box is-flex is-flex-direction-row">
+                <div class="container" >
+
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>@Localized["Label_ID"]</th>
+                                <th>@Localized["Label_BP_Systolic"]</th>
+                                <th>@Localized["Label_BP_Diastolic"]</th>
+                                <th>@Localized["Label_Status"]</th>
+                                <th>@Localized["Label_Doctor"]</th>
+                                <th>@Localized["Label_DateCreated"]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var patient in _patientsBloodPressure)
+                            {
+                                <tr>
+                                    <td>@patient.Id</td>
+                                    <td>@patient.BloodPressureSystolic</td>
+                                    <td>@patient.BloodPressureDiastolic</td>
+                                    <td>@patient.Status</td>
+                                    <td>@patient.Doctor.FirstName @patient.Doctor.LastName @patient.DoctorId</td>
+                                    <td>@patient.DateCreated</td>
+                                    <td><button class="button" @onclick="() => ShowDeleteConfirmation(patient.Id)">@Localized["Button_Delete"]</button></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="container">
+                    <EditForm Model="_patientBP" OnValidSubmit="HandleSubmit" Context="editFormContext">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary class="text-danger" />
+                        <div class="field">
+                            <label class="label">@Localized["Label_BP_Systolic"]</label>
+                            <InputNumber class="input" placeholder=120 @bind-Value="_bloodPressureSystolic" />
+                        </div>
+                        <div class="field">
+                            <label class="label">@Localized["Label_BP_Diastolic"]</label>
+                            <InputNumber class="input" placeholder=60 @bind-Value="_bloodPressureDiastolic" />
+                        </div>
+                        <button type="submit" class="button is-primary">@Localized["Button_Create"]</button>
+                        <p class="has-text-danger">@ErrorMessage</p>
+                    </EditForm>
+                </div>
+            </section>
+        </PatientDashboardWrapper>
+    }
+
+    <HttpStatusExceptionIndicator Exception="@_exception" />
+</DoctorDashboardWrapper>
+
+<ConfirmationModal Title="@($"{Localized["Title_Delete_Patient"]} {Localized["Button_BloodPressure"]}")"
+                   ConfirmButtonText="@Localized["Button_Delete"]"
+                   CancelButtonText="@Localized["Button_Cancel"]"
+                   IsVisible="@_isDeleteConfirmationVisible"
+                   OnConfirm="ConfirmDelete"
+                   OnCancel="HideDeleteConfirmation" />
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    private string _pageTitle = "";
+    private Patient? _patient;
+    private List<PatientBloodPressure> _patientsBloodPressure = new();
+    private PatientBloodPressurePayload _patientBP = new PatientBloodPressurePayload();
+    private HttpStatusCodeException? _exception;
+    private bool _isDeleteConfirmationVisible = false;
+    private string ErrorMessage { get; set; } = string.Empty;
+
+    private int? _bloodPressureSystolic;
+    private int? _bloodPressureDiastolic;
+    private int _bloodPressureID;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (PatientAnalyticsAuthStateProvider.IsDoctor())
+        {
+            var token = PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token;
+
+            try
+            {
+                _patient = PatientService.GetPatientById(token, Id);
+                if (_patient is not null)
+                {
+                    _pageTitle = string.Format(Localized["Title_PatientDashboard_WithPatientName"], _patient.FirstName, _patient.LastName);
+
+                    _patientsBloodPressure = await PatientMetricsBloodPressureService.GetPatientBloodPressures(token, Id);
+                }
+            }
+            catch (HttpStatusCodeException exception)
+            {
+                _exception = exception;
+            }
+        }
+        else
+        {
+            await PatientAnalyticsAuthStateProvider.Logout();
+            NavigationManager.NavigateTo("/");
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        var token = PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token;
+        ErrorMessage = string.Empty;
+
+        if (!_bloodPressureSystolic.HasValue)
+        {
+            ErrorMessage = Localized["Error_BloodPressureSystolicRequired"];
+            return;
+        }
+
+        if (!_bloodPressureDiastolic.HasValue)
+        {
+            ErrorMessage = Localized["Error_BloodPressureDiastolicRequired"];
+            return;
+        }
+
+        _patientBP.SetBloodPressure(_bloodPressureSystolic.Value, _bloodPressureDiastolic.Value);
+
+        try
+        {
+            var newBP = await PatientMetricsBloodPressureService.CreateEntry(token, _patient.Id, _patientBP);
+            _patientsBloodPressure.Add(newBP);
+        }
+        catch (HttpStatusCodeException exception)
+        {
+            ErrorMessage = exception.Message;
+        }
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo($"/dashboard/doctor/patients/{Id}");
+    }
+
+    private void ShowDeleteConfirmation(int id)
+    {
+        _bloodPressureID = id;
+        _isDeleteConfirmationVisible = true;
+    }
+
+    private void HideDeleteConfirmation()
+    {
+        _isDeleteConfirmationVisible = false;
+    }
+
+    private async Task ConfirmDelete()
+    {
+        var token = PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token;
+        try
+        {
+            await PatientMetricsBloodPressureService.DeleteEntryById(token, _bloodPressureID);
+            _patientsBloodPressure.RemoveAll(bp => bp.Id == _bloodPressureID);
+        }
+        catch (HttpStatusCodeException exception)
+        {
+            _exception = exception;
+        }
+        finally
+        {
+            _isDeleteConfirmationVisible = false;
+        }
+    }
+}

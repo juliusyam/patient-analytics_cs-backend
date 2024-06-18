@@ -345,9 +345,9 @@ namespace PatientAnalytics.Blazor.Localization {
             }
         }
         
-        internal static string Label_First_Name {
+        internal static string Message_No_Email {
             get {
-                return ResourceManager.GetString("Label_First_Name", resourceCulture);
+                return ResourceManager.GetString("Message_No_Email", resourceCulture);
             }
         }
         
@@ -396,6 +396,70 @@ namespace PatientAnalytics.Blazor.Localization {
         internal static string Title_Delete_Patient {
             get {
                 return ResourceManager.GetString("Title_Delete_Patient", resourceCulture);
+            }
+        }
+        
+        internal static string Unit_Celsius
+        {
+            get
+            {
+                return ResourceManager.GetString("Unit_Celsius", resourceCulture);
+            }
+        }
+        
+        internal static string Unit_Cm
+        {
+            get
+            {
+                return ResourceManager.GetString("Unit_Cm", resourceCulture);
+            }
+        }
+        
+        internal static string Unit_Fahrenheit
+        {
+            get
+            {
+                return ResourceManager.GetString("Unit_Fahrenheit", resourceCulture);
+            }
+        }
+        
+        internal static string Unit_Ft
+        {
+            get
+            {
+                return ResourceManager.GetString("Unit_Ft", resourceCulture);
+            }
+        }
+        
+        internal static string Unit_In
+        {
+            get
+            {
+                return ResourceManager.GetString("Unit_In", resourceCulture);
+            }
+        }
+        
+        internal static string Unit_Kg
+        {
+            get
+            {
+                return ResourceManager.GetString("Unit_Kg", resourceCulture);
+            }
+        }
+        
+        internal static string Unit_Lb
+        {
+            get
+            {
+                return ResourceManager.GetString("Unit_Lb", resourceCulture);
+            }
+        }
+        
+        internal static string Unit_St
+        {
+            get
+            {
+                return ResourceManager.GetString("Unit_St", resourceCulture);
             }
         }
     }

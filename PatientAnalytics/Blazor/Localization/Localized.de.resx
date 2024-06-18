@@ -190,9 +190,90 @@
         <value>e.g. Männlich / Weiblich</value>
     </data>
     <data name="Placeholder_Last_Name" xml:space="preserve">
-      <value>e.g. Schmidt</value>
+        <value>e.g. Schmidt</value>
     </data>
     <data name="Title_Delete_Patient" xml:space="preserve">
         <value>Patient Löschen</value>
+    </data>
+    <data name="Button_BloodPressure" xml:space="preserve">
+        <value>Blutdruck</value>
+    </data>
+   <data name="Button_Height" xml:space="preserve">
+        <value>Höhe</value>
+    </data>
+    <data name="Button_Weight" xml:space="preserve">
+        <value>Gewicht</value>
+    </data>
+    <data name="Button_Temperature" xml:space="preserve">
+        <value>Temperatur</value>
+    </data>
+    <data name="Label_BP_Systolic" xml:space="preserve">
+        <value>Systolischer Blutdruck</value>
+    </data>
+    <data name="Label_BP_Diastolic" xml:space="preserve">
+        <value>Blutdruck diastolisch</value>
+    </data>
+    <data name="Label_Status" xml:space="preserve">
+        <value>Status</value>
+    </data>
+    <data name="Label_Doctor" xml:space="preserve">
+        <value>Arzt / Ärztin</value>
+    </data>
+    <data name="Label_Selected_Unit" xml:space="preserve">
+        <value>Ausgewählte Einheit</value>
+    </data>
+    <data name="Label_Unit" xml:space="preserve">
+        <value>Einheit</value>
+    </data>
+    <data name="Label_Celsius" xml:space="preserve">
+        <value>Celsius</value>
+    </data>
+    <data name="Label_Fahrenheit" xml:space="preserve">
+        <value>Fahrenheit</value>
+    </data>
+    <data name="Error_HeightRequired" xml:space="preserve">
+        <value>Höhenwert ist erforderlich.</value>
+    </data>
+    <data name="Error_UnitRequired" xml:space="preserve">
+        <value>Einheit ist erforderlich.</value>
+    </data>
+    <data name="Error_BloodPressureSystolicRequired" xml:space="preserve">
+        <value>Der systolische Blutdruckwert ist erforderlich.</value>
+    </data>
+    <data name="Error_BloodPressureDiastolicRequired" xml:space="preserve">
+        <value>Der diastolische Blutdruckwert ist erforderlich.</value>
+    </data>
+    <data name="Error_WeightRequired" xml:space="preserve">
+        <value>Gewichtswert ist erforderlich.</value>
+    </data>
+    <data name="Error_TemperatureRequired" xml:space="preserve">
+        <value>Temperaturwert ist erforderlich.</value>
+    </data>
+    <data name="Unit_Cm" xml:space="preserve">
+        <value>Cm</value>
+    </data>
+    <data name="Unit_In" xml:space="preserve">
+        <value>Zoll</value>
+    </data>
+    <data name="Unit_Ft" xml:space="preserve">
+        <value>Ft</value>
+    </data>
+    <data name="Unit_Kg" xml:space="preserve">
+        <value>Kg</value>
+    </data>
+    <data name="Unit_St" xml:space="preserve">
+        <value>Stein</value>
+    </data>
+    <data name="Unit_Lb" xml:space="preserve">
+        <value>Lb</value>
+    </data>
+    <data name="Unit_Celsius" xml:space="preserve">
+        <value>Celsius</value>
+    </data>
+    <data name="Unit_Fahrenheit" xml:space="preserve">
+        <value>Fahrenheit</value>
+    </data>
+    <data name="Message_No_Email" xml:space="preserve">
+        <value>E-Mail nicht verfügbar</value>
     </data>
 </root>

@@ -68,7 +68,7 @@ public class PatientBloodPressurePayload
     public double BloodPressureSystolic { get; protected set; }
     public double BloodPressureDiastolic { get; protected set; }
 
-    public PatientBloodPressurePayload(double bloodPressureSystolic, double bloodPressureDiastolic)
+    public void SetBloodPressure(double bloodPressureSystolic, double bloodPressureDiastolic)
     {
         BloodPressureSystolic = bloodPressureSystolic;
         BloodPressureDiastolic = bloodPressureDiastolic;
