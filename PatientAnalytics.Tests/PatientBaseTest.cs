@@ -9,21 +9,26 @@ using PatientAnalytics.Services;
 namespace PatientAnalytics.Tests;
 public abstract class PatientBaseTest : BaseTest
 {
-    private static readonly PatientService PatientService = new (DbContext, JwtService, HubContext, Localized);
+    protected static readonly PatientService PatientService = new (DbContext, JwtService, HubContext, Localized);
     protected static readonly PatientController PatientController = new (PatientService, Localized);
-
-    private User _superUser;
+        
+    protected User _superUser;
     private User _adminUser;
     protected User DoctorUser;
-    private Patient _patientZero;
-    
+    protected User Doctor02User;
+    protected Patient _patientZero;
+    protected Patient _patientOne;
+    protected Patient _patient;
+
     private string _superAdminUserJwt;
     private string _adminUserJwt;
     private string _doctorUserJwt;
+    private string _doctor02UserJwt;
 
     protected IHttpContextAccessor SuperAdminHttpContextAccessor;
     protected IHttpContextAccessor AdminHttpContextAccessor;
     protected IHttpContextAccessor DoctorHttpContextAccessor;
+    protected IHttpContextAccessor Doctor02HttpContextAccessor;
 
     [SetUp]
     public void SetUp()
@@ -37,18 +42,25 @@ public abstract class PatientBaseTest : BaseTest
         DoctorUser = CreateDoctorUserForTest();
         AddSaveChanges(DoctorUser);
 
-        _patientZero = CreatePatientForTest();
+        Doctor02User = CreateDoctorUserForTest();
+        AddSaveChanges(Doctor02User);
+
+        _patientZero = CreateTestPatient();
         AddPatientSaveChanges(_patientZero);
-        
+        _patientOne = CreateTestPatient(DoctorUser.Id);
+        AddPatientSaveChanges(_patientOne);
+
         _superAdminUserJwt = JwtService.GenerateJwt(_superUser);
         _adminUserJwt = JwtService.GenerateJwt(_adminUser);
         _doctorUserJwt = JwtService.GenerateJwt(DoctorUser);
+        _doctor02UserJwt = JwtService.GenerateJwt(Doctor02User);
 
         SuperAdminHttpContextAccessor = CreateHttpContextAccessor(_superAdminUserJwt);
         AdminHttpContextAccessor = CreateHttpContextAccessor(_adminUserJwt);
         DoctorHttpContextAccessor = CreateHttpContextAccessor(_doctorUserJwt);
-    }
-    
+        Doctor02HttpContextAccessor = CreateHttpContextAccessor(_doctor02UserJwt);
+    }    
+
     [TearDown]
     public void TearDown()
     {
@@ -108,11 +120,11 @@ public abstract class PatientBaseTest : BaseTest
         DateTime.Now
      );
 
-    private static Patient CreatePatientForTest()
+    private static Patient CreateTestPatient(int doctorId = 666)
     {
         // Define and return the patient for this test class
         return Patient.CreatePatient(
-            666,
+            doctorId,
             new Person(
                 DateTime.Now,
                 "gender01",
