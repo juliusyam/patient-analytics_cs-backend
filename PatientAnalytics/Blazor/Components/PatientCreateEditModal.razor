@@ -67,7 +67,7 @@
     public Patient? Patient { get; set; }
 
     private Patient? _patient;
-    private PersonDTO _patientDto = new();
+    private PersonPayload _patientDto = new();
 
     private bool IsEditMode => Patient is not null;
     private string ErrorMessage { get; set; } = string.Empty;
@@ -93,7 +93,7 @@
         _patient = patient;
         if (patient is not null)
         {
-            _patientDto = new PersonDTO
+            _patientDto = new PersonPayload
             {
                 Gender = patient.Gender,
                 FirstName = patient.FirstName ?? "",
@@ -110,26 +110,15 @@
         var token = PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token;
         ErrorMessage = string.Empty;
 
-        var patient = new Person(
-                    _patientDto.DateOfBirth,
-                    _patientDto.Gender,
-                    _patientDto.Email,
-                    _patientDto.Address,
-                    _patientDto.FirstName,
-                    _patientDto.LastName,
-                    Patient?.DateCreated ?? DateTime.Now,
-                    DateTime.Now
-                );
-
         try
         {
             if (IsEditMode)
             {
-                await PatientService.EditPatient(token, Patient.Id, patient);
+                await PatientService.EditPatient(token, Patient.Id, _patientDto);
             }
             else
             {
-                var newPatient = await PatientService.CreatePatient(token, patient);
+                var newPatient = await PatientService.CreatePatient(token, _patientDto);
                 await OnPatientCreated.InvokeAsync(newPatient);
             }
             CloseModal();

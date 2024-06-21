@@ -31,11 +31,27 @@ public abstract class WeightBaseTest : PatientBaseTest
         ClearPatientsWeights();
     }
 
-    protected static readonly PatientWeightPayload WeightKgPayload = new PatientWeightPayload(55, "Kg");
-    protected static readonly PatientWeightPayload WeightStPayload = new PatientWeightPayload(11, "St");
-    protected static readonly PatientWeightPayload WeightLbPayload = new PatientWeightPayload(160, "Lb");
+    protected static readonly PatientWeightPayload WeightKgPayload = new()
+    {
+        Weight = 55,
+        Unit = "Kg"
+    };
+    protected static readonly PatientWeightPayload WeightStPayload = new()
+    {
+        Weight = 11,
+        Unit = "St"
+    };
+    protected static readonly PatientWeightPayload WeightLbPayload = new()
+    {
+        Weight = 160,
+        Unit = "Lb"
+    };
 
-    protected static readonly PatientWeightPayload WeightWrongUnitPayload = new PatientWeightPayload(6, "Ft");
+    protected static readonly PatientWeightPayload WeightWrongUnitPayload = new()
+    {
+        Weight = 6,
+        Unit = "Ft"
+    };
 
     private static PatientWeight CreateTestWeight(int patientId, int doctorId, PatientWeightPayload payload)
     {

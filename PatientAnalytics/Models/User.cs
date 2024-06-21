@@ -9,8 +9,16 @@ public class User : Person
 {
     private User(
         DateTime dateOfBirth, string gender, string email, string passwordHash, string username, string role, string? address, string? firstName, string? lastName, DateTime dateCreated, DateTime? dateEdited
-    ) : base(dateOfBirth, gender, email, address, firstName, lastName, dateCreated, dateEdited)
+    )
     {
+        DateOfBirth = dateOfBirth;
+        Gender = gender;
+        Email = email;
+        Address = address;
+        FirstName = firstName;
+        LastName = lastName;
+        DateCreated = dateCreated;
+        DateEdited = dateEdited;
         PasswordHash = passwordHash;
         Username = username;
         Role = role;

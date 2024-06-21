@@ -17,6 +17,11 @@ public class PatientHub : Hub
 
     public async Task SendDeletedPatient(Patient patient)
     {
-        await Clients.All.SendAsync("DeletedPatient", patient);
+        await Clients.All.SendAsync("ReceiveDeletedPatient", patient);
+    }
+
+    public async Task TestSendMessage(string message)
+    {
+        await Clients.All.SendAsync("TestReceiveMessage", message);
     }
 }

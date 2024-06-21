@@ -45,7 +45,7 @@ public class PatientController
     }
 
     [HttpPost(Name = "CreatePatient")]
-    public async Task<Patient?> CreatePatient([FromServices] IHttpContextAccessor httpContextAccessor, [FromBody] Person payload)
+    public async Task<Patient?> CreatePatient([FromServices] IHttpContextAccessor httpContextAccessor, [FromBody] PersonPayload payload)
     {
         ValidateAuthorization(httpContextAccessor, out var authorization);
 
@@ -53,7 +53,7 @@ public class PatientController
     }
 
     [HttpPut("{patientId:int}", Name = "EditPatient")]
-    public async Task<Patient> EditPatient([FromServices] IHttpContextAccessor httpContextAccessor, [FromRoute] int patientId, [FromBody] Person payload)
+    public async Task<Patient> EditPatient([FromServices] IHttpContextAccessor httpContextAccessor, [FromRoute] int patientId, [FromBody] PersonPayload payload)
     {
         ValidateAuthorization(httpContextAccessor, out var authorization);
 

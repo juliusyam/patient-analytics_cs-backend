@@ -4,6 +4,7 @@
 @inject PatientService PatientService
 @inject IStringLocalizer<Localized> Localized
 @rendermode InteractiveServer
+@implements IAsyncDisposable
 
 <PageTitle>@Localized["Title_DoctorDashboard"]</PageTitle>
 
@@ -44,6 +45,7 @@
     </section>
     <section class="box is-flex is-flex-direction-row is-justify-content-space-between">
         <button class="button is-success" @onclick="ToggleCreatePatient">@Localized["Button_Create_New_Patient"]</button>
+        <button class="button is-success" @onclick="TestSendMessage">Test Send Message</button>
     </section>
 
     <PatientCreateEditModal @bind-IsModalOpen="_createPatient" OnClose="HandleModalClose" OnPatientCreated="HandlePatientCreated" />
@@ -51,20 +53,80 @@
 </DoctorDashboardWrapper>
 
 @code {
+    private HubConnection? _hubConnection;
     private List<Patient> _patients = new();
     private bool _createPatient = false;
     private HttpStatusCodeException? _exception;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         if (PatientAnalyticsAuthStateProvider.IsDoctor())
         {
             FetchPatients();
+
+            _hubConnection = new BlazorHubConnectionBuilder(
+                NavigationManager.ToAbsoluteUri("/patientHub"), 
+                PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token)
+                .Build();
+            
+            _hubConnection.On<Patient>("ReceiveNewPatient", (patient) =>
+            {
+                var existingPatient = _patients.FirstOrDefault(p => p.Id == patient.Id);
+                
+                if (existingPatient is null) _patients.Add(patient);
+                
+                StateHasChanged();
+            });
+            
+            _hubConnection.On<Patient>("ReceiveUpdatedPatient", (patient) =>
+            {
+                var existingPatient = _patients.FirstOrDefault(p => p.Id == patient.Id);
+
+                if (existingPatient is not null)
+                {
+                    var index = _patients.IndexOf(existingPatient);
+                    if (index >= 0) _patients[index] = patient;
+                }
+                
+                StateHasChanged();
+            });
+            
+            _hubConnection.On<Patient>("ReceiveDeletedPatient", (patient) =>
+            {
+                var existingPatient = _patients.FirstOrDefault(p => p.Id == patient.Id);
+
+                if (existingPatient is not null) _patients.Remove(existingPatient);
+                
+                StateHasChanged();
+            });
+
+            _hubConnection.On<string>("TestReceiveMessage", (message) =>
+            {
+                Console.WriteLine("Message received" + message);
+                StateHasChanged();
+            });
+
+            await _hubConnection.StartAsync();
+            
+            Console.WriteLine(_hubConnection.State);
         }
     }
 
     private void ViewPatient(int id) => NavigationManager.NavigateTo($"/dashboard/doctor/patients/{id}");
 
+    private void TestSendMessage()
+    {
+        if (_hubConnection is not null)
+        {
+            Console.WriteLine("Hub Connection: " + _hubConnection.State);
+            _hubConnection.SendAsync("TestSendMessage", "Mock message");
+        }
+        else
+        {
+            Console.WriteLine("Hub Connection Not Established");
+        }
+    }
+    
     private void FetchPatients()
     {
         try
@@ -92,5 +154,13 @@
     {
         _patients.Add(newPatient);
         StateHasChanged();
+    }
+    
+    public async ValueTask DisposeAsync()
+    {
+        if (_hubConnection is not null)
+        {
+            await _hubConnection.DisposeAsync();
+        }
     }
 }

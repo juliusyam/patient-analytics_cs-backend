@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
@@ -83,7 +84,7 @@ public class PatientService
         return query.ToList();
     }
     
-    public async Task<Patient?> CreatePatient(string token, Person payload)
+    public async Task<Patient?> CreatePatient(string token, PersonPayload payload)
     {
         ValidateIsDoctor(token, out var user);
 
@@ -98,13 +99,18 @@ public class PatientService
         _context.Patients.Add(patient);
 
         await _context.SaveChangesAsync();
-        
-        await _hubContext.Clients.All.SendAsync("ReceiveNewPatient", patient);
+
+        var userNameIdentifier = _jwtService.DecodeJwt(token)?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (userNameIdentifier is not null)
+        { 
+            await _hubContext.Clients.User(userNameIdentifier).SendAsync("ReceiveNewPatient", patient);
+        }
 
         return patient;
     }
 
-    public async Task<Patient> EditPatient(string token, int patientId, Person payload)
+    public async Task<Patient> EditPatient(string token, int patientId, PersonPayload payload)
     {
         ValidateCrudPermission(token, patientId, out var patient, out _);
 
@@ -122,8 +128,13 @@ public class PatientService
         
         await _context.SaveChangesAsync();
 
-        await _hubContext.Clients.All.SendAsync("ReceiveUpdatedPatient", patient);
+        var userNameIdentifier = _jwtService.DecodeJwt(token)?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
+        if (userNameIdentifier is not null)
+        {
+            await _hubContext.Clients.User(userNameIdentifier).SendAsync("ReceiveUpdatedPatient", patient);
+        }
+        
         return patient;
     }
     
@@ -136,8 +147,13 @@ public class PatientService
 
         await _context.SaveChangesAsync();
 
-        await _hubContext.Clients.All.SendAsync("DeletedPatient", patient);
+        var userNameIdentifier = _jwtService.DecodeJwt(token)?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
+        if (userNameIdentifier is not null)
+        {
+            await _hubContext.Clients.User(userNameIdentifier).SendAsync("ReceiveDeletedPatient", patient);
+        }
+        
         return new NoContentResult();
     }
 

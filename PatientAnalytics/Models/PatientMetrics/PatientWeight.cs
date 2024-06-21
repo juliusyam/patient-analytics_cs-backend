@@ -64,10 +64,10 @@ public class PatientWeight
 
 public class PatientWeightPayload
 {
-    public double Weight { get; protected set; }
+    public double Weight { get; set; }
     
     [RegularExpression("^Kg$|^Lb$|^St$", ErrorMessage = "Invalid Unit Value. Unit must be either Kg, Lb or St.")]
-    public string Unit { get; protected set; }
+    public string Unit { get; set; }
 
     public void SetWeight(double weight, string unit)
     {

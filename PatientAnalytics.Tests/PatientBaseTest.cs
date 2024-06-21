@@ -76,65 +76,60 @@ public abstract class PatientBaseTest : BaseTest
     
     protected const int FakePatientId = 999;
 
-    protected static readonly Person PersonPayload = new Person(
-        DateTime.Now,
-        "gender",
-        "email2",
-        "address02",
-        "firstnamePatientTest02",
-        "lastnamePatientTest02",
-        DateTime.Now,
-        DateTime.Now
-     );
+    protected static readonly PersonPayload PersonPayload = new()
+    {
+        DateOfBirth = DateTime.Now,
+        Gender = "gender",
+        Email = "email2",
+        Address = "address02",
+        FirstName = "firstnamePatientTest02",
+        LastName = "lastnamePatientTest02"
+    };
 
-    protected static readonly Person UpdatedPersonPayload = new Person(
-        DateTime.Now,
-        "gender",
-        "email2",
-        "address03",
-        "firstnamePatientTest02",
-        "lastnamePatientTest02",
-        DateTime.Now,
-        DateTime.Now
-     );
+    protected static readonly PersonPayload UpdatedPersonPayload = new()
+    {
+        DateOfBirth = DateTime.Now,
+        Gender = "gender",
+        Email = "email2",
+        Address = "address03",
+        FirstName = "firstnamePatientTest02",
+        LastName = "lastnamePatientTest02"
+    };
 
-    protected static readonly Person UpdatedPersonPayload02 = new Person(
-        DateTime.Now,
-        "gender",
-        "email01",
-        "address03",
-        "firstnamePatientTest02",
-        "lastnamePatientTest02",
-        DateTime.Now,
-        DateTime.Now
-     );
+    protected static readonly PersonPayload UpdatedPersonPayload02 = new()
+    {
+        DateOfBirth = DateTime.Now,
+        Gender = "gender",
+        Email = "email01",
+        Address = "address03",
+        FirstName = "firstnamePatientTest02",
+        LastName = "lastnamePatientTest02"
+    };
 
-    protected static readonly Person PersonPayload02 = new Person(
-        DateTime.Now,
-        "gender",
-        "email04",
-        "address02",
-        "firstnamePatientTest04",
-        "lastnamePatientTest04",
-        DateTime.Now,
-        DateTime.Now
-     );
+    protected static readonly PersonPayload PersonPayload02 = new()
+    {
+        DateOfBirth = DateTime.Now,
+        Gender = "gender",
+        Email = "email04",
+        Address = "address02",
+        FirstName = "firstnamePatientTest04",
+        LastName = "lastnamePatientTest04"
+    };
 
     private static Patient CreateTestPatient(int doctorId = 666)
     {
         // Define and return the patient for this test class
         return Patient.CreatePatient(
             doctorId,
-            new Person(
-                DateTime.Now,
-                "gender01",
-                "email01",
-                "address01",
-                "firstnamePatientTest01",
-                "lastnamePatientTest01",
-                DateTime.Now,
-                DateTime.Now
-            )
+            new PersonPayload()
+            {
+                DateOfBirth = DateTime.Now,
+                Gender = "gender01",
+                Email = "email01",
+                Address = "address01",
+                FirstName = "firstnamePatientTest01",
+                LastName = "lastnamePatientTest01"
+            }
         );
     }
 

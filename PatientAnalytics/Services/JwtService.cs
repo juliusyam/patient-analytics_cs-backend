@@ -51,13 +51,15 @@ public class JwtService
     public ClaimsPrincipal? DecodeJwt(string token)
     {
         var handler = new JwtSecurityTokenHandler();
+
+        var formattedToken = token.Replace("Bearer ", "");
         
-        if (!handler.CanReadToken(token))
+        if (!handler.CanReadToken(formattedToken))
         {
             return null;
         }
         
-        var jsonToken = handler.ReadJwtToken(token.Replace("Bearer ", ""));
+        var jsonToken = handler.ReadJwtToken(formattedToken);
 
         return new ClaimsPrincipal(new ClaimsIdentity(jsonToken.Claims,  "Custom Authentication"));
     }

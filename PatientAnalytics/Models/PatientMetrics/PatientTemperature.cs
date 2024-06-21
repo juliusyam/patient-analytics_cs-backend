@@ -56,10 +56,10 @@ public class PatientTemperature
 
 public class PatientTemperaturePayload
 { 
-    public double Temperature { get; protected set; }
+    public double Temperature { get; set; }
 
     [RegularExpression("^Celsius$|^Fahrenheit$", ErrorMessage = "Invalid Unit Value. Unit must be either Celsius or Fahrenheit.")]
-    public string Unit { get; protected set; }
+    public string Unit { get; set; }
 
     public void SetTemperature(double temperature, string unit)
     {

@@ -2,6 +2,14 @@
 	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;
   &lt;Assembly Path="/usr/local/share/dotnet/packs/Microsoft.AspNetCore.App.Ref/8.0.4/ref/net8.0/Microsoft.AspNetCore.Components.Server.dll" /&gt;
 &lt;/AssemblyExplorer&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=7b60174b_002D3da4_002D4285_002D80e1_002Db6c267e02a44/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="PatientControllerTest" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;NUnit3x::5DEACB3D-9557-4F95-B798-BDFCA4E84CF9::net8.0::PatientAnalytics.Tests.Controllers.PatientControllerTest&lt;/TestId&gt;
+    &lt;TestId&gt;NUnit3x::5DEACB3D-9557-4F95-B798-BDFCA4E84CF9::net8.0::PatientAnalytics.Tests.Controllers.AuthControllerTest&lt;/TestId&gt;
+    &lt;TestId&gt;NUnit3x::5DEACB3D-9557-4F95-B798-BDFCA4E84CF9::net8.0::PatientAnalytics.Tests.Controllers.RegistrationControllerTest&lt;/TestId&gt;
+    &lt;TestId&gt;NUnit3x::5DEACB3D-9557-4F95-B798-BDFCA4E84CF9::net8.0::PatientAnalytics.Tests.Controllers.SuperAdminControllerTest&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
 	<s:Boolean x:Key="/Default/ResxEditorPersonal/CheckedGroups/=Miscellaneous_0020Files_002FGegidas/@EntryIndexedValue">False</s:Boolean>
 	<s:Boolean x:Key="/Default/ResxEditorPersonal/CheckedGroups/=Miscellaneous_0020Files_002FGegidas/@EntryIndexRemoved">True</s:Boolean>
 	

@@ -28,9 +28,17 @@ public abstract class BloodPressureBaseTest : PatientBaseTest
         ClearPatientsBloodPressures();
     }
 
-    protected static readonly PatientBloodPressurePayload BloodPressurePayload = new PatientBloodPressurePayload(120, 60);
+    protected static readonly PatientBloodPressurePayload BloodPressurePayload = new()
+    {
+        BloodPressureSystolic = 120,
+        BloodPressureDiastolic = 80
+    };
 
-    protected static readonly PatientBloodPressurePayload BloodPressurePayload2 = new PatientBloodPressurePayload(180, 40);
+    protected static readonly PatientBloodPressurePayload BloodPressurePayload2 = new PatientBloodPressurePayload()
+    {
+        BloodPressureSystolic = 180,
+        BloodPressureDiastolic = 40
+    };
     
     private static PatientBloodPressure CreateTestBloodPressure(int patientId, int doctorId, PatientBloodPressurePayload payload)
     {

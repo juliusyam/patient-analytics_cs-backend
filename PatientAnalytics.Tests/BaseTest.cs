@@ -15,6 +15,7 @@ using PatientAnalytics.Models.Auth;
 using PatientAnalytics.Services;
 using PatientAnalytics.Utils;
 using PatientAnalytics.Utils.Localization;
+using SignalR_UnitTestingSupportCommon.IHubContextSupport;
 
 namespace PatientAnalytics.Tests;
 public abstract class BaseTest
@@ -58,14 +59,8 @@ public abstract class BaseTest
 
     private static IHubContext<PatientHub> GetHubContext()
     {
-        var mockClients = new Mock<IHubClients>();
-        var mockClientProxy = new Mock<IClientProxy>();
-        mockClients.Setup(clients => clients.All).Returns(mockClientProxy.Object);
-        
-        var hubContext = new Mock<IHubContext<PatientHub>>();
-        hubContext.Setup(x => x.Clients).Returns(() => mockClients.Object);
-
-        return hubContext.Object;
+        var iHubContextSupport = new UnitTestingSupportForIHubContext<PatientHub>();
+        return iHubContextSupport.IHubContextMock.Object;
     }
 
     protected static User CreateSuperUserForTest()

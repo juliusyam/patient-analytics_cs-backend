@@ -1,33 +1,39 @@
 using System.ComponentModel.DataAnnotations;
-using Microsoft.IdentityModel.Tokens;
 
 namespace PatientAnalytics.Models;
 
 public class Person
 {
-    public Person(DateTime dateOfBirth, string gender, string email, string? address, string? firstName, string? lastName, DateTime dateCreated,
-        DateTime? dateEdited)
-    {
-        DateOfBirth = dateOfBirth;
-        Gender = gender;
-        Email = email;
-        Address = address;
-        DateCreated = dateCreated;
-        DateEdited = dateEdited;
-        FirstName = firstName;
-        LastName = lastName;
-    }
-
     [Key]
-    public int Id { get; protected set; }
-    public DateTime DateOfBirth { get; protected set; }
-    public string Gender { get; protected set; }
-    public string? FirstName { get; protected set; }
-    public string? LastName { get; protected set; }
+    public int Id { get; set; }
+    public DateTime DateOfBirth { get; set; }
+    public string Gender { get; set; }
+    public string? FirstName { get; set; }
+    public string? LastName { get; set; }
     
     [EmailAddress(ErrorMessage = "Email address format is invalid.")]
-    public string Email { get; protected set; }
-    public string? Address { get; protected set; }
-    public DateTime DateCreated { get; protected set; }
-    public DateTime? DateEdited { get; protected set; }
+    public string Email { get; set; }
+    public string? Address { get; set; }
+    public DateTime DateCreated { get; set; }
+    public DateTime? DateEdited { get; set; }
+}
+
+public class PersonPayload
+{
+    [Required(ErrorMessage = "Date of Birth is required.")]
+    public DateTime DateOfBirth { get; set; } = DateTime.Now;
+    
+    [Required(ErrorMessage = "Gender is required.")]
+    public string Gender { get; set; }
+    
+    [Required(ErrorMessage = "First Name is required.")]
+    public string? FirstName { get; set; }
+    
+    [Required(ErrorMessage = "Last Name is required.")]
+    public string? LastName { get; set; }
+    
+    [Required(ErrorMessage = "Email is required."), RegularExpression(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$", ErrorMessage = "Email format is invalid")]
+    public string Email { get; set; }
+    
+    public string? Address { get; set; }
 }

@@ -27,11 +27,23 @@ public abstract class HeightBaseTest : PatientBaseTest
         ClearPatientsHeights();
     }
 
-    protected static readonly PatientHeightPayload HeightCmPayload = new PatientHeightPayload(180, "Cm");
+    protected static readonly PatientHeightPayload HeightCmPayload = new()
+    {
+        Height = 180,
+        Unit = "Cm"
+    };
 
-    protected static readonly PatientHeightPayload HeightInPayload = new PatientHeightPayload(50, "In");
+    protected static readonly PatientHeightPayload HeightInPayload = new()
+    {
+        Height = 50,
+        Unit = "In"
+    };
 
-    protected static readonly PatientHeightPayload HeightWrongUnitPayload = new PatientHeightPayload(6, "Ft");
+    protected static readonly PatientHeightPayload HeightWrongUnitPayload = new()
+    {
+        Height = 6,
+        Unit = "Ft"
+    };
 
     private static PatientHeight CreateTestHeight(int patientId, int doctorId, PatientHeightPayload payload)
     {

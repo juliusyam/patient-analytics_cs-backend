@@ -28,10 +28,22 @@ public abstract class TemperatureBaseTest : PatientBaseTest
         ClearPatientsTemperatures();
     }
 
-    protected static readonly PatientTemperaturePayload TempCelsiusPayload = new PatientTemperaturePayload(38, "Celsius");
-    protected static readonly PatientTemperaturePayload TempFahrenheitPayload = new PatientTemperaturePayload(98, "Fahrenheit");
+    protected static readonly PatientTemperaturePayload TempCelsiusPayload = new()
+    {
+        Temperature = 38,
+        Unit = "Celsius"
+    };
+    protected static readonly PatientTemperaturePayload TempFahrenheitPayload = new()
+    {
+        Temperature = 98,
+        Unit = "Fahrenheit"
+    };
 
-    protected static readonly PatientTemperaturePayload TempWrongUnitPayload = new PatientTemperaturePayload(60, "Ft");
+    protected static readonly PatientTemperaturePayload TempWrongUnitPayload = new()
+    {
+        Temperature = 60,
+        Unit = "Ft"
+    };
 
     private static PatientTemperature CreateTestTemperature(int patientId, int doctorId, PatientTemperaturePayload payload)
     {
