@@ -345,9 +345,9 @@ namespace PatientAnalytics.Blazor.Localization {
             }
         }
         
-        internal static string Message_No_Email {
+        internal static string Label_First_Name {
             get {
-                return ResourceManager.GetString("Message_No_Email", resourceCulture);
+                return ResourceManager.GetString("Label_First_Name", resourceCulture);
             }
         }
         
@@ -399,67 +399,171 @@ namespace PatientAnalytics.Blazor.Localization {
             }
         }
         
-        internal static string Unit_Celsius
-        {
-            get
-            {
-                return ResourceManager.GetString("Unit_Celsius", resourceCulture);
+        internal static string Button_BloodPressure {
+            get {
+                return ResourceManager.GetString("Button_BloodPressure", resourceCulture);
             }
         }
         
-        internal static string Unit_Cm
-        {
-            get
-            {
+        internal static string Button_Height {
+            get {
+                return ResourceManager.GetString("Button_Height", resourceCulture);
+            }
+        }
+        
+        internal static string Button_Weight {
+            get {
+                return ResourceManager.GetString("Button_Weight", resourceCulture);
+            }
+        }
+        
+        internal static string Button_Temperature {
+            get {
+                return ResourceManager.GetString("Button_Temperature", resourceCulture);
+            }
+        }
+        
+        internal static string Label_BP_Systolic {
+            get {
+                return ResourceManager.GetString("Label_BP_Systolic", resourceCulture);
+            }
+        }
+        
+        internal static string Label_BP_Diastolic {
+            get {
+                return ResourceManager.GetString("Label_BP_Diastolic", resourceCulture);
+            }
+        }
+        
+        internal static string Label_Status {
+            get {
+                return ResourceManager.GetString("Label_Status", resourceCulture);
+            }
+        }
+        
+        internal static string Label_Doctor {
+            get {
+                return ResourceManager.GetString("Label_Doctor", resourceCulture);
+            }
+        }
+        
+        internal static string Label_Selected_Unit {
+            get {
+                return ResourceManager.GetString("Label_Selected_Unit", resourceCulture);
+            }
+        }
+        
+        internal static string Label_Unit {
+            get {
+                return ResourceManager.GetString("Label_Unit", resourceCulture);
+            }
+        }
+        
+        internal static string Label_Celsius {
+            get {
+                return ResourceManager.GetString("Label_Celsius", resourceCulture);
+            }
+        }
+        
+        internal static string Label_Fahrenheit {
+            get {
+                return ResourceManager.GetString("Label_Fahrenheit", resourceCulture);
+            }
+        }
+        
+        internal static string Error_HeightRequired {
+            get {
+                return ResourceManager.GetString("Error_HeightRequired", resourceCulture);
+            }
+        }
+        
+        internal static string Error_UnitRequired {
+            get {
+                return ResourceManager.GetString("Error_UnitRequired", resourceCulture);
+            }
+        }
+        
+        internal static string Error_BloodPressureSystolicRequired {
+            get {
+                return ResourceManager.GetString("Error_BloodPressureSystolicRequired", resourceCulture);
+            }
+        }
+        
+        internal static string Error_BloodPressureDiastolicRequired {
+            get {
+                return ResourceManager.GetString("Error_BloodPressureDiastolicRequired", resourceCulture);
+            }
+        }
+        
+        internal static string Error_WeightRequired {
+            get {
+                return ResourceManager.GetString("Error_WeightRequired", resourceCulture);
+            }
+        }
+        
+        internal static string Error_TemperatureRequired {
+            get {
+                return ResourceManager.GetString("Error_TemperatureRequired", resourceCulture);
+            }
+        }
+        
+        internal static string Unit_Cm {
+            get {
                 return ResourceManager.GetString("Unit_Cm", resourceCulture);
             }
         }
         
-        internal static string Unit_Fahrenheit
-        {
-            get
-            {
-                return ResourceManager.GetString("Unit_Fahrenheit", resourceCulture);
-            }
-        }
-        
-        internal static string Unit_Ft
-        {
-            get
-            {
-                return ResourceManager.GetString("Unit_Ft", resourceCulture);
-            }
-        }
-        
-        internal static string Unit_In
-        {
-            get
-            {
+        internal static string Unit_In {
+            get {
                 return ResourceManager.GetString("Unit_In", resourceCulture);
             }
         }
         
-        internal static string Unit_Kg
-        {
-            get
-            {
+        internal static string Unit_Ft {
+            get {
+                return ResourceManager.GetString("Unit_Ft", resourceCulture);
+            }
+        }
+        
+        internal static string Unit_Kg {
+            get {
                 return ResourceManager.GetString("Unit_Kg", resourceCulture);
             }
         }
         
-        internal static string Unit_Lb
-        {
-            get
-            {
+        internal static string Unit_St {
+            get {
+                return ResourceManager.GetString("Unit_St", resourceCulture);
+            }
+        }
+        
+        internal static string Unit_Lb {
+            get {
                 return ResourceManager.GetString("Unit_Lb", resourceCulture);
             }
         }
         
-        internal static string Unit_St
-        {
-            get
-            {
-                return ResourceManager.GetString("Unit_St", resourceCulture);
+        internal static string Unit_Celsius {
+            get {
+                return ResourceManager.GetString("Unit_Celsius", resourceCulture);
+            }
+        }
+        
+        internal static string Unit_Fahrenheit {
+            get {
+                return ResourceManager.GetString("Unit_Fahrenheit", resourceCulture);
+            }
+        }
+        
+        internal static string Message_No_Email {
+            get {
+                return ResourceManager.GetString("Message_No_Email", resourceCulture);
+            }
+        }
+        
+        internal static string Button_Download_Report {
+            get {
+                return ResourceManager.GetString("Button_Download_Report", resourceCulture);
             }
         }
     }

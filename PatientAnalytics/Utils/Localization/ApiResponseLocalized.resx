@@ -69,4 +69,34 @@
     <data name="PatientWeightError_NotFound" xml:space="preserve">
         <value>Unable to locate weight record with id: {0}</value>
     </data>
+    <data name="ReportTitles_Temperatures" xml:space="preserve">
+        <value>Temperature</value>
+    </data>
+    <data name="ReportTitles_Weight" xml:space="preserve">
+        <value>Weight</value>
+    </data>
+    <data name="ReportTitles_Height" xml:space="preserve">
+        <value>Height</value>
+    </data>
+    <data name="ReportTitles_BloodPressure" xml:space="preserve">
+        <value>Blood Pressure</value>
+    </data>
+    <data name="ReportTitles_PatientID" xml:space="preserve">
+        <value>Patient ID: {0}</value>
+    </data>
+    <data name="ReportTitles_Patient" xml:space="preserve">
+        <value>Report for patient {0} {1}</value>
+    </data>
+    <data name="ReportTitles_BMIStart" xml:space="preserve">
+        <value>First BMI Reading at {0}: {1}</value>
+    </data>
+    <data name="ReportTitles_BMIEnd" xml:space="preserve">
+        <value>Last BMI Reading at {0}: {1}</value>
+    </data>
+    <data name="DateFormatting_Date" xml:space="preserve">
+        <value>dd MMM yyyy</value>
+    </data>
+    <data name="DateFormatting_DateTime" xml:space="preserve">
+        <value>yyyyMMdd_hhmm</value>
+    </data>
 </root>

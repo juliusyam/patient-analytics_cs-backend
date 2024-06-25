@@ -14,13 +14,16 @@ namespace PatientAnalytics.Controllers;
 public class PatientController
 {
     private readonly PatientService _patientService;
+    private readonly ReportService _reportService;
     private readonly IStringLocalizer<ApiResponseLocalized> _localized;
 
     public PatientController(
         PatientService patientService,
+        ReportService reportService,
         IStringLocalizer<ApiResponseLocalized> localized)
     {
         _patientService = patientService;
+        _reportService = reportService;
         _localized = localized;
     }
     
@@ -66,6 +69,17 @@ public class PatientController
         ValidateAuthorization(httpContextAccessor, out var authorization);
 
         return await _patientService.DeletePatient(authorization, patientId);
+    }
+    
+    [HttpGet("{patientId:int}/report", Name = "GetPatientReport")]
+    public ReportResponse GetPatientReportById([FromServices] IHttpContextAccessor httpContextAccessor, [FromRoute] int patientId)
+    {
+        ValidateAuthorization(httpContextAccessor, out var authorization);
+
+        var patient = _patientService.GetPatientById(authorization, patientId);
+        var reportResponse = _reportService.GenerateReportForPatient(patient);
+
+        return reportResponse;
     }
 
     private void ValidateAuthorization(IHttpContextAccessor httpContextAccessor, out string verifiedAuthorization)

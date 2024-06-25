@@ -276,4 +276,7 @@
     <data name="Message_No_Email" xml:space="preserve">
         <value>電子郵件不可用</value>
     </data>
+    <data name="Button_Download_Report" xml:space="preserve">
+        <value>下載報告</value>
+    </data>
 </root>

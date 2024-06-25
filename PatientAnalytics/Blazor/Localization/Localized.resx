@@ -276,4 +276,7 @@
     <data name="Message_No_Email" xml:space="preserve">
         <value>Email Not Available</value>
     </data>
+    <data name="Button_Download_Report" xml:space="preserve">
+        <value>Download Report</value>
+    </data>
 </root>

@@ -69,4 +69,34 @@
     <data name="PatientWeightError_NotFound" xml:space="preserve">
         <value>Der Gewichtsdatensatz mit der ID: {0} konnte nicht gefunden werden.</value>
     </data>
+    <data name="ReportTitles_Temperatures" xml:space="preserve">
+        <value>Temperatur</value>
+    </data>
+    <data name="ReportTitles_Weight" xml:space="preserve">
+        <value>Gewicht</value>
+    </data>
+    <data name="ReportTitles_Height" xml:space="preserve">
+        <value>Höhe</value>
+    </data>
+    <data name="ReportTitles_BloodPressure" xml:space="preserve">
+        <value>Blutdruck</value>
+    </data>
+    <data name="ReportTitles_PatientID" xml:space="preserve">
+        <value>Patienten ID: {0}</value>
+    </data>
+    <data name="ReportTitles_Patient" xml:space="preserve">
+        <value>Bericht für Patienten {0} {1}</value>
+    </data>
+    <data name="ReportTitles_BMIStart" xml:space="preserve">
+        <value>Erste BMI-Messung um {0}: {1}</value>
+    </data>
+    <data name="ReportTitles_BMIEnd" xml:space="preserve">
+        <value>Letzter BMI-Wert um {0}: {1}</value>
+    </data>
+    <data name="DateFormatting_Date" xml:space="preserve">
+        <value>dd MMM yyyy</value>
+    </data>
+    <data name="DateFormatting_DateTime" xml:space="preserve">
+        <value>yyyyMMdd_hhmm</value>
+    </data>
 </root>

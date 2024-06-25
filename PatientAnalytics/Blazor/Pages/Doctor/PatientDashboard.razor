@@ -3,6 +3,8 @@
 @inject PatientAnalyticsAuthStateProvider PatientAnalyticsAuthStateProvider
 @inject NavigationManager NavigationManager
 @inject PatientService PatientService
+@inject ReportService ReportService
+@inject IJSRuntime JS       
 
 <PageTitle>@_pageTitle</PageTitle>
 
@@ -16,6 +18,9 @@
             <div class ="is-flex is-gap-3">
                 <button class="button is-success" @onclick="ToggleUpdateDetails">@(_updateDetails ? Localized["Button_Cancel"] : Localized["Button_Edit"])</button>
                 <button class="button is-danger is-outlined" @onclick="ShowDeleteConfirmation">@Localized["Button_Delete"]</button>
+            </div>
+            <div>
+                <button disabled="@_isDownloadReportDisabled" class="button" @onclick="GetReport">@Localized["Button_Download_Report"]</button>
             </div>
         </section>
         
@@ -74,6 +79,8 @@
     private Patient? _patient;
     private bool _updateDetails = false;
     private bool _isDeleteConfirmationVisible = false;
+    private bool _isDownloadReportDisabled = true;
+
     private HttpStatusCodeException? _exception;
     
     protected override void OnInitialized()
@@ -87,13 +94,45 @@
             try
             {
                 _patient = PatientService.GetPatientById(token, Id);
-                if (_patient is not null) _pageTitle = string.Format(Localized["Title_PatientDashboard_WithPatientName"], _patient.FirstName, _patient.LastName);
+                if (_patient is not null)
+                {
+                    _pageTitle = string.Format(Localized["Title_PatientDashboard_WithPatientName"], _patient.FirstName, _patient.LastName);
+                    _isDownloadReportDisabled = false;
+                }
             }
             catch (HttpStatusCodeException exception)
             {
                 _exception = exception;
             }
         }
+    }
+
+    private async Task GetReport()
+    {
+        _isDownloadReportDisabled = true;
+
+        await Task.Delay(300);
+        
+        try
+        {
+            if (_patient != null)
+            {
+                ReportResponse reportResponse = ReportService.GenerateReportForPatient(_patient);
+                var reportBytes = reportResponse.fileStream;
+                var fileName = reportResponse.fileName;
+            
+                using var stream = new MemoryStream(reportBytes);
+                using var streamRef = new DotNetStreamReference(stream: stream);
+
+                await JS.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
+            }
+        }
+        catch (HttpStatusCodeException exception)
+        {
+            _exception = exception;
+        }
+        
+        _isDownloadReportDisabled = false;
     }
 
     private void ToggleUpdateDetails()

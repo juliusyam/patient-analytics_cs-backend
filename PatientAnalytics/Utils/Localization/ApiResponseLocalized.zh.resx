@@ -68,4 +68,34 @@
     <data name="PatientWeightError_NotFound" xml:space="preserve">
         <value>無法找到 ID 為 {0} 的體重記錄</value>
     </data>
+    <data name="ReportTitles_Temperatures" xml:space="preserve">
+        <value>溫度</value>
+    </data>
+    <data name="ReportTitles_Weight" xml:space="preserve">
+        <value>重量</value>
+    </data>
+    <data name="ReportTitles_Height" xml:space="preserve">
+        <value>高度</value>
+    </data>
+    <data name="ReportTitles_BloodPressure" xml:space="preserve">
+        <value>血壓</value>
+    </data>
+    <data name="ReportTitles_PatientID" xml:space="preserve">
+        <value>病號 ID: {0}</value>
+    </data>
+    <data name="ReportTitles_Patient" xml:space="preserve">
+        <value>給病人的報告 {0} {1}</value>
+    </data>
+    <data name="ReportTitles_BMIStart" xml:space="preserve">
+        <value>第一次 BMI 讀數 {0}: {1}</value>
+    </data>
+    <data name="ReportTitles_BMIEnd" xml:space="preserve">
+        <value>最後 BMI 讀數為 {0}: {1}</value>
+    </data>
+    <data name="DateFormatting_Date" xml:space="preserve">
+        <value>dd MMM yyyy</value>
+    </data>
+    <data name="DateFormatting_DateTime" xml:space="preserve">
+        <value>yyyyMMdd_hhmm</value>
+    </data>
 </root>

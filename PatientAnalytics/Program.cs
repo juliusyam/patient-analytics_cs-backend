@@ -102,6 +102,7 @@ builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<RegistrationService>();
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<ReportService>();
 builder.Services.AddScoped<PatientService>();
 builder.Services.AddScoped<PatientMetricsTemperatureService>();
 builder.Services.AddScoped<PatientMetricsBloodPressureService>();

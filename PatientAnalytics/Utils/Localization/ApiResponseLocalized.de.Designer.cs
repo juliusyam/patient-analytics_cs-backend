@@ -62,16 +62,16 @@ namespace PatientAnalytics.Utils.Localization {
                 return ResourceManager.GetString("HeaderError_Authorization", resourceCulture);
             }
         }
-
-        public static string AuthError_Unauthorized_SuperAdmin {
-            get {
-                return ResourceManager.GetString("AuthError_Unauthorized_SuperAdmin", resourceCulture);
-            }
-        }
         
         public static string AuthError_Unauthorized {
             get {
                 return ResourceManager.GetString("AuthError_Unauthorized", resourceCulture);
+            }
+        }
+        
+        public static string AuthError_Unauthorized_SuperAdmin {
+            get {
+                return ResourceManager.GetString("AuthError_Unauthorized_SuperAdmin", resourceCulture);
             }
         }
         
@@ -144,6 +144,66 @@ namespace PatientAnalytics.Utils.Localization {
         public static string PatientWeightError_NotFound {
             get {
                 return ResourceManager.GetString("PatientWeightError_NotFound", resourceCulture);
+            }
+        }
+        
+        public static string ReportTitles_Temperatures {
+            get {
+                return ResourceManager.GetString("ReportTitles_Temperatures", resourceCulture);
+            }
+        }
+        
+        public static string ReportTitles_Weight {
+            get {
+                return ResourceManager.GetString("ReportTitles_Weight", resourceCulture);
+            }
+        }
+        
+        public static string ReportTitles_Height {
+            get {
+                return ResourceManager.GetString("ReportTitles_Height", resourceCulture);
+            }
+        }
+        
+        public static string ReportTitles_BloodPressure {
+            get {
+                return ResourceManager.GetString("ReportTitles_BloodPressure", resourceCulture);
+            }
+        }
+        
+        public static string ReportTitles_PatientID {
+            get {
+                return ResourceManager.GetString("ReportTitles_PatientID", resourceCulture);
+            }
+        }
+        
+        public static string ReportTitles_Patient {
+            get {
+                return ResourceManager.GetString("ReportTitles_Patient", resourceCulture);
+            }
+        }
+        
+        public static string ReportTitles_BMIStart {
+            get {
+                return ResourceManager.GetString("ReportTitles_BMIStart", resourceCulture);
+            }
+        }
+        
+        public static string ReportTitles_BMIEnd {
+            get {
+                return ResourceManager.GetString("ReportTitles_BMIEnd", resourceCulture);
+            }
+        }
+        
+        public static string DateFormatting_Date {
+            get {
+                return ResourceManager.GetString("DateFormatting_Date", resourceCulture);
+            }
+        }
+        
+        public static string DateFormatting_DateTime {
+            get {
+                return ResourceManager.GetString("DateFormatting_DateTime", resourceCulture);
             }
         }
     }
