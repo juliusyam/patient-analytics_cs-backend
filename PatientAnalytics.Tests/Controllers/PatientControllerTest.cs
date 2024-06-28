@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.IdentityModel.Tokens;
 using NUnit.Framework;
 using PatientAnalytics.Middleware;
 
@@ -45,12 +44,12 @@ public class PatientControllerTest : PatientBaseTest
     [Test]
     public void CreatePatient_WithNotLoggedInUser_ThrowsMessage()
     {        
-        var exception = Assert.ThrowsAsync<SecurityTokenMalformedException>(async () =>
+        var exception = Assert.ThrowsAsync<HttpStatusCodeException>(async () =>
         {
             await PatientController.CreatePatient(CreateHttpContextAccessor("Bob"), PersonPayload);
         });
 
-        Assert.That(exception!.Message, Is.EqualTo(ExpectedTokenMessage));
+        Assert.That(exception!.Message, Is.EqualTo("Token format is invalid"));
     }
 
     [Test]
@@ -109,12 +108,12 @@ public class PatientControllerTest : PatientBaseTest
     {
         var patients = DbContext.Patients.ToList();
 
-        var exception = Assert.ThrowsAsync<SecurityTokenMalformedException>(async () =>
+        var exception = Assert.ThrowsAsync<HttpStatusCodeException>(async () =>
         {
             await PatientController.DeletePatient(CreateHttpContextAccessor("Bob"), patients[0].Id);
         });
 
-        Assert.That(exception!.Message, Is.EqualTo(ExpectedTokenMessage));
+        Assert.That(exception!.Message, Is.EqualTo("Token format is invalid"));
     }
 
     [Test]
@@ -168,12 +167,12 @@ public class PatientControllerTest : PatientBaseTest
     {
         var patients = DbContext.Patients.ToList();
 
-        var exception = Assert.ThrowsAsync<SecurityTokenMalformedException>(() => {
+        var exception = Assert.ThrowsAsync<HttpStatusCodeException>(() => {
             PatientController.GetPatientById(CreateHttpContextAccessor("Bob"), patients[0].Id);
             return Task.CompletedTask;
         });
 
-        Assert.That(exception!.Message, Is.EqualTo(ExpectedTokenMessage));
+        Assert.That(exception!.Message, Is.EqualTo("Token format is invalid"));
     }
 
     [Test]
@@ -227,12 +226,12 @@ public class PatientControllerTest : PatientBaseTest
     {
         var patients = DbContext.Patients.ToList();
         
-        var exception = Assert.ThrowsAsync<SecurityTokenMalformedException>(async () =>
+        var exception = Assert.ThrowsAsync<HttpStatusCodeException>(async () =>
         {
             await PatientController.DeletePatient(CreateHttpContextAccessor("Bob"), patients[0].Id);
         });
 
-        Assert.That(exception!.Message, Is.EqualTo(ExpectedTokenMessage));
+        Assert.That(exception!.Message, Is.EqualTo("Token format is invalid"));
     }
 
     [Test]
@@ -290,12 +289,12 @@ public class PatientControllerTest : PatientBaseTest
     {
         var patients = DbContext.Patients.ToList();
 
-        var exception = Assert.ThrowsAsync<SecurityTokenMalformedException>(() => {
+        var exception = Assert.ThrowsAsync<HttpStatusCodeException>(() => {
             PatientController.GetPatientById(CreateHttpContextAccessor("Bob"), patients[0].Id);
             return Task.CompletedTask;
         });
 
-        Assert.That(exception!.Message, Is.EqualTo(ExpectedTokenMessage));
+        Assert.That(exception!.Message, Is.EqualTo("Token format is invalid"));
     }
 
     [Test]

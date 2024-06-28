@@ -106,8 +106,11 @@
     private string _pageTitle = "";
     private Patient? _patient;
     private List<PatientWeight> _patientsWeight = new();
-    private PatientWeightPayload _patientWeightPayload = new PatientWeightPayload();
+    private PatientWeightPayload _patientWeightPayload = new();
+    
+    private bool _refreshing;
     private HttpStatusCodeException? _exception;
+    
     private bool _isDeleteConfirmationVisible = false;
     private string ErrorMessage { get; set; } = string.Empty;
 
@@ -123,33 +126,32 @@
 
         if (PatientAnalyticsAuthStateProvider.IsDoctor())
         {
-            var token = PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token;
-
-            try
-            {
-                _patient = PatientService.GetPatientById(token, Id);
-                if (_patient is not null)
+            await PatientAnalyticsAuthStateProvider.ServiceWrapperAsync(
+                _refreshing,
+                async token =>
                 {
-                    _pageTitle = string.Format(Localized["Title_PatientDashboard_WithPatientName"], _patient.FirstName, _patient.LastName);
+                    _patient = PatientService.GetPatientById(token, Id);
+                    
+                    if (_patient is not null)
+                    {
+                        _pageTitle = string.Format(Localized["Title_PatientDashboard_WithPatientName"], _patient.FirstName, _patient.LastName);
 
-                    _patientsWeight = await PatientMetricsWeightService.GetPatientWeights(token, Id);
-                }
-            }
-            catch (HttpStatusCodeException exception)
-            {
-                _exception = exception;
-            }
+                        _patientsWeight = await PatientMetricsWeightService.GetPatientWeights(token, Id);
+                    }
+                },
+                refreshing => _refreshing = refreshing,
+                exception => _exception = exception, 
+                () => NavigationManager.NavigateTo("/"));
         }
         else
         {
-            await PatientAnalyticsAuthStateProvider.Logout();
+            await PatientAnalyticsAuthStateProvider.LogoutAsync();
             NavigationManager.NavigateTo("/");
         }
     }
 
     private async Task HandleSubmit()
     {
-        var token = PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token;
         ErrorMessage = string.Empty;
 
         if (!_weightValue.HasValue)
@@ -166,21 +168,17 @@
 
         _patientWeightPayload.SetWeight(_weightValue.Value, _selectedUnit);
 
-        try
-        {
-            var newWeightEntry = await PatientMetricsWeightService.CreateEntry(token, _patient.Id, _patientWeightPayload);
-            newWeightEntry = newWeightEntry.Formatted();
-            _patientsWeight.Add(newWeightEntry);
-        }
-        catch (HttpStatusCodeException exception)
-        {
-            ErrorMessage = exception.Message;
-        }
-    }
-
-    private void GoBack()
-    {
-        NavigationManager.NavigateTo($"/dashboard/doctor/patients/{Id}");
+        await PatientAnalyticsAuthStateProvider.ServiceWrapperAsync(
+            _refreshing,
+            async token =>
+            {
+                var newWeightEntry = await PatientMetricsWeightService.CreateEntry(token, _patient.Id, _patientWeightPayload);
+                
+                _patientsWeight.Add(newWeightEntry);
+            },
+            refreshing => _refreshing = refreshing,
+            exception => ErrorMessage = exception.Message, 
+            () => NavigationManager.NavigateTo("/"));
     }
 
     private void ShowDeleteConfirmation(int id)
@@ -196,20 +194,18 @@
 
     private async Task ConfirmDelete()
     {
-        var token = PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token;
-        try
-        {
-            await PatientMetricsWeightService.DeleteEntryById(token, _weightID);
-            _patientsWeight.RemoveAll(bp => bp.Id == _weightID);
-        }
-        catch (HttpStatusCodeException exception)
-        {
-            _exception = exception;
-        }
-        finally
-        {
-            _isDeleteConfirmationVisible = false;
-        }
+        await PatientAnalyticsAuthStateProvider.ServiceWrapperAsync(
+            _refreshing,
+            async token =>
+            {
+                await PatientMetricsWeightService.DeleteEntryById(token, _weightID);
+                _patientsWeight.RemoveAll(bp => bp.Id == _weightID);
+                
+                _isDeleteConfirmationVisible = false;
+            },
+            refreshing => _refreshing = refreshing,
+            exception => _exception = exception, 
+            () => NavigationManager.NavigateTo("/"));
     }
 
     private string GetWeightDisplay(PatientWeight patientWeight)

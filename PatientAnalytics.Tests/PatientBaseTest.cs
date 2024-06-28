@@ -9,8 +9,9 @@ using PatientAnalytics.Services;
 namespace PatientAnalytics.Tests;
 public abstract class PatientBaseTest : BaseTest
 {
-    protected static readonly PatientService PatientService = new (DbContext, JwtService, HubContext, Localized);
-    protected static readonly PatientController PatientController = new (PatientService, Localized);
+    protected static readonly PatientService PatientService = new(DbContext, JwtService, HubContext, Localized);
+    protected static readonly ReportService ReportService = new(Localized);
+    protected static readonly PatientController PatientController = new(PatientService, ReportService, Localized);
         
     protected User _superUser;
     private User _adminUser;
@@ -68,12 +69,6 @@ public abstract class PatientBaseTest : BaseTest
         ClearPatients();
     }
 
-    protected const string ExpectedTokenMessage = "IDX12709: " +
-        "CanReadToken() returned false. JWT is not well formed." +
-        "\nThe token needs to be in JWS or JWE Compact Serialization Format. " +
-        "(JWS): 'EncodedHeader.EndcodedPayload.EncodedSignature'. " +
-        "(JWE): 'EncodedProtectedHeader.EncodedEncryptedKey.EncodedInitializationVector.EncodedCiphertext.EncodedAuthenticationTag'.";
-    
     protected const int FakePatientId = 999;
 
     protected static readonly PersonPayload PersonPayload = new()

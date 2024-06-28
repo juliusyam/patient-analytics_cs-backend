@@ -80,30 +80,28 @@
     private bool _updateDetails = false;
     private bool _isDeleteConfirmationVisible = false;
     private bool _isDownloadReportDisabled = true;
-
+    
+    private bool _refreshing;
     private HttpStatusCodeException? _exception;
     
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         _pageTitle = Localized["Title_PatientDashboard"];
         
         if (PatientAnalyticsAuthStateProvider.IsDoctor())
         {
-            var token = PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token;
-
-            try
-            {
-                _patient = PatientService.GetPatientById(token, Id);
-                if (_patient is not null)
+            await PatientAnalyticsAuthStateProvider.ServiceWrapper(
+                _refreshing,
+                token =>
                 {
-                    _pageTitle = string.Format(Localized["Title_PatientDashboard_WithPatientName"], _patient.FirstName, _patient.LastName);
+                    _patient = PatientService.GetPatientById(token, Id);
+                    if (_patient is not null) 
+                        _pageTitle = string.Format(Localized["Title_PatientDashboard_WithPatientName"], _patient.FirstName, _patient.LastName);
                     _isDownloadReportDisabled = false;
-                }
-            }
-            catch (HttpStatusCodeException exception)
-            {
-                _exception = exception;
-            }
+                },
+                refreshing => _refreshing = refreshing,
+                exception => _exception = exception, 
+                () => NavigationManager.NavigateTo("/"));
         }
     }
 
@@ -157,21 +155,16 @@
 
     private async Task ConfirmDelete()
     {
-        var token = PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token;
-        try
-        {
-            await PatientService.DeletePatient(token, _patient.Id);
-
-            NavigationManager.NavigateTo("/dashboard/doctor");
-        }
-        catch (HttpStatusCodeException exception)
-        {
-            _exception = exception;
-        }
-        finally
-        {
-            _isDeleteConfirmationVisible = false;
-        }
+        await PatientAnalyticsAuthStateProvider.ServiceWrapperAsync(
+            _refreshing,
+            async token =>
+            {
+                await PatientService.DeletePatient(token, _patient.Id);
+                NavigationManager.NavigateTo("/dashboard/doctor");
+            },
+            refreshing => _refreshing = refreshing,
+            exception => _exception = exception,
+            () => NavigationManager.NavigateTo("/"));
     }
 
     private void HandleModalClose()

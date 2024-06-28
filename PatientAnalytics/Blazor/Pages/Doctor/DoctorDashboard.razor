@@ -56,8 +56,10 @@
     private HubConnection? _hubConnection;
     private List<Patient> _patients = new();
     private bool _createPatient = false;
+    
+    private bool _refreshing;
     private HttpStatusCodeException? _exception;
-
+    
     protected override async Task OnInitializedAsync()
     {
         if (PatientAnalyticsAuthStateProvider.IsDoctor())
@@ -127,16 +129,14 @@
         }
     }
     
-    private void FetchPatients()
+    private async void FetchPatients()
     {
-        try
-        {
-            _patients = PatientService.GetPatients(PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token, null, null, null);
-        }
-        catch (HttpStatusCodeException exception)
-        {
-            _exception = exception;
-        }
+        await PatientAnalyticsAuthStateProvider.ServiceWrapper(
+            _refreshing, 
+            token => _patients = PatientService.GetPatients(token, null, null, null),
+            refreshing => _refreshing = refreshing,
+            exception => _exception = exception, 
+            () => NavigationManager.NavigateTo("/"));
     }
 
     private void ToggleCreatePatient()

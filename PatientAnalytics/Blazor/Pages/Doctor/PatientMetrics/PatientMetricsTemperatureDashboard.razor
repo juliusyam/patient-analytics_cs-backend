@@ -98,9 +98,12 @@
     private string _pageTitle = "";
     private Patient? _patient;
     private List<PatientTemperature> _patientsTemperature = new();
-    private PatientTemperaturePayload _patientTemperaturePayload = new PatientTemperaturePayload();
+    private PatientTemperaturePayload _patientTemperaturePayload = new();
+    
+    private bool _refreshing;
     private HttpStatusCodeException? _exception;
-    private bool _isDeleteConfirmationVisible = false;
+    
+    private bool _isDeleteConfirmationVisible;
     private string ErrorMessage { get; set; } = string.Empty;
 
     private double? _temperatureValue;
@@ -115,33 +118,32 @@
 
         if (PatientAnalyticsAuthStateProvider.IsDoctor())
         {
-            var token = PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token;
-
-            try
-            {
-                _patient = PatientService.GetPatientById(token, Id);
-                if (_patient is not null)
+            await PatientAnalyticsAuthStateProvider.ServiceWrapperAsync(
+                _refreshing,
+                async token =>
                 {
-                    _pageTitle = string.Format(Localized["Title_PatientDashboard_WithPatientName"], _patient.FirstName, _patient.LastName);
+                    _patient = PatientService.GetPatientById(token, Id);
+                    
+                    if (_patient is not null)
+                    {
+                        _pageTitle = string.Format(Localized["Title_PatientDashboard_WithPatientName"], _patient.FirstName, _patient.LastName);
 
-                    _patientsTemperature = await PatientMetricsTemperatureService.GetPatientTemperatures(token, Id);
-                }
-            }
-            catch (HttpStatusCodeException exception)
-            {
-                _exception = exception;
-            }
+                        _patientsTemperature = await PatientMetricsTemperatureService.GetPatientTemperatures(token, Id);
+                    }
+                },
+                refreshing => _refreshing = refreshing,
+                exception => _exception = exception, 
+                () => NavigationManager.NavigateTo("/"));
         }
         else
         {
-            await PatientAnalyticsAuthStateProvider.Logout();
+            await PatientAnalyticsAuthStateProvider.LogoutAsync();
             NavigationManager.NavigateTo("/");
         }
     }
 
     private async Task HandleSubmit()
     {
-        var token = PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token;
         ErrorMessage = string.Empty;
 
         if (!_temperatureValue.HasValue)
@@ -158,21 +160,17 @@
 
         _patientTemperaturePayload.SetTemperature(_temperatureValue.Value, _selectedUnit);
 
-        try
-        {
-            var newTemperatureEntry = await PatientMetricsTemperatureService.CreateEntry(token, _patient.Id, _patientTemperaturePayload);
-            newTemperatureEntry = newTemperatureEntry.Formatted();
-            _patientsTemperature.Add(newTemperatureEntry);
-        }
-        catch (HttpStatusCodeException exception)
-        {
-            ErrorMessage = exception.Message;
-        }
-    }
-
-    private void GoBack()
-    {
-        NavigationManager.NavigateTo($"/dashboard/doctor/patients/{Id}");
+        await PatientAnalyticsAuthStateProvider.ServiceWrapperAsync(
+            _refreshing,
+            async token =>
+            {
+                var newTemperatureEntry = await PatientMetricsTemperatureService.CreateEntry(token, _patient.Id, _patientTemperaturePayload);
+                
+                _patientsTemperature.Add(newTemperatureEntry);
+            },
+            refreshing => _refreshing = refreshing,
+            exception => ErrorMessage = exception.Message, 
+            () => NavigationManager.NavigateTo("/"));
     }
 
     private void ShowDeleteConfirmation(int id)
@@ -188,20 +186,18 @@
 
     private async Task ConfirmDelete()
     {
-        var token = PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token;
-        try
-        {
-            await PatientMetricsTemperatureService.DeleteEntryById(token, _temperatureID);
-            _patientsTemperature.RemoveAll(bp => bp.Id == _temperatureID);
-        }
-        catch (HttpStatusCodeException exception)
-        {
-            _exception = exception;
-        }
-        finally
-        {
-            _isDeleteConfirmationVisible = false;
-        }
+        await PatientAnalyticsAuthStateProvider.ServiceWrapperAsync(
+            _refreshing,
+            async token =>
+            {
+                await PatientMetricsTemperatureService.DeleteEntryById(token, _temperatureID);
+                _patientsTemperature.RemoveAll(bp => bp.Id == _temperatureID);
+                
+                _isDeleteConfirmationVisible = false;
+            },
+            refreshing => _refreshing = refreshing,
+            exception => _exception = exception, 
+            () => NavigationManager.NavigateTo("/"));
     }
 
     private string GetTemperatureDisplay(PatientTemperature patientTemperature)

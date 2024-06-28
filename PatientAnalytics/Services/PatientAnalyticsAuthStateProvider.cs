@@ -1,50 +1,177 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Components.Authorization;
+using PatientAnalytics.Middleware;
 using PatientAnalytics.Models.Auth;
 
 namespace PatientAnalytics.Services;
 
 public class PatientAnalyticsAuthStateProvider : AuthenticationStateProvider, IDisposable
 {
+    private readonly AuthService _authService;
     private readonly PatientAnalyticsUserService _patientAnalyticsUserService;
 
-    public PatientAnalyticsAuthStateProvider(PatientAnalyticsUserService patientAnalyticsUserService)
+    public PatientAnalyticsAuthStateProvider(
+        PatientAnalyticsUserService patientAnalyticsUserService,
+        AuthService authService)
     {
         _patientAnalyticsUserService = patientAnalyticsUserService;
+        _authService = authService;
         AuthenticationStateChanged += OnAuthenticationStateChangedAsync;
     }
 
     public async Task OnAfterRenderAsync()
     {
         var principal = new ClaimsPrincipal();
-        var userPrincipal = await _patientAnalyticsUserService.FetchBrowserTokenAsync();
+
+        var userPrincipal = await _patientAnalyticsUserService.FetchUserFromStorageAsync(RefreshAsync);
 
         if (userPrincipal is not null)
         {
             principal = userPrincipal;
-        };
+        }
         
         NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(principal)));
     }
     
-    public async Task Login(LoginResponse response)
+    public async Task<LoginResponse> LoginAsync(LoginPayload loginPayload)
     {
+        var response = await _authService.Login(loginPayload);
+        
         var principal = new ClaimsPrincipal();
-        var updatedUser = await _patientAnalyticsUserService.SendLoginRequestAsync(response);
+
+        var updatedUser = await _patientAnalyticsUserService.SaveUserInStorageAsync(response);
         
         if (updatedUser.UserPrincipal is not null)
         {
             principal = updatedUser.UserPrincipal;
-        };
+        }
+        
+        NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(principal)));
+
+        return response;
+    }
+
+    public async Task LogoutAsync()
+    {
+        var token = FetchCurrentUser().Token;
+        var refreshToken = FetchCurrentUser().RefreshToken;
+
+        if (token != string.Empty)
+        {
+            try
+            {
+                // Allow the continuation of logout even if token is no longer valid to revoke refresh token
+                await _authService.Logout(token, refreshToken);
+            }
+            catch (HttpStatusCodeException) {}
+        }
+        
+        await _patientAnalyticsUserService.RemoveUserFromStorageAsync();
+        
+        NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(new ClaimsPrincipal())));
+    }
+
+    private async Task RefreshAsync()
+    {
+        var principal = new ClaimsPrincipal();
+        
+        var storage = _patientAnalyticsUserService.GetAuthenticationDataMemoryStorage();
+        
+        var refreshResponse = await _authService.Refresh(storage.Token, new RefreshPayload
+        {
+            RefreshToken = storage.RefreshToken
+        });
+        
+        var updatedUser = await _patientAnalyticsUserService.SaveUserInStorageAsync(refreshResponse);
+        
+        if (updatedUser.UserPrincipal is not null)
+        {
+            principal = updatedUser.UserPrincipal;
+        }
         
         NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(principal)));
     }
 
-    public async Task Logout()
+    public async Task ServiceWrapper(
+        bool refreshing, 
+        Action<string> serviceCallback,
+        Action<bool> updateRefreshingState,
+        Action<HttpStatusCodeException> updateExceptionState,
+        Action handleLogout)
     {
-        await _patientAnalyticsUserService.SendLogoutRequestAsync();
-        
-        NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(new ClaimsPrincipal())));
+        try
+        {
+            serviceCallback(FetchCurrentUser().Token);
+        }
+        catch (HttpStatusCodeException exception)
+        {
+            if (!refreshing && exception.StatusCode == 401)
+            {
+                try
+                {
+                    updateRefreshingState(true);
+
+                    await RefreshAsync();
+                    
+                    // FetchCurrentUser().Token will be updated if RefreshAsync() is successful
+                    serviceCallback(FetchCurrentUser().Token);
+                }
+                catch
+                {
+                    await LogoutAsync();
+                    handleLogout();
+                }
+                finally
+                {
+                    updateRefreshingState(false);
+                }
+            }
+            else
+            {
+                updateExceptionState(exception);
+            }
+        }  
+    }
+    
+    public async Task ServiceWrapperAsync(
+        bool refreshing, 
+        Func<string, Task> serviceCallback,
+        Action<bool> updateRefreshingState,
+        Action<HttpStatusCodeException> updateExceptionState,
+        Action handleLogout)
+    {
+        try
+        {
+            await serviceCallback(FetchCurrentUser().Token);
+        }
+        catch (HttpStatusCodeException exception)
+        {
+            if (!refreshing && exception.StatusCode == 401)
+            {
+                try
+                {
+                    updateRefreshingState(true);
+
+                    await RefreshAsync();
+                    
+                    // FetchCurrentUser().Token will be updated if RefreshAsync() is successful
+                    await serviceCallback(FetchCurrentUser().Token);
+                }
+                catch
+                {
+                    await LogoutAsync();
+                    handleLogout();
+                }
+                finally
+                {
+                    updateRefreshingState(false);
+                }
+            }
+            else
+            {
+                updateExceptionState(exception);
+            }
+        }  
     }
     
     public override Task<AuthenticationState> GetAuthenticationStateAsync()
@@ -55,7 +182,7 @@ public class PatientAnalyticsAuthStateProvider : AuthenticationStateProvider, ID
         if (memoryStorage.UserPrincipal is not null)
         {
             principal = memoryStorage.UserPrincipal;
-        };
+        }
         
         return Task.FromResult(new AuthenticationState(principal));
     }

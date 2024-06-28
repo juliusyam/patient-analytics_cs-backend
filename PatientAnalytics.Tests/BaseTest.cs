@@ -25,6 +25,9 @@ public abstract class BaseTest
     private static readonly Dictionary<string, string> TestConfiguration = new()
     {
         { "Jwt:Key", "tp6osj2CoTOIz8pvIUV0Vg1T0vlkZFD14nEtLYZ75FFfaQWQ7qMcU6byLyIkqArgVQT3P1YGvwHumjqZJtOtW3VMG2OLR9tpHKcC" },
+        { "Jwt:Issuer", "http://localhost:5272/" },
+        { "Jwt:Audience", "http://localhost:5272/" },
+        { "Jwt:ExpirationTime", "1" },
         { "Auth:Salt", "passwordSalt" }
     };
 

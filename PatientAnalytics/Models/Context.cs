@@ -11,6 +11,7 @@ public class Context : DbContext
     }
     
     public virtual DbSet<User> Users { get; private set; } = default!;
+    public virtual DbSet<UserRefresh> UserRefreshes { get; private set; } = default!;
     public virtual DbSet<Patient> Patients { get; private set; } = default!;
     public virtual DbSet<PatientTemperature> PatientTemperatures { get; private set; } = default!;
     public virtual DbSet<PatientBloodPressure> PatientBloodPressures { get; private set; } = default!;
@@ -23,6 +24,14 @@ public class Context : DbContext
         {
             user.HasKey(e => e.Id);
         });
+        
+        modelBuilder.Entity<User>()
+            .HasMany(e => e.UserRefreshes)
+            .WithOne(e => e.User)
+            .HasForeignKey(e => e.UserId)
+            .IsRequired(false);
+
+        modelBuilder.Entity<UserRefresh>().Ignore(e => e.User);
 
         modelBuilder.Entity<Patient>()
             .HasMany(e => e.BloodPressures)

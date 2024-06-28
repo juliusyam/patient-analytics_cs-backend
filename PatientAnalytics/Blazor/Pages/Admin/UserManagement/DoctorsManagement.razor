@@ -3,6 +3,7 @@
 @inject PatientAnalyticsAuthStateProvider PatientAnalyticsAuthStateProvider
 @inject UserService UserService
 @inject RegistrationService RegistrationService
+@inject NavigationManager NavigationManager
 
 <PageTitle>@Localized["Title_UserManagement_Doctors"]</PageTitle>
 
@@ -23,43 +24,40 @@
 
 @code {
     private List<User> _doctors = new();
+    
+    private bool _refreshing;
     private HttpStatusCodeException? _exception;
     private HttpStatusCodeException? _createDoctorException;
     
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         if (PatientAnalyticsAuthStateProvider.HasAdminPrivileges())
         {
-            try
-            {
-                _doctors = UserService.GetDoctors(PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token);
-            }
-            catch (HttpStatusCodeException exception)
-            {
-                _exception = exception;
-            }
+            await PatientAnalyticsAuthStateProvider.ServiceWrapper(
+                _refreshing,
+                token => _doctors = UserService.GetDoctors(token),
+                refreshing => _refreshing = refreshing,
+                exception => _exception = exception, 
+                () => NavigationManager.NavigateTo("/"));
         }
     }
 
     private async void CreateDoctor((RegistrationPayload, Action)args)
     {
-        try
-        {
-            var registerResponse = await RegistrationService.RegisterUser(
-                PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token,
-                    args.Item1,
-                    "Doctor"
-                );
+        await PatientAnalyticsAuthStateProvider.ServiceWrapperAsync(
+            _refreshing,
+            async token =>
+            {
+                var registerResponse = await RegistrationService.RegisterUser(token, args.Item1, "Doctor");
 
-            _createDoctorException = null;
+                _createDoctorException = null;
             
-            _doctors.Add(registerResponse.User);
+                _doctors.Add(registerResponse.User);
             
-            args.Item2();
-        }
-        catch (HttpStatusCodeException exception)
-        {
-            _createDoctorException = exception;
-        }
+                args.Item2();
+            },
+            refreshing => _refreshing = refreshing,
+            exception => _createDoctorException = exception, 
+            () => NavigationManager.NavigateTo("/"));
     }
 }

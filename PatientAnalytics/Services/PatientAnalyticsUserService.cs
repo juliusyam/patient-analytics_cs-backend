@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+using PatientAnalytics.Middleware;
 using PatientAnalytics.Models.Auth;
 
 namespace PatientAnalytics.Services;
@@ -20,30 +21,47 @@ public class PatientAnalyticsUserService
         _protectedLocalStorage = protectedLocalStorage;
     }
 
-    public async Task<ClaimsPrincipal?> FetchBrowserTokenAsync()
+    public async Task<ClaimsPrincipal?> FetchUserFromStorageAsync(Func<Task> refreshCallback)
     {
         var result = await _protectedLocalStorage.GetAsync<string>("user");
+        var refreshResult = await _protectedLocalStorage.GetAsync<string>("user-refresh");
             
         if (result.Success && result.Value is not null)
         {
-            _authenticationDataMemoryStorage.UpdateUser(result.Value, _jwtService.DecodeJwt(result.Value));
+            _authenticationDataMemoryStorage.UpdateTokens(result.Value, refreshResult.Value);
+            
+            try
+            {
+                _authenticationDataMemoryStorage.UpdateClaimsPrincipal(_jwtService.DecodeJwt(result.Value));
+            }
+            catch (HttpStatusCodeException exception)
+            {
+                if (exception.StatusCode == 401)
+                {
+                   await refreshCallback();
+                }
+            }
         }
 
         return _authenticationDataMemoryStorage.UserPrincipal;
     }
 
-    public async Task<AuthenticationDataMemoryStorage> SendLoginRequestAsync(LoginResponse response)
+    public async Task<AuthenticationDataMemoryStorage> SaveUserInStorageAsync(LoginResponse response)
     {
-        _authenticationDataMemoryStorage.UpdateUser(response.Token, _jwtService.DecodeJwt(response.Token));
+        _authenticationDataMemoryStorage.UpdateTokens(response.Token, response.RefreshToken);
+        _authenticationDataMemoryStorage.UpdateClaimsPrincipal(_jwtService.DecodeJwt(response.Token));
+        
         await _protectedLocalStorage.SetAsync("user", response.Token);
+        await _protectedLocalStorage.SetAsync("user-refresh", response.RefreshToken);
 
         return _authenticationDataMemoryStorage;
     }
 
-    public async Task SendLogoutRequestAsync()
+    public async Task RemoveUserFromStorageAsync()
     {
         _authenticationDataMemoryStorage.RemoveUser();
         await _protectedLocalStorage.DeleteAsync("user");
+        await _protectedLocalStorage.DeleteAsync("user-refresh");
     }
 
     public AuthenticationDataMemoryStorage GetAuthenticationDataMemoryStorage()

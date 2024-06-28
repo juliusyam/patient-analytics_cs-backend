@@ -6,17 +6,24 @@ namespace PatientAnalytics.Services;
 public class AuthenticationDataMemoryStorage
 {
     public string Token { get; private set; } = "";
-    public ClaimsPrincipal? UserPrincipal { get; set; } = null;
+    public string RefreshToken { get; private set; } = "";
+    public ClaimsPrincipal? UserPrincipal { get; set; }
 
-    public void UpdateUser(string token, ClaimsPrincipal? principal)
+    public void UpdateClaimsPrincipal(ClaimsPrincipal? principal)
+    {
+        UserPrincipal = principal;
+    }
+    
+    public void UpdateTokens(string token, string? refreshToken)
     {
         Token = token;
-        UserPrincipal = principal;
+        RefreshToken = refreshToken ?? "";
     }
 
     public void RemoveUser()
     {
         Token = "";
+        RefreshToken = "";
         UserPrincipal = null;
     }
 }

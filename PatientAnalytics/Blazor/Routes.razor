@@ -1,9 +1,12 @@
+@using Microsoft.IdentityModel.Tokens
 @inject IJSRuntime JSRuntime
 @inject PatientAnalyticsAuthStateProvider PatientAnalyticsAuthStateProvider
 @inject IStringLocalizer<Localized> Localized
 @rendermode InteractiveServer
 
 <CascadingAuthenticationState>
+    <HttpStatusExceptionIndicator Exception="_exception" Size="Sm" />
+    
     @if (_isCheckingUserCredentials)
     {
         <div class="anchor-center-container">
@@ -17,8 +20,8 @@
     {
         <Router AppAssembly="typeof(Program).Assembly">
             <Found Context="routeData">
-                <RouteView RouteData="routeData" />
-                <FocusOnNavigate RouteData="routeData" Selector="h1" />
+                <RouteView RouteData="routeData"/>
+                <FocusOnNavigate RouteData="routeData" Selector="h1"/>
             </Found>
         </Router>
     }
@@ -26,12 +29,20 @@
 
 @code{
     private bool _isCheckingUserCredentials = true;
+    private HttpStatusCodeException? _exception;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await PatientAnalyticsAuthStateProvider.OnAfterRenderAsync();
+            try
+            {
+                await PatientAnalyticsAuthStateProvider.OnAfterRenderAsync();
+            }
+            catch (HttpStatusCodeException exception)
+            {
+                _exception = exception;
+            }
 
             _isCheckingUserCredentials = false;
         }

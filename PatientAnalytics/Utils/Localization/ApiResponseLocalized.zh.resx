@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <root>
     <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
         <xsd:element name="root" msdata:IsDataSet="true">
@@ -32,6 +33,12 @@
     <data name="AuthError_Unauthorized_SuperAdmin" xml:space="preserve">
         <value>您沒有超級管理員權限</value>
     </data>
+    <data name="AuthError_TokenFormatInvalid" xml:space="preserve">
+        <value>加密代幣格式無效</value>
+    </data>
+    <data name="AuthError_Refresh_InvalidOrExpired">
+        <value>刷新加密代幣無效或已過期</value>
+    </data>
     <data name="AuthError_UserNotFound" xml:space="preserve">
         <value>未找到用戶</value>
     </data>
@@ -49,6 +56,12 @@
     </data>
     <data name="AuthError_DecodeJwt_UserNotFound" xml:space="preserve">
         <value>無法找到 ID 為 {0} 的用戶</value>
+    </data>
+    <data name="AuthError_DecodeJwt_ExpiryNotFound" xml:space="preserve">
+        <value>無法從加密代幣中解碼過期時間</value>
+    </data>
+    <data name="AuthError_DecodeJwt_Expired" xml:space="preserve">
+        <value>加密代幣已過期。請重新登入。</value>
     </data>
     <data name="PatientError_NotFound" xml:space="preserve">
         <value>無法找到 ID 為 {0} 的患者</value>

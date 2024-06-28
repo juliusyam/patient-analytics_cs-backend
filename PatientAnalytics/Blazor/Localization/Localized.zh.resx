@@ -231,6 +231,9 @@
     <data name="Label_Fahrenheit" xml:space="preserve">
         <value>華氏度</value>
     </data>
+    <data name="Error_InvalidRole" xml:space="preserve">
+        <value>角色值無效。角色值可以是超級管理員、管理員或醫生。</value>
+    </data>
     <data name="Error_HeightRequired" xml:space="preserve">
         <value>高度值是必要的。</value>
     </data>

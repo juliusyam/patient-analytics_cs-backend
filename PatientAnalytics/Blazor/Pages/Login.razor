@@ -1,8 +1,6 @@
 @page "/"
-@inject IServiceScopeFactory ScopeFactory
 @inject PatientAnalyticsAuthStateProvider PatientAnalyticsAuthStateProvider
 @inject NavigationManager NavigationManager
-@inject AuthService AuthService
 @inject IStringLocalizer<Localized> Localized
 @attribute [RequireAntiforgeryToken]
 @rendermode @(new InteractiveServerRenderMode(false))
@@ -33,12 +31,13 @@
 </section>
 
 @code {
+
     [SupplyParameterFromForm]
-    private LoginPayload? Model { get; set; }
+    private LoginPayload Model { get; set; } = new();
     
     private HttpStatusCodeException? _exception;
     
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         Model = new LoginPayload();
         
@@ -56,9 +55,7 @@
     {
         try
         {
-            var response = AuthService.Login(Model);
-
-            await PatientAnalyticsAuthStateProvider.Login(response);
+            var response = await PatientAnalyticsAuthStateProvider.LoginAsync(Model);
 
             OnRedirect(response.User.Role);
         }
@@ -80,7 +77,9 @@
                 NavigationManager.NavigateTo("/dashboard/admin");
                 break;
             default:
-                Console.WriteLine("No Matching Role!");
+                _exception = new HttpStatusCodeException(
+                    StatusCodes.Status422UnprocessableEntity,
+                    Localized["Error_InvalidRole"]);
                 break;
         }
     }

@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
 using PatientAnalytics.Controllers;
@@ -10,7 +12,7 @@ namespace PatientAnalytics.Tests.Controllers;
 [TestFixture]
 public class AuthControllerTest : BaseTest
 {
-    private readonly AuthController _controller = new (AuthService);
+    private readonly AuthController _controller = new(AuthService, JwtService, Localized);
 
     private User _superUser; 
     private User _adminUser;
@@ -36,42 +38,42 @@ public class AuthControllerTest : BaseTest
     }
 
     [Test]
-    public void Login_ValidSuperUserCredentials_SuccessfulLogin()
+    public async Task Login_ValidSuperUserCredentials_SuccessfulLogin()
     {
         var payload = new LoginPayload
         {
             Username = _superUser.Username,
             Password = UserPassword
         };
-        var response = _controller.Login(payload);
+        var response = await _controller.Login(payload);
 
         Assert.That(_superUser, Is.EqualTo(response.User));
         Assert.That(response.Token, Is.Not.Null);
     }
 
     [Test]
-    public void Login_ValidAdminUserCredentials_SuccessfulLogin()
+    public async Task Login_ValidAdminUserCredentials_SuccessfulLogin()
     {
         var payload = new LoginPayload
         {
             Username = _adminUser.Username,
             Password = UserPassword
         };
-        var response = _controller.Login(payload);
+        var response = await _controller.Login(payload);
         
         Assert.That(_adminUser, Is.EqualTo(response.User));
         Assert.That(response.Token, Is.Not.Null);
     }
 
     [Test]
-    public void Login_ValidDoctorUserCredentials_SuccessfulLogin()
+    public async Task Login_ValidDoctorUserCredentials_SuccessfulLogin()
     {
         var payload = new LoginPayload
         {
             Username = _doctorUser.Username,
             Password = UserPassword
         };
-        var response = _controller.Login(payload);
+        var response = await _controller.Login(payload);
 
         Assert.That(_doctorUser, Is.EqualTo(response.User));
         Assert.That(response.Token, Is.Not.Null);
@@ -85,10 +87,8 @@ public class AuthControllerTest : BaseTest
             Username = _superUser.Username,
             Password = "incorrect password"
         };
-
-        HttpStatusCodeException exception = Assert.Throws<HttpStatusCodeException>(
-        () => _controller.Login(payload)
-        );
+        
+        var exception = Assert.ThrowsAsync<HttpStatusCodeException>(() => _controller.Login(payload));
 
         Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
         Assert.That(exception.Message, Is.EqualTo("Wrong Password"));
@@ -103,9 +103,7 @@ public class AuthControllerTest : BaseTest
             Password = UserPassword
         };
 
-        HttpStatusCodeException exception = Assert.Throws<HttpStatusCodeException>(
-        () => _controller.Login(payload)
-        );
+        var exception = Assert.ThrowsAsync<HttpStatusCodeException>(() => _controller.Login(payload));
 
         Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status404NotFound));
         Assert.That(exception.Message, Is.EqualTo("User not found"));

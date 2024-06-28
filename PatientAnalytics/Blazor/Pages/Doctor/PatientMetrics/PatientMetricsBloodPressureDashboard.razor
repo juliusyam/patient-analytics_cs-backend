@@ -1,7 +1,7 @@
 ﻿@page "/patients/{id:int}/bloodpressure"
-@inject IStringLocalizer<Localized> Localized
-@using PatientAnalytics.Services.PatientMetrics
 @using PatientAnalytics.Models.PatientMetrics
+@using PatientAnalytics.Services.PatientMetrics
+@inject IStringLocalizer<Localized> Localized
 @inject PatientAnalyticsAuthStateProvider PatientAnalyticsAuthStateProvider
 @inject NavigationManager NavigationManager
 @inject PatientService PatientService
@@ -81,9 +81,12 @@
     private string _pageTitle = "";
     private Patient? _patient;
     private List<PatientBloodPressure> _patientsBloodPressure = new();
-    private PatientBloodPressurePayload _patientBP = new PatientBloodPressurePayload();
+    private PatientBloodPressurePayload _patientBP = new();
+    
+    private bool _refreshing;
     private HttpStatusCodeException? _exception;
-    private bool _isDeleteConfirmationVisible = false;
+    
+    private bool _isDeleteConfirmationVisible;
     private string ErrorMessage { get; set; } = string.Empty;
 
     private int? _bloodPressureSystolic;
@@ -94,33 +97,32 @@
     {
         if (PatientAnalyticsAuthStateProvider.IsDoctor())
         {
-            var token = PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token;
-
-            try
-            {
-                _patient = PatientService.GetPatientById(token, Id);
-                if (_patient is not null)
+            await PatientAnalyticsAuthStateProvider.ServiceWrapperAsync(
+                _refreshing,
+                async token =>
                 {
-                    _pageTitle = string.Format(Localized["Title_PatientDashboard_WithPatientName"], _patient.FirstName, _patient.LastName);
+                    _patient = PatientService.GetPatientById(token, Id);
+                    
+                    if (_patient is not null)
+                    {
+                        _pageTitle = string.Format(Localized["Title_PatientDashboard_WithPatientName"], _patient.FirstName, _patient.LastName);
 
-                    _patientsBloodPressure = await PatientMetricsBloodPressureService.GetPatientBloodPressures(token, Id);
-                }
-            }
-            catch (HttpStatusCodeException exception)
-            {
-                _exception = exception;
-            }
+                        _patientsBloodPressure = await PatientMetricsBloodPressureService.GetPatientBloodPressures(token, Id);
+                    }
+                },
+                refreshing => _refreshing = refreshing,
+                exception => _exception = exception, 
+                () => NavigationManager.NavigateTo("/"));
         }
         else
         {
-            await PatientAnalyticsAuthStateProvider.Logout();
+            await PatientAnalyticsAuthStateProvider.LogoutAsync();
             NavigationManager.NavigateTo("/");
         }
     }
 
     private async Task HandleSubmit()
     {
-        var token = PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token;
         ErrorMessage = string.Empty;
 
         if (!_bloodPressureSystolic.HasValue)
@@ -137,20 +139,16 @@
 
         _patientBP.SetBloodPressure(_bloodPressureSystolic.Value, _bloodPressureDiastolic.Value);
 
-        try
-        {
-            var newBP = await PatientMetricsBloodPressureService.CreateEntry(token, _patient.Id, _patientBP);
-            _patientsBloodPressure.Add(newBP);
-        }
-        catch (HttpStatusCodeException exception)
-        {
-            ErrorMessage = exception.Message;
-        }
-    }
-
-    private void GoBack()
-    {
-        NavigationManager.NavigateTo($"/dashboard/doctor/patients/{Id}");
+        await PatientAnalyticsAuthStateProvider.ServiceWrapperAsync(
+            _refreshing,
+            async token =>
+            {
+                var newBloodPressure = await PatientMetricsBloodPressureService.CreateEntry(token, _patient.Id, _patientBP);
+                _patientsBloodPressure.Add(newBloodPressure);
+            },
+            refreshing => _refreshing = refreshing,
+            exception => ErrorMessage = exception.Message, 
+            () => NavigationManager.NavigateTo("/"));
     }
 
     private void ShowDeleteConfirmation(int id)
@@ -166,19 +164,17 @@
 
     private async Task ConfirmDelete()
     {
-        var token = PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token;
-        try
-        {
-            await PatientMetricsBloodPressureService.DeleteEntryById(token, _bloodPressureID);
-            _patientsBloodPressure.RemoveAll(bp => bp.Id == _bloodPressureID);
-        }
-        catch (HttpStatusCodeException exception)
-        {
-            _exception = exception;
-        }
-        finally
-        {
-            _isDeleteConfirmationVisible = false;
-        }
+        await PatientAnalyticsAuthStateProvider.ServiceWrapperAsync(
+            _refreshing,
+            async token =>
+            {
+                await PatientMetricsBloodPressureService.DeleteEntryById(token, _bloodPressureID);
+                _patientsBloodPressure.RemoveAll(bp => bp.Id == _bloodPressureID);
+                
+                _isDeleteConfirmationVisible = false;
+            },
+            refreshing => _refreshing = refreshing,
+            exception => _exception = exception, 
+            () => NavigationManager.NavigateTo("/"));
     }
 }

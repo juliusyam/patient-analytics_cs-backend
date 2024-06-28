@@ -12,8 +12,9 @@ public static class SqliteConnectionAccess
         sqliteConnection.Open();
 
         var sqliteCommand = sqliteConnection.CreateCommand();
-
+        
         CreateUsersTable(sqliteCommand);
+        CreateUserRefreshesTable(sqliteCommand);
         CreatePatientsTable(sqliteCommand);
         CreatePatientTemperaturesTable(sqliteCommand);
         CreatePatientBloodPressuresTable(sqliteCommand);
@@ -34,6 +35,9 @@ public static class SqliteConnectionAccess
 
         var (user, password) = await userService.CreateInitialSuperAdmin();
 
+        DropPatientWeightsTable(sqliteCommand);
+        CreateUserRefreshesTable(sqliteCommand);
+        
         DropPatientsTable(sqliteCommand);
         CreatePatientsTable(sqliteCommand);
         
@@ -57,7 +61,7 @@ public static class SqliteConnectionAccess
         command.CommandText =
             "CREATE TABLE IF NOT EXISTS Users(" +
                 "Id INTEGER NOT NULL UNIQUE, " +
-                "DateOfBirth TEXT NOT NULL, " +
+                "DateOfBirth DATETIME NOT NULL, " +
                 "Gender TEXT NOT NULL, " +
                 "Email TEXT NOT NULL UNIQUE, " +
                 "Username TEXT NOT NULL UNIQUE, " +
@@ -65,8 +69,8 @@ public static class SqliteConnectionAccess
                 "LastName TEXT, " +
                 "Address INTEGER, " +
                 "PasswordHash TEXT NOT NULL, "+
-                "DateCreated TEXT NOT NULL, " +
-                "DateEdited TEXT, " +
+                "DateCreated DATETIME NOT NULL, " +
+                "DateEdited DATETIME, " +
                 "Role TEXT NOT NULL, " +
                 "PRIMARY KEY(Id AUTOINCREMENT)" +
             ");";
@@ -79,7 +83,29 @@ public static class SqliteConnectionAccess
         command.CommandText = "DROP TABLE IF EXISTS Users";
         command.ExecuteNonQuery();
     }
+    
+    private static void CreateUserRefreshesTable(SqliteCommand command)
+    {
+        command.CommandText =
+            "CREATE TABLE IF NOT EXISTS UserRefreshes(" +
+            "Id INTEGER NOT NULL UNIQUE, " +
+            "UserId INTEGER NOT NULL, " +
+            "RefreshTokenHash TEXT NOT NULL, " +
+            "RefreshTokenExpiry DATETIME NOT NULL, " +
+            "DateCreated DATETIME NOT NULL, " +
+            "PRIMARY KEY(Id AUTOINCREMENT)" +
+            "FOREIGN KEY(UserId) REFERENCES Users(Id)" +
+            ");";
 
+        command.ExecuteNonQuery();
+    }
+
+    private static void DropUserRefreshesTable(SqliteCommand command)
+    {
+        command.CommandText = "DROP TABLE IF EXISTS UserRefreshes";
+        command.ExecuteNonQuery();
+    }
+    
     private static void CreatePatientsTable(SqliteCommand command)
     {
         command.CommandText = 

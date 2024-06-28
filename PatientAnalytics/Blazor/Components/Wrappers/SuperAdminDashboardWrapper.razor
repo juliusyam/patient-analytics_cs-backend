@@ -44,7 +44,7 @@
 
     private async Task OnLogout()
     {
-        await PatientAnalyticsAuthStateProvider.Logout();
+        await PatientAnalyticsAuthStateProvider.LogoutAsync();
         NavigationManager.NavigateTo("/");
     }
 }

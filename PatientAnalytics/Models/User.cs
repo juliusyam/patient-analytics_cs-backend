@@ -7,43 +7,26 @@ namespace PatientAnalytics.Models;
 
 public class User : Person
 {
-    private User(
-        DateTime dateOfBirth, string gender, string email, string passwordHash, string username, string role, string? address, string? firstName, string? lastName, DateTime dateCreated, DateTime? dateEdited
-    )
-    {
-        DateOfBirth = dateOfBirth;
-        Gender = gender;
-        Email = email;
-        Address = address;
-        FirstName = firstName;
-        LastName = lastName;
-        DateCreated = dateCreated;
-        DateEdited = dateEdited;
-        PasswordHash = passwordHash;
-        Username = username;
-        Role = role;
-    }
-
     public static User CreateUser(string passwordHash, RegistrationPayload payload, string role)
     {
         var userRoles = new[] { "SuperAdmin", "Admin", "Doctor" };
-        if (!userRoles.Contains(role)) throw new HttpStatusCodeException(StatusCodes.Status400BadRequest, "Invalid Role Value. Role Value can either be SuperAdmin, Admin or Doctor");
-        
-        var dateCreated = DateTime.Now;
+        if (!userRoles.Contains(role)) 
+            throw new HttpStatusCodeException(StatusCodes.Status400BadRequest, 
+                "Invalid Role Value. Role Value can either be SuperAdmin, Admin or Doctor");
 
-        return new User(
-            payload.DateOfBirth,
-            payload.Gender,
-            payload.Email,
-            passwordHash,
-            payload.Username,
-            role,
-            payload.Address,
-            payload.FirstName,
-            payload.LastName,
-            dateCreated,
-            null
-        );
+        return new User
+        {
+            DateOfBirth = payload.DateOfBirth,
+            Gender = payload.Gender,
+            Email = payload.Email,
+            PasswordHash = passwordHash,
+            Username = payload.Username,
+            Role = role,
+            Address = payload.Address,
+            FirstName = payload.FirstName,
+            LastName = payload.LastName,
+            DateCreated = DateTime.Now
+        };
     }
 
     public ClaimsPrincipal ToClaimsPrincipal()
@@ -65,4 +48,6 @@ public class User : Person
     
     [RegularExpression("^SuperAdmin$|^Admin$|^Doctor$", ErrorMessage = "Invalid Role Value. Role Value can either be SuperAdmin, Admin or Doctor")]
     public string Role { get; private set; }
+    
+    public ICollection<UserRefresh> UserRefreshes { get; } = new List<UserRefresh>();
 }

@@ -231,6 +231,9 @@
     <data name="Label_Fahrenheit" xml:space="preserve">
         <value>Fahrenheit</value>
     </data>
+    <data name="Error_InvalidRole" xml:space="preserve">
+        <value>Ungültiger Rollenwert. Der Rollenwert kann entweder SuperAdmin, Admin oder Doctor sein.</value>
+    </data>
     <data name="Error_HeightRequired" xml:space="preserve">
         <value>Höhenwert ist erforderlich.</value>
     </data>

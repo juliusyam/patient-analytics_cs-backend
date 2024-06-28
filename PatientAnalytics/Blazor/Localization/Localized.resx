@@ -231,6 +231,9 @@
     <data name="Label_Fahrenheit" xml:space="preserve">
         <value>Fahrenheit</value>
     </data>
+    <data name="Error_InvalidRole" xml:space="preserve">
+        <value>Invalid Role Value. Role Value can either be SuperAdmin, Admin or Doctor.</value>
+    </data>
     <data name="Error_HeightRequired" xml:space="preserve">
         <value>Height value is required.</value>
     </data>

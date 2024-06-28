@@ -471,6 +471,12 @@ namespace PatientAnalytics.Blazor.Localization {
             }
         }
         
+        internal static string Error_InvalidRole {
+            get {
+                return ResourceManager.GetString("Error_InvalidRole", resourceCulture);
+            }
+        }
+        
         internal static string Error_HeightRequired {
             get {
                 return ResourceManager.GetString("Error_HeightRequired", resourceCulture);

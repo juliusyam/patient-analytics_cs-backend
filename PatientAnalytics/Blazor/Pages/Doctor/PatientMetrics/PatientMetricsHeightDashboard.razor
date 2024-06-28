@@ -107,9 +107,12 @@
     private Patient? _patient;
     private string _metricTitle = "";
     private List<PatientHeight> _patientsHeight = new();
-    private PatientHeightPayload _patientHeightPayload = new PatientHeightPayload();
+    private PatientHeightPayload _patientHeightPayload = new();
+    
+    private bool _refreshing;
     private HttpStatusCodeException? _exception;
-    private bool _isDeleteConfirmationVisible = false;
+    
+    private bool _isDeleteConfirmationVisible;
     private string ErrorMessage { get; set; } = string.Empty;
 
     private double? _heightValue;
@@ -124,33 +127,32 @@
 
         if (PatientAnalyticsAuthStateProvider.IsDoctor())
         {
-            var token = PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token;
-
-            try
-            {
-                _patient = PatientService.GetPatientById(token, Id);
-                if (_patient is not null)
+            await PatientAnalyticsAuthStateProvider.ServiceWrapperAsync(
+                _refreshing,
+                async token =>
                 {
-                    _pageTitle = string.Format(Localized["Title_PatientDashboard_WithPatientName"], _patient.FirstName, _patient.LastName);
+                    _patient = PatientService.GetPatientById(token, Id);
+                    
+                    if (_patient is not null)
+                    {
+                        _pageTitle = string.Format(Localized["Title_PatientDashboard_WithPatientName"], _patient.FirstName, _patient.LastName);
 
-                    _patientsHeight = await PatientMetricsHeightService.GetPatientHeights(token, Id);
-                }
-            }
-            catch (HttpStatusCodeException exception)
-            {
-                _exception = exception;
-            }
+                        _patientsHeight = await PatientMetricsHeightService.GetPatientHeights(token, Id);
+                    }
+                },
+                refreshing => _refreshing = refreshing,
+                exception => _exception = exception, 
+                () => NavigationManager.NavigateTo("/"));
         }
         else
         {
-            await PatientAnalyticsAuthStateProvider.Logout();
+            await PatientAnalyticsAuthStateProvider.LogoutAsync();
             NavigationManager.NavigateTo("/");
         }
     }
 
     private async Task HandleSubmit()
     {
-        var token = PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token;
         ErrorMessage = string.Empty;
 
         if (!_heightValue.HasValue)
@@ -167,21 +169,16 @@
 
         _patientHeightPayload.SetPatientHeight(_heightValue.Value, _selectedUnit);
 
-        try
-        {
-            var newHeightEntry = await PatientMetricsHeightService.CreateEntry(token, _patient.Id, _patientHeightPayload);
-            newHeightEntry = newHeightEntry.Formatted();
-            _patientsHeight.Add(newHeightEntry);
-        }
-        catch (HttpStatusCodeException exception)
-        {
-            ErrorMessage = exception.Message;
-        }
-    }
-
-    private void GoBack()
-    {
-        NavigationManager.NavigateTo($"/dashboard/doctor/patients/{Id}");
+        await PatientAnalyticsAuthStateProvider.ServiceWrapperAsync(
+            _refreshing,
+            async token =>
+            {
+                var newHeightEntry = await PatientMetricsHeightService.CreateEntry(token, _patient.Id, _patientHeightPayload);
+                _patientsHeight.Add(newHeightEntry);
+            },
+            refreshing => _refreshing = refreshing,
+            exception => ErrorMessage = exception.Message, 
+            () => NavigationManager.NavigateTo("/"));
     }
 
     private void ShowDeleteConfirmation(int id)
@@ -197,20 +194,18 @@
 
     private async Task ConfirmDelete()
     {
-        var token = PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token;
-        try
-        {
-            await PatientMetricsHeightService.DeleteEntryById(token, _heightID);
-            _patientsHeight.RemoveAll(bp => bp.Id == _heightID);
-        }
-        catch (HttpStatusCodeException exception)
-        {
-            _exception = exception;
-        }
-        finally
-        {
-            _isDeleteConfirmationVisible = false;
-        }
+        await PatientAnalyticsAuthStateProvider.ServiceWrapperAsync(
+            _refreshing,
+            async token =>
+            {
+                await PatientMetricsHeightService.DeleteEntryById(token, _heightID);
+                _patientsHeight.RemoveAll(bp => bp.Id == _heightID);
+                
+                _isDeleteConfirmationVisible = false;
+            },
+            refreshing => _refreshing = refreshing,
+            exception => _exception = exception, 
+            () => NavigationManager.NavigateTo("/"));
     }
 
     private string GetHeightDisplay(PatientHeight patientHeight)

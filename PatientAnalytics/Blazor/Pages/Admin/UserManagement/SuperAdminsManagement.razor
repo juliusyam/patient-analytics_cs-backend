@@ -3,6 +3,7 @@
 @inject PatientAnalyticsAuthStateProvider PatientAnalyticsAuthStateProvider
 @inject UserService UserService
 @inject RegistrationService RegistrationService
+@inject NavigationManager NavigationManager
 
 <PageTitle>@Localized["Title_UserManagement_SuperAdmins"]</PageTitle>
 
@@ -23,43 +24,40 @@
 
 @code {
     private List<User> _superAdmins = new();
+    
+    private bool _refreshing;
     private HttpStatusCodeException? _exception;
     private HttpStatusCodeException? _createSuperAdminException;
     
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         if (PatientAnalyticsAuthStateProvider.IsSuperAdmin())
         {
-            try
-            {
-                _superAdmins = UserService.GetSuperAdmins(PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token);
-            }
-            catch (HttpStatusCodeException exception)
-            {
-                _exception = exception;
-            }
+            await PatientAnalyticsAuthStateProvider.ServiceWrapper(
+                _refreshing,
+                token => _superAdmins = UserService.GetSuperAdmins(token),
+                refreshing => _refreshing = refreshing,
+                exception => _exception = exception, 
+                () => NavigationManager.NavigateTo("/"));
         }
     }
     
     private async void CreateSuperAdmin((RegistrationPayload, Action)args)
     {
-        try
-        {
-            var registerResponse = await RegistrationService.RegisterUser(
-                PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token,
-                args.Item1,
-                "SuperAdmin"
-            );
+        await PatientAnalyticsAuthStateProvider.ServiceWrapperAsync(
+            _refreshing,
+            async token =>
+            {
+                var registerResponse = await RegistrationService.RegisterUser(token, args.Item1, "SuperAdmin");
 
-            _createSuperAdminException = null;
+                _createSuperAdminException = null;
             
-            _superAdmins.Add(registerResponse.User);
+                _superAdmins.Add(registerResponse.User);
             
-            args.Item2();
-        }
-        catch (HttpStatusCodeException exception)
-        {
-            _createSuperAdminException = exception;
-        }
+                args.Item2();
+            },
+            refreshing => _refreshing = refreshing,
+            exception => _createSuperAdminException = exception, 
+            () => NavigationManager.NavigateTo("/"));
     }
 }

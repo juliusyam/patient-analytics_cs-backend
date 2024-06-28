@@ -75,6 +75,18 @@ namespace PatientAnalytics.Utils.Localization {
             }
         }
         
+        public static string AuthError_TokenFormatInvalid {
+            get {
+                return ResourceManager.GetString("AuthError_TokenFormatInvalid", resourceCulture);
+            }
+        }
+        
+        public static string AuthError_Refresh_InvalidOrExpired {
+            get {
+                return ResourceManager.GetString("AuthError_Refresh_InvalidOrExpired", resourceCulture);
+            }
+        }
+        
         public static string AuthError_UserNotFound {
             get {
                 return ResourceManager.GetString("AuthError_UserNotFound", resourceCulture);
@@ -108,6 +120,18 @@ namespace PatientAnalytics.Utils.Localization {
         public static string AuthError_DecodeJwt_UserNotFound {
             get {
                 return ResourceManager.GetString("AuthError_DecodeJwt_UserNotFound", resourceCulture);
+            }
+        }
+        
+        public static string AuthError_DecodeJwt_ExpiryNotFound {
+            get {
+                return ResourceManager.GetString("AuthError_DecodeJwt_ExpiryNotFound", resourceCulture);
+            }
+        }
+        
+        public static string AuthError_DecodeJwt_Expired {
+            get {
+                return ResourceManager.GetString("AuthError_DecodeJwt_Expired", resourceCulture);
             }
         }
         

@@ -31,7 +31,13 @@
         <value>Sie verfügen nicht über die entsprechende Berechtigung</value>
     </data>
     <data name="AuthError_Unauthorized_SuperAdmin" xml:space="preserve">
-        <value>You don't have the correct Super Admin authorization</value>
+        <value>Sie verfügen nicht über die richtige Super-Admin-Berechtigung</value>
+    </data>
+    <data name="AuthError_TokenFormatInvalid" xml:space="preserve">
+        <value>Token-Format ist ungültig</value>
+    </data>
+    <data name="AuthError_Refresh_InvalidOrExpired">
+        <value>Aktualisierungstoken ist ungültig oder abgelaufen</value>
     </data>
     <data name="AuthError_UserNotFound" xml:space="preserve">
         <value>Benutzer nicht gefunden</value>
@@ -50,6 +56,12 @@
     </data>
     <data name="AuthError_DecodeJwt_UserNotFound" xml:space="preserve">
         <value>Benutzer mit ID: {0} konnte nicht gefunden werden</value>
+    </data>
+    <data name="AuthError_DecodeJwt_ExpiryNotFound" xml:space="preserve">
+        <value>Ablaufdatum kann nicht aus Token entschlüsselt werden</value>
+    </data>
+    <data name="AuthError_DecodeJwt_Expired" xml:space="preserve">
+        <value>Token ist abgelaufen. Bitte erneut anmelden.</value>
     </data>
     <data name="PatientError_NotFound" xml:space="preserve">
         <value>Patient mit ID: {0} konnte nicht gefunden werden</value>
