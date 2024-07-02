@@ -1,0 +1,17 @@
+Whenever a database table/ model is updated we should create a new migration to track the changes.  To do this, issue this command:
+
+`dotnet ef migrations add {descriptive_migration_name}`
+
+To apply migrations to the database issue this command:
+
+`dotnet ef database update`
+
+When doing this for the first time you should start with an empty database.  
+
+
+To revert all database migrations you can run:
+`dotnet ef database update 0`
+
+
+Running the InitialCreate migration will add an initial Super Admin user with the username "superadmin".  
+The password for this user will be logged to the console at the end of the InitialCreate migration.
