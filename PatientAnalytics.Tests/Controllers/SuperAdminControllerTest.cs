@@ -15,7 +15,7 @@ namespace PatientAnalytics.Tests.Controllers;
 public class SuperAdminControllerTest : BaseTest
 {
     private static readonly RegistrationService RegistrationService = 
-        new(DbContext, Configuration, JwtService, Localized);
+        new(DbContext, Configuration, JwtService, HubContext, Localized);
 
     private static readonly SuperAdminController SuperAdminController =
         new(RegistrationService, Localized);

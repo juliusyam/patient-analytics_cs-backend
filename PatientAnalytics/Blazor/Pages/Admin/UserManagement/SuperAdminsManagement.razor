@@ -9,6 +9,11 @@
 
 <SuperAdminDashboardWrapper>
     <HttpStatusExceptionIndicator Exception="@_exception" />
+    <section class="box is-flex is-flex-direction-row is-justify-content-space-between">
+        <div class="is-flex">
+            <button class="button" @onclick="GoBack">@Localized["Button_Back"]</button>
+        </div>
+    </section>
 
     <div class="columns">
         <div class="column">
@@ -20,6 +25,8 @@
             <UserForm OnSubmit="CreateSuperAdmin" Exception="_createSuperAdminException" />
         </div>
     </div>
+    
+    <p>@_receivedMessage</p>
 </SuperAdminDashboardWrapper>
 
 @code {
@@ -28,7 +35,10 @@
     private bool _refreshing;
     private HttpStatusCodeException? _exception;
     private HttpStatusCodeException? _createSuperAdminException;
-    
+    private HubConnection? _hubConnection;
+    private Timer? _resetTimer;
+    private string _receivedMessage = string.Empty;
+
     protected override async Task OnInitializedAsync()
     {
         if (PatientAnalyticsAuthStateProvider.IsSuperAdmin())
@@ -40,6 +50,19 @@
                 exception => _exception = exception, 
                 () => NavigationManager.NavigateTo("/"));
         }
+
+        _hubConnection = PatientAnalyticsAuthStateProvider.GetHubConnection();
+        
+        _hubConnection?.On<User>("ReceiveNewSuperAdmin", user =>
+        {
+            var existingSuperAdmin = _superAdmins.FirstOrDefault(sa => sa.Id == user.Id);
+            if (existingSuperAdmin is null) _superAdmins.Add(user);
+            InvokeAsync(StateHasChanged);
+        });
+
+        _hubConnection?.On<string>("ReceiveMessage", SetReceivedMessage);
+
+        _hubConnection?.On<string>("ReceiveNewUser", SetReceivedMessage);
     }
     
     private async void CreateSuperAdmin((RegistrationPayload, Action)args)
@@ -59,5 +82,24 @@
             refreshing => _refreshing = refreshing,
             exception => _createSuperAdminException = exception, 
             () => NavigationManager.NavigateTo("/"));
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/dashboard/admin");
+    }
+
+    private void SetReceivedMessage(string message)
+    {
+        _receivedMessage = message;
+        InvokeAsync(StateHasChanged);
+        _resetTimer?.Dispose();
+        _resetTimer = new Timer(ResetReceivedMessage, null, TimeSpan.FromSeconds(5), Timeout.InfiniteTimeSpan);
+    }
+
+    private void ResetReceivedMessage(object? state)
+    {
+        _receivedMessage = string.Empty;
+        InvokeAsync(StateHasChanged);
     }
 }

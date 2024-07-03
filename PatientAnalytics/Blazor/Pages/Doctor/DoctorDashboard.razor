@@ -4,7 +4,6 @@
 @inject PatientService PatientService
 @inject IStringLocalizer<Localized> Localized
 @rendermode InteractiveServer
-@implements IAsyncDisposable
 
 <PageTitle>@Localized["Title_DoctorDashboard"]</PageTitle>
 
@@ -55,23 +54,20 @@
 @code {
     private HubConnection? _hubConnection;
     private List<Patient> _patients = new();
-    private bool _createPatient = false;
+    private bool _createPatient;
     
     private bool _refreshing;
     private HttpStatusCodeException? _exception;
     
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         if (PatientAnalyticsAuthStateProvider.IsDoctor())
         {
             FetchPatients();
 
-            _hubConnection = new BlazorHubConnectionBuilder(
-                NavigationManager.ToAbsoluteUri("/patientHub"), 
-                PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token)
-                .Build();
+            _hubConnection = PatientAnalyticsAuthStateProvider.GetHubConnection();
             
-            _hubConnection.On<Patient>("ReceiveNewPatient", (patient) =>
+            _hubConnection?.On<Patient>("ReceiveNewPatient", (patient) =>
             {
                 var existingPatient = _patients.FirstOrDefault(p => p.Id == patient.Id);
                 
@@ -80,7 +76,7 @@
                 StateHasChanged();
             });
             
-            _hubConnection.On<Patient>("ReceiveUpdatedPatient", (patient) =>
+            _hubConnection?.On<Patient>("ReceiveUpdatedPatient", (patient) =>
             {
                 var existingPatient = _patients.FirstOrDefault(p => p.Id == patient.Id);
 
@@ -93,7 +89,7 @@
                 StateHasChanged();
             });
             
-            _hubConnection.On<Patient>("ReceiveDeletedPatient", (patient) =>
+            _hubConnection?.On<Patient>("ReceiveDeletedPatient", (patient) =>
             {
                 var existingPatient = _patients.FirstOrDefault(p => p.Id == patient.Id);
 
@@ -102,15 +98,11 @@
                 StateHasChanged();
             });
 
-            _hubConnection.On<string>("TestReceiveMessage", (message) =>
+            _hubConnection?.On<string>("TestReceiveMessage", (message) =>
             {
-                Console.WriteLine("Message received" + message);
+                Console.WriteLine("Message received: " + message);
                 StateHasChanged();
             });
-
-            await _hubConnection.StartAsync();
-            
-            Console.WriteLine(_hubConnection.State);
         }
     }
 
@@ -154,13 +146,5 @@
     {
         _patients.Add(newPatient);
         StateHasChanged();
-    }
-    
-    public async ValueTask DisposeAsync()
-    {
-        if (_hubConnection is not null)
-        {
-            await _hubConnection.DisposeAsync();
-        }
     }
 }

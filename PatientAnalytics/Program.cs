@@ -164,7 +164,7 @@ app.MapControllers();
 
 app.UseResponseCompression();
 
-app.MapHub<PatientHub>("/patientHub");
+app.MapHub<PatientHub>(app.Configuration["HubConnection:Route"]!);
 
 app.UseCors("AllowSpecificOrigin");
 

@@ -111,4 +111,7 @@
     <data name="DateFormatting_DateTime" xml:space="preserve">
         <value>yyyyMMdd_hhmm</value>
     </data>
+    <data name="Message_Role_Created" xml:space="preserve">
+        <value>A new {0} has been created.</value>
+    </data>
 </root>

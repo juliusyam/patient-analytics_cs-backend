@@ -15,7 +15,7 @@ namespace PatientAnalytics.Tests.Controllers;
 public class RegistrationControllerTest : BaseTest
 {
     private static readonly RegistrationService RegistrationService = 
-        new(DbContext, Configuration, JwtService, Localized);
+        new(DbContext, Configuration, JwtService, HubContext, Localized);
 
     private static readonly RegistrationController RegistrationController =
         new(RegistrationService, Localized);

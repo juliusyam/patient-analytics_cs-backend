@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.Security.Claims;
 using PatientAnalytics.Middleware;
 using PatientAnalytics.Models.Auth;
 
@@ -29,25 +28,11 @@ public class User : Person
         };
     }
 
-    public ClaimsPrincipal ToClaimsPrincipal()
-    {
-        return new ClaimsPrincipal(new ClaimsIdentity(
-            new[]
-            {
-                new Claim(ClaimTypes.Email, Email),
-                new Claim(ClaimTypes.NameIdentifier, Username),
-                new Claim(ClaimTypes.Sid, Id.ToString()),
-                new Claim(ClaimTypes.Role, Role),
-            },
-            "Custom Authentication"
-            ));
-    }
-
-    public string Username { get; private set; }
-    public string PasswordHash { get; private set; }
+    public string Username { get; set; }
+    public string PasswordHash { get; set; }
     
     [RegularExpression("^SuperAdmin$|^Admin$|^Doctor$", ErrorMessage = "Invalid Role Value. Role Value can either be SuperAdmin, Admin or Doctor")]
-    public string Role { get; private set; }
+    public string Role { get; set; }
     
     public ICollection<UserRefresh> UserRefreshes { get; } = new List<UserRefresh>();
 }

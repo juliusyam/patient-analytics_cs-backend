@@ -1,9 +1,12 @@
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Localization;
+using PatientAnalytics.Hubs;
 using PatientAnalytics.Middleware;
 using PatientAnalytics.Models;
 using PatientAnalytics.Models.Auth;
 using PatientAnalytics.Utils;
 using PatientAnalytics.Utils.Localization;
+using System.Security.Claims;
 
 namespace PatientAnalytics.Services;
 
@@ -12,17 +15,20 @@ public class RegistrationService
     private readonly IConfiguration _config;
     private readonly Context _context;
     private readonly JwtService _jwtService;
+    private readonly IHubContext<PatientHub> _hubContext;
     private readonly IStringLocalizer<ApiResponseLocalized> _localized;
-    
+
     public RegistrationService(
             Context context, 
             IConfiguration config, 
             JwtService jwtService,
+            IHubContext<PatientHub> hubContext,
             IStringLocalizer<ApiResponseLocalized> localized)
     {
         _context = context;
         _config = config;
         _jwtService = jwtService;
+        _hubContext = hubContext;
         _localized = localized;
     }
     
@@ -71,6 +77,24 @@ public class RegistrationService
         
         var token = _jwtService.GenerateJwt(user);
 
+        var userNameIdentifier = _jwtService.DecodeJwt(token)?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (userNameIdentifier is not null)
+        {
+            switch (role)
+            {
+                case "SuperAdmin":
+                    await _hubContext.Clients.Group("SuperAdmin").SendAsync("ReceiveNewSuperAdmin", user);
+                    break;
+                case "Admin":
+                    await _hubContext.Clients.Group("Admin").SendAsync("ReceiveNewAdmin", user);
+                    break;
+                case "Doctor":
+                    await _hubContext.Clients.Group("Admin").SendAsync("ReceiveNewDoctor", user);
+                    break;
+            }
+        }
+    
         return new RegisterResponse(user, token);
     }
 

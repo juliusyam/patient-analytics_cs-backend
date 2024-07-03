@@ -1,5 +1,9 @@
 using System.Security.Claims;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Http.Connections;
+using Microsoft.AspNetCore.SignalR.Client;
 using PatientAnalytics.Middleware;
 using PatientAnalytics.Models.Auth;
 
@@ -9,13 +13,17 @@ public class PatientAnalyticsAuthStateProvider : AuthenticationStateProvider, ID
 {
     private readonly AuthService _authService;
     private readonly PatientAnalyticsUserService _patientAnalyticsUserService;
+    private readonly IConfiguration _config;
+    private HubConnection? _hubConnection;
 
     public PatientAnalyticsAuthStateProvider(
         PatientAnalyticsUserService patientAnalyticsUserService,
-        AuthService authService)
+        AuthService authService,
+        IConfiguration config)
     {
         _patientAnalyticsUserService = patientAnalyticsUserService;
         _authService = authService;
+        _config = config;
         AuthenticationStateChanged += OnAuthenticationStateChangedAsync;
     }
 
@@ -190,9 +198,45 @@ public class PatientAnalyticsAuthStateProvider : AuthenticationStateProvider, ID
     private async void OnAuthenticationStateChangedAsync(Task<AuthenticationState> task)
     {
         var authenticationState = await task;
+        
         _patientAnalyticsUserService.UpdateUserPrincipal(authenticationState.User);
+
+        await EstablishHubConnection();
     }
 
+    private async Task EstablishHubConnection()
+    {
+        if (_hubConnection is not null) await _hubConnection.DisposeAsync();
+        
+        var token = FetchCurrentUser().Token;
+
+        if (token == string.Empty) return;
+        
+        _hubConnection = new HubConnectionBuilder()
+            .WithUrl(_config["HubConnection:Url"]!, options =>
+            {
+                options.SkipNegotiation = true;
+                options.Transports = HttpTransportType.WebSockets;
+                options.AccessTokenProvider = () => Task.FromResult(token);
+            })
+            .AddJsonProtocol(protocolOptions =>
+            {
+                var jsonOptions = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
+                };
+
+                jsonOptions.Converters.Add(new JsonStringEnumConverter());
+
+                protocolOptions.PayloadSerializerOptions = jsonOptions;
+            })
+            .Build();
+
+        await _hubConnection.StartAsync();
+    }
+
+    public HubConnection? GetHubConnection() => _hubConnection;
+    
     public AuthenticationDataMemoryStorage FetchCurrentUser()
     {
         return _patientAnalyticsUserService.GetAuthenticationDataMemoryStorage();
