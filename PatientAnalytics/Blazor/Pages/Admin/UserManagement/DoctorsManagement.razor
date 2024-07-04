@@ -25,8 +25,6 @@
             <UserForm OnSubmit="CreateDoctor" Exception="_createDoctorException" />
         </div>
     </div>
-    
-    <p>@_receivedMessage</p>
 </AdminDashboardWrapper>
 
 @code {
@@ -36,8 +34,6 @@
     private HttpStatusCodeException? _exception;
     private HttpStatusCodeException? _createDoctorException;
     private HubConnection? _hubConnection;
-    private Timer? _resetTimer;
-    private string _receivedMessage = string.Empty;
     
     protected override async Task OnInitializedAsync()
     {
@@ -58,8 +54,6 @@
                 if (existingDoctor is null) _doctors.Add(user);
                 InvokeAsync(StateHasChanged);
             });
-        
-            _hubConnection?.On<string>("ReceiveMessage", SetReceivedMessage);
         }
     }
 
@@ -85,19 +79,5 @@
     private void GoBack()
     {
         NavigationManager.NavigateTo("/dashboard/admin");
-    }
-    
-    private void SetReceivedMessage(string message)
-    {
-        _receivedMessage = message;
-        InvokeAsync(StateHasChanged);
-        _resetTimer?.Dispose();
-        _resetTimer = new Timer(ResetReceivedMessage, null, TimeSpan.FromSeconds(5), Timeout.InfiniteTimeSpan);
-    }
-    
-    private void ResetReceivedMessage(object? state)
-    {
-        _receivedMessage = string.Empty;
-        InvokeAsync(StateHasChanged);
     }
 }

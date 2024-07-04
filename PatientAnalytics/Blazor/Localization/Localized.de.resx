@@ -282,4 +282,10 @@
     <data name="Button_Download_Report" xml:space="preserve">
         <value>Bericht herunterladen</value>
     </data>
+    <data name="SignalRMessage_UserLoggedIn">
+        <value>{0} hat sich angemeldet.</value>
+    </data>
+    <data name="SignalRMessage_UserLoggedOut">
+        <value>{0} hat sich abgemeldet.</value>
+    </data>
 </root>

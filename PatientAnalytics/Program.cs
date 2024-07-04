@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json.Serialization;
+using Blazored.Toast;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.ResponseCompression;
@@ -132,6 +133,8 @@ builder.Services.AddScoped<AuthenticationStateProvider>(provider =>
 builder.Services.AddAuthenticationCore();
 
 builder.Services.AddLocalization();
+
+builder.Services.AddBlazoredToast();
 
 var app = builder.Build();
 

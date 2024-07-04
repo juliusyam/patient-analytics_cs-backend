@@ -74,6 +74,13 @@ public class PatientAnalyticsAuthStateProvider : AuthenticationStateProvider, ID
             catch (HttpStatusCodeException) {}
         }
         
+        if (_hubConnection is not null)
+        {
+            var userRole = FetchCurrentUser().UserPrincipal?.FindFirst(ClaimTypes.Role)?.Value;
+            var userName = FetchCurrentUser().UserPrincipal?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            await _hubConnection.SendAsync("RemoveFromGroup", userName, userRole);
+        }
+        
         await _patientAnalyticsUserService.RemoveUserFromStorageAsync();
         
         NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(new ClaimsPrincipal())));
@@ -231,8 +238,13 @@ public class PatientAnalyticsAuthStateProvider : AuthenticationStateProvider, ID
                 protocolOptions.PayloadSerializerOptions = jsonOptions;
             })
             .Build();
-
+        
         await _hubConnection.StartAsync();
+        
+        var userRole = FetchCurrentUser().UserPrincipal?.FindFirst(ClaimTypes.Role)?.Value;
+        var userName = FetchCurrentUser().UserPrincipal?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        
+        await _hubConnection.SendAsync("AddToGroup", userName, userRole);
     }
 
     public HubConnection? GetHubConnection() => _hubConnection;

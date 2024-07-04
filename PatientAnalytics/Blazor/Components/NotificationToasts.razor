@@ -1,0 +1,26 @@
+@inject IStringLocalizer<Localized> Localized
+@inject IToastService ToastService
+@inject PatientAnalyticsAuthStateProvider PatientAnalyticsAuthStateProvider
+
+<BlazoredToasts Position="ToastPosition.TopRight" Timeout="10" ShowProgressBar="true" />
+
+@code {
+    private HubConnection? _hubConnection;
+
+    protected override void OnInitialized()
+    {
+        _hubConnection = PatientAnalyticsAuthStateProvider.GetHubConnection();
+        
+        _hubConnection?.On<string>("UserLoggedIn", username =>
+        {
+            ToastService.ShowInfo(string.Format(Localized["SignalRMessage_UserLoggedIn"], username));
+            InvokeAsync(StateHasChanged);
+        });
+        
+        _hubConnection?.On<string>("UserLoggedOut", username =>
+        {
+            ToastService.ShowInfo(string.Format(Localized["SignalRMessage_UserLoggedOut"], username));
+            InvokeAsync(StateHasChanged);
+        });
+    }
+}

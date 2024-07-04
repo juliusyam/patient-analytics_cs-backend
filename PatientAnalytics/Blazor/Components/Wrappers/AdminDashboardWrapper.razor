@@ -4,6 +4,8 @@
 
 <AuthorizeView Roles="SuperAdmin, Admin">
     <Authorized>
+        <NotificationToasts />
+        
         <section class="is-flex is-flex-direction-row is-justify-content-space-between mb-4">
             <div class="container">
                 <h1 class="title mb-2">@Localized["AppTitle"]</h1>
@@ -12,7 +14,7 @@
 
             <div class="container is-flex is-justify-content-flex-end is-align-items-center is-gap-3">
                 <p class="subtitle has-text-right m-0">@_authMessage</p>
-                <button class="button" onclick="@OnLogout">@Localized["Button_Logout"]</button>
+                <button class="button" @onclick="OnLogout">@Localized["Button_Logout"]</button>
             </div>
         </section>
 
@@ -25,7 +27,7 @@
 
 @code {
     [Parameter, EditorRequired]
-    public RenderFragment? ChildContent { private get; set; } = null;
+    public RenderFragment? ChildContent { private get; set; }
 
     private string _authMessage = "";
 

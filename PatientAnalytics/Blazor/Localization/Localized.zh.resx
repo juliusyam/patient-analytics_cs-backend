@@ -282,4 +282,10 @@
     <data name="Button_Download_Report" xml:space="preserve">
         <value>下載報告</value>
     </data>
+    <data name="SignalRMessage_UserLoggedIn">
+        <value>{0} 已登入。</value>
+    </data>
+    <data name="SignalRMessage_UserLoggedOut">
+        <value>{0} 已登出。</value>
+    </data>
 </root>

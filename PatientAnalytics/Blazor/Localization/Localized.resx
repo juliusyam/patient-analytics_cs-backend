@@ -282,4 +282,10 @@
     <data name="Button_Download_Report" xml:space="preserve">
         <value>Download Report</value>
     </data>
+    <data name="SignalRMessage_UserLoggedIn">
+        <value>{0} has signed in.</value>
+    </data>
+    <data name="SignalRMessage_UserLoggedOut">
+        <value>{0} has signed off.</value>
+    </data>
 </root>

@@ -572,5 +572,17 @@ namespace PatientAnalytics.Blazor.Localization {
                 return ResourceManager.GetString("Button_Download_Report", resourceCulture);
             }
         }
+        
+        internal static string SignalRMessage_UserLoggedIn {
+            get {
+                return ResourceManager.GetString("SignalRMessage_UserLoggedIn", resourceCulture);
+            }
+        }
+        
+        internal static string SignalRMessage_UserLoggedOut {
+            get {
+                return ResourceManager.GetString("SignalRMessage_UserLoggedOut", resourceCulture);
+            }
+        }
     }
 }
