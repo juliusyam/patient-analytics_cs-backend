@@ -22,7 +22,7 @@ public class PatientHeight
     public double HeightIn { get; protected set; }
     
     [NotMapped]
-    public string HeightFtFormatted { get; protected set; }
+    public string? HeightFtFormatted { get; protected set; }
 
     public static PatientHeight CreateFromPayload(int patientId, int doctorId, PatientHeightPayload payload)
     {
@@ -61,9 +61,9 @@ public class PatientHeight
 public class PatientHeightPayload
 {
     public double Height { get; set; }
-    
+
     [RegularExpression("^Cm$|^In$", ErrorMessage = "Invalid Unit Value. Unit must be either Cm or In.")]
-    public string Unit { get; set; }
+    public string Unit { get; set; } = null!;
 
     public void SetPatientHeight(double height, string unit)
     {

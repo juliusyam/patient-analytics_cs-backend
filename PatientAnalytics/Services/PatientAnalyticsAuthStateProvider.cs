@@ -224,7 +224,7 @@ public class PatientAnalyticsAuthStateProvider : AuthenticationStateProvider, ID
             {
                 options.SkipNegotiation = true;
                 options.Transports = HttpTransportType.WebSockets;
-                options.AccessTokenProvider = () => Task.FromResult(token);
+                options.AccessTokenProvider = () => Task.FromResult(token)!;
             })
             .AddJsonProtocol(protocolOptions =>
             {

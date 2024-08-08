@@ -23,21 +23,21 @@
                             <label class="radio-button">
                                 <input type="radio" 
                                         value="@Localized[$"Unit_Cm"]"
-                                        @onchange="(e) => _selectedDisplayUnit = e.Value.ToString()" 
+                                        @onchange="UpdateDisplayUnit" 
                                         checked="@IsSelectedUnit(@Localized[$"Unit_Cm"])">
                                 <span>@Localized[$"Unit_Cm"]</span>
                             </label>
                             <label class="radio-button">
                                 <input type="radio"
                                         value="@Localized[$"Unit_In"]"
-                                        @onchange="(e) => _selectedDisplayUnit = e.Value.ToString()" 
+                                        @onchange="UpdateDisplayUnit" 
                                         checked="@IsSelectedUnit(@Localized[$"Unit_In"])">
                                 <span>@Localized[$"Unit_In"]</span>
                             </label>
                             <label class="radio-button">
                                 <input type="radio"
                                         value="@Localized[$"Unit_Ft"]"
-                                        @onchange="(e) => _selectedDisplayUnit = e.Value.ToString()" 
+                                        @onchange="UpdateDisplayUnit" 
                                         checked="@IsSelectedUnit(@Localized[$"Unit_Ft"])">
                                 <span>@Localized[$"Unit_Ft"]</span>
                             </label>
@@ -58,9 +58,13 @@
                                 <tr>
                                     <td>@patient.Id</td>
                                     <td>@GetHeightDisplay(patient)</td>
-                                    <td>@patient.Doctor.FirstName @patient.Doctor.LastName</td>
+                                    <td>@patient.Doctor?.FirstName @patient.Doctor?.LastName</td>
                                     <td>@patient.DateCreated</td>
-                                    <td><button class="button" @onclick="() => ShowDeleteConfirmation(patient.Id)">@Localized["Button_Delete"]</button></td>
+                                    <td>
+                                        <button class="button" @onclick="() => ShowDeleteConfirmation(patient.Id)">
+                                            @Localized["Button_Delete"]
+                                        </button>
+                                    </td>
                                 </tr>
                             }
                         </tbody>
@@ -68,7 +72,7 @@
                 </div>
 
                 <div class="container">
-                    <EditForm Model="_patientHeightPayload" OnValidSubmit="HandleSubmit" Context="editFormContext">
+                    <EditForm Model="_patientHeightPayload" OnValidSubmit="HandleSubmit">
                         <DataAnnotationsValidator />
                         <ValidationSummary class="text-danger" />
                         <div class="field">
@@ -105,7 +109,6 @@
     public int Id { get; set; }
     private string _pageTitle = "";
     private Patient? _patient;
-    private string _metricTitle = "";
     private List<PatientHeight> _patientsHeight = new();
     private PatientHeightPayload _patientHeightPayload = new();
     
@@ -117,8 +120,8 @@
 
     private double? _heightValue;
     private string? _selectedUnit;
-    private string _selectedDisplayUnit;
-    private int _heightID;
+    private string? _selectedDisplayUnit;
+    private int _heightId;
 
     protected override async Task OnInitializedAsync()
     {
@@ -173,7 +176,7 @@
             _refreshing,
             async token =>
             {
-                var newHeightEntry = await PatientMetricsHeightService.CreateEntry(token, _patient.Id, _patientHeightPayload);
+                var newHeightEntry = await PatientMetricsHeightService.CreateEntry(token, Id, _patientHeightPayload);
                 _patientsHeight.Add(newHeightEntry);
             },
             refreshing => _refreshing = refreshing,
@@ -183,7 +186,7 @@
 
     private void ShowDeleteConfirmation(int id)
     {
-        _heightID = id;
+        _heightId = id;
         _isDeleteConfirmationVisible = true;
     }
 
@@ -198,8 +201,8 @@
             _refreshing,
             async token =>
             {
-                await PatientMetricsHeightService.DeleteEntryById(token, _heightID);
-                _patientsHeight.RemoveAll(bp => bp.Id == _heightID);
+                await PatientMetricsHeightService.DeleteEntryById(token, _heightId);
+                _patientsHeight.RemoveAll(bp => bp.Id == _heightId);
                 
                 _isDeleteConfirmationVisible = false;
             },
@@ -222,5 +225,13 @@
     private bool IsSelectedUnit(string unit)
     {
         return _selectedDisplayUnit == unit;
+    }
+
+    private void UpdateDisplayUnit(ChangeEventArgs e)
+    {
+        if (e.Value is not null)
+        {
+            _selectedDisplayUnit = e.Value.ToString();
+        }
     }
 }

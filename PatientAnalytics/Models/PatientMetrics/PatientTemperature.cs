@@ -23,7 +23,7 @@ public class PatientTemperature
 
     public static PatientTemperature CreateFromPayload(int patientId, int doctorId, PatientTemperaturePayload payload)
     {
-        var temperatureCelsius = 0.0;
+        double temperatureCelsius;
         
         switch (payload.Unit)
         {
@@ -58,8 +58,9 @@ public class PatientTemperaturePayload
 { 
     public double Temperature { get; set; }
 
-    [RegularExpression("^Celsius$|^Fahrenheit$", ErrorMessage = "Invalid Unit Value. Unit must be either Celsius or Fahrenheit.")]
-    public string Unit { get; set; }
+    [RegularExpression("^Celsius$|^Fahrenheit$",
+        ErrorMessage = "Invalid Unit Value. Unit must be either Celsius or Fahrenheit.")]
+    public string Unit { get; set; } = null!;
 
     public void SetTemperature(double temperature, string unit)
     {

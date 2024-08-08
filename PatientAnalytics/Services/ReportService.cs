@@ -28,10 +28,10 @@ public class ReportService
         var weights = patient.Weights.Select(x => (x.DateCreated, x.WeightKg)).OrderBy(x => x.DateCreated);
         var heights = patient.Heights.Select(x => (x.DateCreated, x.HeightCm)).OrderBy(x => x.DateCreated);
 
-        double? firstBMI = null;
-        DateTime? firstBMIDate = null;
-        double? lastBMI = null;
-        DateTime? lastBMIDate = null;
+        double? firstBmi = null;
+        DateTime? firstBmiDate = null;
+        double? lastBmi = null;
+        DateTime? lastBmiDate = null;
 
         if (weights.Count() > 0)
         {
@@ -46,9 +46,9 @@ public class ReportService
             {
                 var weight = firstMatchingPair.Item2.Item1;
                 var height = firstMatchingPair.Item2.Item2;
-                firstBMIDate = firstMatchingPair.Item1;
+                firstBmiDate = firstMatchingPair.Item1;
 
-                firstBMI = weight / (height / 100 * height / 100);
+                firstBmi = weight / (height / 100 * height / 100);
             }
         }
 
@@ -66,9 +66,9 @@ public class ReportService
             {
                 var weight = lastMatchingPair.Item2.Item1;
                 var height = lastMatchingPair.Item2.Item2;
-                lastBMIDate = lastMatchingPair.Item1;
+                lastBmiDate = lastMatchingPair.Item1;
                 
-                lastBMI = weight / (height / 100 * height / 100);
+                lastBmi = weight / (height / 100 * height / 100);
             }
         }
 
@@ -134,20 +134,22 @@ public class ReportService
                             .FontSize(16)
                             .FontColor(Colors.Blue.Medium);
 
-                        if (firstBMI != null)
+                        if (firstBmi != null)
                         {
                             rowCount++;
 
-                            var formattedDate = firstBMIDate.Value.ToString(_localized["DateFormatting_Date"]);
+                            // TODO: Remove force unwrap
+                            var formattedDate = firstBmiDate!.Value.ToString(_localized["DateFormatting_Date"]);
 
-                            table.Cell().Row(rowCount).Column(1).AlignRight().PaddingRight(10).Text(string.Format(_localized["ReportTitles_BMIStart"], formattedDate, Math.Round((double)firstBMI))).FontSize(12);
+                            table.Cell().Row(rowCount).Column(1).AlignRight().PaddingRight(10).Text(string.Format(_localized["ReportTitles_BMIStart"], formattedDate, Math.Round((double)firstBmi))).FontSize(12);
                         }
 
-                        if (lastBMI != null)
+                        if (lastBmi != null)
                         {
                             rowCount++;
-                            var formattedDate = lastBMIDate.Value.ToString(_localized["DateFormatting_Date"]);
-                            table.Cell().Row(rowCount).Column(2).AlignLeft().PaddingLeft(10).Text(string.Format(_localized["ReportTitles_BMIEnd"], formattedDate, Math.Round((double)lastBMI))).FontSize(12);
+                            // TODO: Remove force unwrap
+                            var formattedDate = lastBmiDate!.Value.ToString(_localized["DateFormatting_Date"]);
+                            table.Cell().Row(rowCount).Column(2).AlignLeft().PaddingLeft(10).Text(string.Format(_localized["ReportTitles_BMIEnd"], formattedDate, Math.Round((double)lastBmi))).FontSize(12);
                         }
 
                         if (temperatureBarChart != null)

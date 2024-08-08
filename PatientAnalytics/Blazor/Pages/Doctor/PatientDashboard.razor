@@ -37,7 +37,7 @@
                 </ContentWithLabel>
                 <ContentWithLabel Label="@Localized["Label_Address"]">@_patient.Address</ContentWithLabel>
 
-                <div class="divider"/>
+                <div class="divider"></div>
 
                 <ContentWithLabel Label="@Localized["Label_DateCreated"]">
                     @_patient.DateCreated.ToString(Localized["DateFormatting_DateTime"])
@@ -77,8 +77,8 @@
     private string _pageTitle = "";
     
     private Patient? _patient;
-    private bool _updateDetails = false;
-    private bool _isDeleteConfirmationVisible = false;
+    private bool _updateDetails;
+    private bool _isDeleteConfirmationVisible;
     private bool _isDownloadReportDisabled = true;
     
     private bool _refreshing;
@@ -159,7 +159,7 @@
             _refreshing,
             async token =>
             {
-                await PatientService.DeletePatient(token, _patient.Id);
+                await PatientService.DeletePatient(token, Id);
                 NavigationManager.NavigateTo("/dashboard/doctor");
             },
             refreshing => _refreshing = refreshing,
@@ -175,18 +175,18 @@
 
     private void ShowBloodPressure()
     {
-        NavigationManager.NavigateTo($"/patients/{_patient.Id}/bloodpressure");
+        NavigationManager.NavigateTo($"/patients/{Id}/bloodpressure");
     }
     private void ShowHeight()
     {
-        NavigationManager.NavigateTo($"/patients/{_patient.Id}/height");
+        NavigationManager.NavigateTo($"/patients/{Id}/height");
     }
     private void ShowWeight()
     {
-        NavigationManager.NavigateTo($"/patients/{_patient.Id}/weight");
+        NavigationManager.NavigateTo($"/patients/{Id}/weight");
     }
     private void ShowTemperature()
     {
-        NavigationManager.NavigateTo($"/patients/{_patient.Id}/temperature");
+        NavigationManager.NavigateTo($"/patients/{Id}/temperature");
     }
 }

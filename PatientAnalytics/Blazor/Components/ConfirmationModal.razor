@@ -1,7 +1,7 @@
 ﻿@inject IStringLocalizer<Localized> Localized
 
 <div class="modal @ModalClass">
-    <div class="modal-background" />
+    <div class="modal-background"></div>
     <div class="modal-card">
         <header class="modal-card-head">
             <p class="modal-card-title">@Title</p>
@@ -15,12 +15,12 @@
 </div>
 
 @code {
+    [Parameter, EditorRequired] 
+    public string Title { get; set; } = "";
     [Parameter, EditorRequired]
-    public string Title { get; set; }
+    public string ConfirmButtonText { get; set; } = "";
     [Parameter, EditorRequired]
-    public string ConfirmButtonText { get; set; } 
-    [Parameter, EditorRequired]
-    public string CancelButtonText { get; set; }
+    public string CancelButtonText { get; set; } = "";
     [Parameter]
     public EventCallback OnConfirm { get; set; }
     [Parameter]

@@ -23,14 +23,14 @@
                             <label class="radio-button">
                                 <input type="radio"
                                         value="@Localized["Label_Celsius"]"
-                                        @onchange="(e) => _selectedDisplayUnit = e.Value.ToString()" 
+                                        @onchange="UpdateDisplayUnit" 
                                         checked="@IsSelectedUnit(@Localized["Label_Celsius"])">
                                 <span>@Localized["Label_Celsius"]</span>
                             </label>
                             <label class="radio-button">
                                 <input type="radio" 
                                         value="@Localized["Label_Fahrenheit"]"
-                                        @onchange="(e) => _selectedDisplayUnit = e.Value.ToString()" 
+                                        @onchange="UpdateDisplayUnit" 
                                         checked="@IsSelectedUnit(@Localized["Label_Fahrenheit"])">
                                 <span>@Localized["Label_Fahrenheit"]</span>
                             </label>
@@ -51,16 +51,20 @@
                                 <tr>
                                     <td>@patient.Id</td>
                                     <td>@GetTemperatureDisplay(patient)</td>
-                                    <td>@patient.Doctor.FirstName @patient.Doctor.LastName</td>
+                                    <td>@patient.Doctor?.FirstName @patient.Doctor?.LastName</td>
                                     <td>@patient.DateCreated</td>
-                                    <td><button class="button" @onclick="() => ShowDeleteConfirmation(patient.Id)">@Localized["Button_Delete"]</button></td>
+                                    <td>
+                                        <button class="button" @onclick="() => ShowDeleteConfirmation(patient.Id)">
+                                            @Localized["Button_Delete"]
+                                        </button>
+                                    </td>
                                 </tr>
                             }
                         </tbody>
                     </table>
                 </div>
                 <div class="container">
-                    <EditForm Model="_patientTemperaturePayload" OnValidSubmit="HandleSubmit" Context="editFormContext">
+                    <EditForm Model="_patientTemperaturePayload" OnValidSubmit="HandleSubmit">
                         <DataAnnotationsValidator />
                         <ValidationSummary class="text-danger" />
                         <div class="field">
@@ -107,9 +111,9 @@
     private string ErrorMessage { get; set; } = string.Empty;
 
     private double? _temperatureValue;
-    private string _selectedUnit;
-    private string _selectedDisplayUnit;
-    private int _temperatureID;
+    private string? _selectedUnit;
+    private string? _selectedDisplayUnit;
+    private int _temperatureId;
 
     protected override async Task OnInitializedAsync()
     {
@@ -164,7 +168,7 @@
             _refreshing,
             async token =>
             {
-                var newTemperatureEntry = await PatientMetricsTemperatureService.CreateEntry(token, _patient.Id, _patientTemperaturePayload);
+                var newTemperatureEntry = await PatientMetricsTemperatureService.CreateEntry(token, Id, _patientTemperaturePayload);
                 
                 _patientsTemperature.Add(newTemperatureEntry);
             },
@@ -175,7 +179,7 @@
 
     private void ShowDeleteConfirmation(int id)
     {
-        _temperatureID = id;
+        _temperatureId = id;
         _isDeleteConfirmationVisible = true;
     }
 
@@ -190,8 +194,8 @@
             _refreshing,
             async token =>
             {
-                await PatientMetricsTemperatureService.DeleteEntryById(token, _temperatureID);
-                _patientsTemperature.RemoveAll(bp => bp.Id == _temperatureID);
+                await PatientMetricsTemperatureService.DeleteEntryById(token, _temperatureId);
+                _patientsTemperature.RemoveAll(bp => bp.Id == _temperatureId);
                 
                 _isDeleteConfirmationVisible = false;
             },
@@ -213,5 +217,13 @@
     private bool IsSelectedUnit(string unit)
     {
         return _selectedDisplayUnit == unit;
+    }
+    
+    private void UpdateDisplayUnit(ChangeEventArgs e)
+    {
+        if (e.Value is not null)
+        {
+            _selectedDisplayUnit = e.Value.ToString();
+        }
     }
 }

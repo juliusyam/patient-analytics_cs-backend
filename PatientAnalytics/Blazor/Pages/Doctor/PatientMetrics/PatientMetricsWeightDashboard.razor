@@ -23,21 +23,21 @@
                             <label class="radio-button">
                                 <input type="radio" 
                                         value="@Localized[$"Unit_Kg"]"
-                                        @onchange="(e) => _selectedDisplayUnit = e.Value.ToString()" 
+                                        @onchange="UpdateDisplayUnit" 
                                         checked="@IsSelectedUnit(@Localized[$"Unit_Kg"])">
                                 <span>@Localized[$"Unit_Kg"]</span>
                             </label>
                             <label class="radio-button">
                                 <input type="radio" 
                                         value="@Localized[$"Unit_St"]" 
-                                        @onchange="(e) => _selectedDisplayUnit = e.Value.ToString()" 
+                                        @onchange="UpdateDisplayUnit" 
                                         checked="@IsSelectedUnit(@Localized[$"Unit_St"])">
                                 <span>@Localized[$"Unit_St"]</span>
                             </label>
                             <label class="radio-button">
                                 <input type="radio" 
                                         value="@Localized[$"Unit_Lb"]"
-                                        @onchange="(e) => _selectedDisplayUnit = e.Value.ToString()" 
+                                        @onchange="UpdateDisplayUnit" 
                                         checked="@IsSelectedUnit(@Localized[$"Unit_Lb"])">
                                 <span>@Localized[$"Unit_Lb"]</span>
                             </label>
@@ -58,7 +58,7 @@
                                 <tr>
                                     <td>@patient.Id</td>
                                     <td>@GetWeightDisplay(patient)</td>
-                                    <td>@patient.Doctor.FirstName @patient.Doctor.LastName</td>
+                                    <td>@patient.Doctor?.FirstName @patient.Doctor?.LastName</td>
                                     <td>@patient.DateCreated</td>
                                     <td><button class="button" @onclick="() => ShowDeleteConfirmation(patient.Id)">@Localized["Button_Delete"]</button></td>
                                 </tr>
@@ -67,7 +67,7 @@
                     </table>
                 </div>
                 <div class="container">
-                    <EditForm Model="_patientWeightPayload" OnValidSubmit="HandleSubmit" Context="editFormContext">
+                    <EditForm Model="_patientWeightPayload" OnValidSubmit="HandleSubmit">
                         <DataAnnotationsValidator />
                         <ValidationSummary class="text-danger" />
                         <div class="field">
@@ -111,13 +111,13 @@
     private bool _refreshing;
     private HttpStatusCodeException? _exception;
     
-    private bool _isDeleteConfirmationVisible = false;
+    private bool _isDeleteConfirmationVisible;
     private string ErrorMessage { get; set; } = string.Empty;
 
     private double? _weightValue;
-    private string _selectedUnit;
-    private string _selectedDisplayUnit;
-    private int _weightID;
+    private string? _selectedUnit;
+    private string? _selectedDisplayUnit;
+    private int _weightId;
 
     protected override async Task OnInitializedAsync()
     {
@@ -172,7 +172,7 @@
             _refreshing,
             async token =>
             {
-                var newWeightEntry = await PatientMetricsWeightService.CreateEntry(token, _patient.Id, _patientWeightPayload);
+                var newWeightEntry = await PatientMetricsWeightService.CreateEntry(token, Id, _patientWeightPayload);
                 
                 _patientsWeight.Add(newWeightEntry);
             },
@@ -183,7 +183,7 @@
 
     private void ShowDeleteConfirmation(int id)
     {
-        _weightID = id;
+        _weightId = id;
         _isDeleteConfirmationVisible = true;
     }
 
@@ -198,8 +198,8 @@
             _refreshing,
             async token =>
             {
-                await PatientMetricsWeightService.DeleteEntryById(token, _weightID);
-                _patientsWeight.RemoveAll(bp => bp.Id == _weightID);
+                await PatientMetricsWeightService.DeleteEntryById(token, _weightId);
+                _patientsWeight.RemoveAll(bp => bp.Id == _weightId);
                 
                 _isDeleteConfirmationVisible = false;
             },
@@ -222,5 +222,13 @@
     private bool IsSelectedUnit(string unit)
     {
         return _selectedDisplayUnit == unit;
+    }
+    
+    private void UpdateDisplayUnit(ChangeEventArgs e)
+    {
+        if (e.Value is not null)
+        {
+            _selectedDisplayUnit = e.Value.ToString();
+        }
     }
 }

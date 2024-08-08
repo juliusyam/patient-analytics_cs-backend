@@ -8,14 +8,15 @@ namespace PatientAnalytics.Models;
 public class UserRefresh
 {
     [Key]
-    public int Id { get; private set; }
+    public int Id { get; init; }
     
     public int UserId { get; private set; }
     
     [ForeignKey("UserId")]
     public User? User { get; init; }
-    
-    public string RefreshTokenHash { get; private set; }
+
+    [MaxLength(100)] 
+    public string RefreshTokenHash { get; private set; } = "";
     
     public DateTime RefreshTokenExpiry { get; private set; }
     

@@ -19,7 +19,7 @@ public class PatientBloodPressure
     public double BloodPressureDiastolic { get; protected set; }
     
     [NotMapped]
-    public string Status { get; protected set; }
+    public string? Status { get; protected set; }
 
     public static PatientBloodPressure CreateFromPayload(
         int patientId, 

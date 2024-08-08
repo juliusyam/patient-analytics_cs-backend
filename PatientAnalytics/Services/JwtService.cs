@@ -76,7 +76,7 @@ public class JwtService
         }
     }
 
-    public ClaimsPrincipal? DecodeJwt(string token)
+    public ClaimsPrincipal DecodeJwt(string token)
     {
         ValidateToken(token, out var claimsPrincipal);
         

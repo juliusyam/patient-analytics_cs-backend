@@ -37,7 +37,7 @@
                                     <td>@patient.BloodPressureSystolic</td>
                                     <td>@patient.BloodPressureDiastolic</td>
                                     <td>@patient.Status</td>
-                                    <td>@patient.Doctor.FirstName @patient.Doctor.LastName @patient.DoctorId</td>
+                                    <td>@patient.Doctor?.FirstName @patient.Doctor?.LastName @patient.DoctorId</td>
                                     <td>@patient.DateCreated</td>
                                     <td><button class="button" @onclick="() => ShowDeleteConfirmation(patient.Id)">@Localized["Button_Delete"]</button></td>
                                 </tr>
@@ -46,7 +46,7 @@
                     </table>
                 </div>
                 <div class="container">
-                    <EditForm Model="_patientBP" OnValidSubmit="HandleSubmit" Context="editFormContext">
+                    <EditForm Model="_patientBloodPressurePayload" OnValidSubmit="HandleSubmit">
                         <DataAnnotationsValidator />
                         <ValidationSummary class="text-danger" />
                         <div class="field">
@@ -81,7 +81,7 @@
     private string _pageTitle = "";
     private Patient? _patient;
     private List<PatientBloodPressure> _patientsBloodPressure = new();
-    private PatientBloodPressurePayload _patientBP = new();
+    private PatientBloodPressurePayload _patientBloodPressurePayload = new();
     
     private bool _refreshing;
     private HttpStatusCodeException? _exception;
@@ -91,7 +91,7 @@
 
     private int? _bloodPressureSystolic;
     private int? _bloodPressureDiastolic;
-    private int _bloodPressureID;
+    private int _bloodPressureId;
 
     protected override async Task OnInitializedAsync()
     {
@@ -137,13 +137,13 @@
             return;
         }
 
-        _patientBP.SetBloodPressure(_bloodPressureSystolic.Value, _bloodPressureDiastolic.Value);
+        _patientBloodPressurePayload.SetBloodPressure(_bloodPressureSystolic.Value, _bloodPressureDiastolic.Value);
 
         await PatientAnalyticsAuthStateProvider.ServiceWrapperAsync(
             _refreshing,
             async token =>
             {
-                var newBloodPressure = await PatientMetricsBloodPressureService.CreateEntry(token, _patient.Id, _patientBP);
+                var newBloodPressure = await PatientMetricsBloodPressureService.CreateEntry(token, Id, _patientBloodPressurePayload);
                 _patientsBloodPressure.Add(newBloodPressure);
             },
             refreshing => _refreshing = refreshing,
@@ -153,7 +153,7 @@
 
     private void ShowDeleteConfirmation(int id)
     {
-        _bloodPressureID = id;
+        _bloodPressureId = id;
         _isDeleteConfirmationVisible = true;
     }
 
@@ -168,8 +168,8 @@
             _refreshing,
             async token =>
             {
-                await PatientMetricsBloodPressureService.DeleteEntryById(token, _bloodPressureID);
-                _patientsBloodPressure.RemoveAll(bp => bp.Id == _bloodPressureID);
+                await PatientMetricsBloodPressureService.DeleteEntryById(token, _bloodPressureId);
+                _patientsBloodPressure.RemoveAll(bp => bp.Id == _bloodPressureId);
                 
                 _isDeleteConfirmationVisible = false;
             },

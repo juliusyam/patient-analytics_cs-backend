@@ -6,10 +6,10 @@
 @if (IsModalOpen)
 {
     <div class="modal is-active">
-        <div class="modal-background" />
+        <div class="modal-background"></div>
         <div class="modal-card">
             <header class="modal-card-head">
-                <p class="modal-card-title">@(IsEditMode ? @Localized["Button_Edit"] : @Localized["Button_Create_Patient"])</p>
+                <p class="modal-card-title">@(IsEditMode ? Localized["Button_Edit"] : Localized["Button_Create_Patient"])</p>
                 <button class="delete" aria-label="close" @onclick="CloseModal"></button>
             </header>
             <section class="modal-card-body">
@@ -55,16 +55,11 @@
 }
 
 @code {
-    [Parameter] 
-    public bool IsModalOpen { get; set; }
-    [Parameter] 
-    public EventCallback<bool> IsModalOpenChanged { get; set; }
-    [Parameter] 
-    public EventCallback OnClose { get; set; }
-    [Parameter]
-    public EventCallback<Patient> OnPatientCreated { get; set; }
-    [Parameter]
-    public Patient? Patient { get; set; }
+    [Parameter] public bool IsModalOpen { get; set; }
+    [Parameter] public EventCallback<bool> IsModalOpenChanged { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public EventCallback<Patient> OnPatientCreated { get; set; }
+    [Parameter] public Patient? Patient { get; set; }
 
     private Patient? _patient;
     private PersonPayload _patientDto = new();
@@ -114,13 +109,15 @@
         {
             if (IsEditMode)
             {
-                await PatientService.EditPatient(token, Patient.Id, _patientDto);
+                // TODO: Remove force unwrap
+                await PatientService.EditPatient(token, Patient!.Id, _patientDto);
             }
             else
             {
                 var newPatient = await PatientService.CreatePatient(token, _patientDto);
                 await OnPatientCreated.InvokeAsync(newPatient);
             }
+
             CloseModal();
         }
         catch (HttpStatusCodeException exception)

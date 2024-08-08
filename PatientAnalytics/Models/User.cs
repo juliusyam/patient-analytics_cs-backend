@@ -28,11 +28,14 @@ public class User : Person
         };
     }
 
-    public string Username { get; set; }
-    public string PasswordHash { get; set; }
+    [MaxLength(30)]
+    public string Username { get; set; } = null!;
     
-    [RegularExpression("^SuperAdmin$|^Admin$|^Doctor$", ErrorMessage = "Invalid Role Value. Role Value can either be SuperAdmin, Admin or Doctor")]
-    public string Role { get; set; }
+    [MaxLength(255)]
+    public string PasswordHash { get; set; } = null!;
+    
+    [MaxLength(30), RegularExpression("^SuperAdmin$|^Admin$|^Doctor$", ErrorMessage = "Invalid Role Value. Role Value can either be SuperAdmin, Admin or Doctor")]
+    public string Role { get; set; } = null!;
     
     public ICollection<UserRefresh> UserRefreshes { get; } = new List<UserRefresh>();
 }
