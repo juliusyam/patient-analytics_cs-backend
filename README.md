@@ -22,7 +22,7 @@ https://dotnet.microsoft.com/en-us/download/dotnet/8.0
 
 This project is developed on .NET version 8.0.204.
 
-[How to check if .NET is already installed](https://learn.microsoft.com/en-us/dotnet/core/install/how-to-detect-installed-versions?pivots=os-windows).
+[How to check if .NET is already installed?](https://learn.microsoft.com/en-us/dotnet/core/install/how-to-detect-installed-versions?pivots=os-windows)
 
 Check the current version of .NET runtime with the following command on the project's root directory.
 
@@ -45,8 +45,8 @@ Verify installation with the following command.
 ### Step 4: Setup Database Connection
 For this example we will be connecting to a local Sqlite Database.
 
-1. Install [DB Browser for Sqlite](https://sqlitebrowser.org/)
-2. Create a database titled `PatientAnalytics.db` within the `PatientAnalytics` directory of the project, with DB Browser
+1. Install [DB Browser for Sqlite](https://sqlitebrowser.org/).
+2. Create a database titled `PatientAnalytics.db` within the `PatientAnalytics` directory of the project, with DB Browser.
 
 ### Step 5: Migrate the Database
 Run the following command within the `PatientAnalytics` directory of the project to execute database migration.
