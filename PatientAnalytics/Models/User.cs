@@ -28,6 +28,16 @@ public class User : Person
         };
     }
 
+    public void Deactivate()
+    {
+        IsDeactivated = true;
+    }
+
+    public void Activate()
+    {
+        IsDeactivated = false;
+    }
+
     [MaxLength(30)]
     public string Username { get; set; } = null!;
     

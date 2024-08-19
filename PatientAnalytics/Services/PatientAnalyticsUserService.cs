@@ -32,6 +32,7 @@ public class PatientAnalyticsUserService
             
             try
             {
+                // TODO: Check if is deactivated
                 _authenticationDataMemoryStorage.UpdateClaimsPrincipal(_jwtService.DecodeJwt(result.Value));
             }
             catch (HttpStatusCodeException exception)

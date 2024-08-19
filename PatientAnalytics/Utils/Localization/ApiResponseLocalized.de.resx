@@ -66,6 +66,12 @@
     <data name="AuthError_DecodeJwt_Expired" xml:space="preserve">
         <value>Token ist abgelaufen. Bitte erneut anmelden.</value>
     </data>
+    <data name="UserError_AlreadyActivated" xml:space="preserve">
+        <value>Benutzer mit ID: 1 ist bereits aktiviert</value>
+    </data>
+    <data name="UserError_AlreadyDeactivated" xml:space="preserve">
+        <value>Benutzer mit ID: 1 ist bereits deaktiviert</value>
+    </data>
     <data name="PatientError_NotFound" xml:space="preserve">
         <value>Patient mit ID: {0} konnte nicht gefunden werden</value>
     </data>

@@ -141,6 +141,18 @@ namespace PatientAnalytics.Utils.Localization {
             }
         }
         
+        public static string UserError_AlreadyActivated {
+            get {
+                return ResourceManager.GetString("UserError_AlreadyActivated", resourceCulture);
+            }
+        }
+        
+        public static string UserError_AlreadyDeactivated {
+            get {
+                return ResourceManager.GetString("UserError_AlreadyDeactivated", resourceCulture);
+            }
+        }
+        
         public static string PatientError_NotFound {
             get {
                 return ResourceManager.GetString("PatientError_NotFound", resourceCulture);

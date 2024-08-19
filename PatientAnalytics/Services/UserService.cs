@@ -2,27 +2,22 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using PatientAnalytics.Middleware;
 using PatientAnalytics.Models;
-using PatientAnalytics.Models.Auth;
-using PatientAnalytics.Utils;
 using PatientAnalytics.Utils.Localization;
 
 namespace PatientAnalytics.Services;
 
 public class UserService
 {
-    private readonly IConfiguration _config;
     private readonly Context _context;
     private readonly JwtService _jwtService;
     private readonly IStringLocalizer<ApiResponseLocalized> _localized;
 
     public UserService(
-        [FromServices] Context context, 
-        IConfiguration config, 
+        [FromServices] Context context,
         JwtService jwtService,
         IStringLocalizer<ApiResponseLocalized> localized)
     {
         _context = context;
-        _config = config;
         _jwtService = jwtService;
         _localized = localized;
     }
@@ -47,6 +42,64 @@ public class UserService
         
         return _context.Users.Where(u => u.Role == "SuperAdmin").ToList();
     }
+    
+    public async Task<IActionResult> DeactivateUser(string token, int userId)
+    {
+        var user = GetUserById(token, userId);
+
+        if (user.IsDeactivated)
+        {
+            throw new HttpStatusCodeException(StatusCodes.Status409Conflict,
+                string.Format(_localized["UserError_AlreadyDeactivated"], userId));
+        }
+        
+        user.Deactivate();
+
+        _context.Users.Update(user);
+
+        await _context.SaveChangesAsync();
+
+        return new NoContentResult();
+    }
+
+    public async Task<IActionResult> ActivateUser(string token, int userId)
+    {
+        var user = GetUserById(token, userId);
+        
+        if (!user.IsDeactivated)
+        {
+            throw new HttpStatusCodeException(StatusCodes.Status409Conflict,
+                string.Format(_localized["UserError_AlreadyActivated"], userId));
+        }
+        
+        user.Activate();
+
+        _context.Users.Update(user);
+
+        await _context.SaveChangesAsync();
+
+        return new NoContentResult();
+    }
+
+    private User GetUserById(string token, int userId)
+    {
+        ValidateIsAdmin(token, out _);
+        
+        var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+
+        if (user is null)
+        {
+            throw new HttpStatusCodeException(StatusCodes.Status404NotFound,
+                string.Format(_localized["AuthError_DecodeJwt_UserNotFound"], userId));
+        }
+
+        if (user.Role == "SuperAdmin")
+        {
+            ValidateIsSuperAdmin(token, out _);
+        }
+
+        return user;
+    }
 
     private void ValidateIsAdmin(string token, out User verifiedUser)
     {
@@ -54,7 +107,7 @@ public class UserService
 
         if (user.Role != "SuperAdmin" && user.Role != "Admin")
         {
-            throw new HttpStatusCodeException(StatusCodes.Status401Unauthorized, 
+            throw new HttpStatusCodeException(StatusCodes.Status403Forbidden, 
                 _localized["AuthError_Unauthorized"]);
         }
 
@@ -67,8 +120,8 @@ public class UserService
 
         if (user.Role != "SuperAdmin")
         {
-            throw new HttpStatusCodeException(StatusCodes.Status401Unauthorized, 
-                _localized["AuthError_Unauthorized"]);
+            throw new HttpStatusCodeException(StatusCodes.Status403Forbidden, 
+                _localized["AuthError_Unauthorized_SuperAdmin"]);
         }
 
         verifiedUser = user;

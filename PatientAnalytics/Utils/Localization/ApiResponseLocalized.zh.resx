@@ -66,6 +66,12 @@
     <data name="AuthError_DecodeJwt_Expired" xml:space="preserve">
         <value>加密代幣已過期。請重新登入。</value>
     </data>
+    <data name="UserError_AlreadyActivated" xml:space="preserve">
+        <value>ID 為 {0} 的用戶已啟動</value>
+    </data>
+    <data name="UserError_AlreadyDeactivated" xml:space="preserve">
+        <value>ID 為 {0} 的使用者已停用</value>
+    </data>
     <data name="PatientError_NotFound" xml:space="preserve">
         <value>無法找到 ID 為 {0} 的患者</value>
     </data>

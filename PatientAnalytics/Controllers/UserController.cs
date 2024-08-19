@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using PatientAnalytics.Middleware;
 using PatientAnalytics.Models;
-using PatientAnalytics.Models.Auth;
 using PatientAnalytics.Services;
 using PatientAnalytics.Utils.Localization;
 
@@ -15,16 +14,13 @@ namespace PatientAnalytics.Controllers;
 [Route("/api")]
 public class UserController
 {
-    private readonly RegistrationService _registrationService;
     private readonly UserService _userService;
     private readonly IStringLocalizer<ApiResponseLocalized> _localized;
 
     public UserController(
-        RegistrationService registrationService,
         UserService userService,
         IStringLocalizer<ApiResponseLocalized> localized)
     {
-        _registrationService = registrationService;
         _userService = userService;
         _localized = localized;
     }
@@ -55,6 +51,26 @@ public class UserController
         ValidateAuthorization(httpContextAccessor, out var authorization);
 
         return _userService.GetSuperAdmins(authorization);
+    }
+
+    [HttpPut("user/{userId:int}/deactivate", Name = "DeactivateUser")]
+    public async Task<IActionResult> DeactivateUser(
+        [FromServices] IHttpContextAccessor httpContextAccessor,
+        [FromRoute] int userId)
+    {
+        ValidateAuthorization(httpContextAccessor, out var authorization);
+
+        return await _userService.DeactivateUser(authorization, userId);
+    }
+    
+    [HttpPut("user/{userId:int}/activate", Name = "ActivateUser")]
+    public async Task<IActionResult> ActivateUser(
+        [FromServices] IHttpContextAccessor httpContextAccessor,
+        [FromRoute] int userId)
+    {
+        ValidateAuthorization(httpContextAccessor, out var authorization);
+
+        return await _userService.ActivateUser(authorization, userId);
     }
 
     private void ValidateAuthorization(IHttpContextAccessor httpContextAccessor, out string verifiedAuthorization)
