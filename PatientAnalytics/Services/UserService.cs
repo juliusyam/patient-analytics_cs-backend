@@ -27,28 +27,6 @@ public class UserService
         _localized = localized;
     }
 
-    public async Task<(User, string)> CreateInitialSuperAdmin()
-    {
-        var payload = new RegistrationPayload
-        {
-            DateOfBirth = DateTime.Parse("1990-02-17T06:10:35.950Z"),
-            Gender = "Male",
-            Email = "superadmin@patient-analytics.co.uk",
-            Username = "superadmin",
-            Password = Password.GeneratePassword()
-        };
-        
-        var passwordHash = Password.HashPassword(payload.Password, _config);
-        
-        var user = User.CreateUser(passwordHash, payload, "SuperAdmin");
-        
-        _context.Users.Add(user);
-
-        await _context.SaveChangesAsync();
-        
-        return (user, payload.Password);
-    }
-
     public List<User> GetDoctors(string token)
     {
         ValidateIsAdmin(token, out _);

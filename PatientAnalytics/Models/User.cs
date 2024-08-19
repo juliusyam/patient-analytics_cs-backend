@@ -36,6 +36,8 @@ public class User : Person
     
     [MaxLength(30), RegularExpression("^SuperAdmin$|^Admin$|^Doctor$", ErrorMessage = "Invalid Role Value. Role Value can either be SuperAdmin, Admin or Doctor")]
     public string Role { get; set; } = null!;
+
+    public bool IsDeactivated { get; set; }
     
     public ICollection<UserRefresh> UserRefreshes { get; } = new List<UserRefresh>();
 }

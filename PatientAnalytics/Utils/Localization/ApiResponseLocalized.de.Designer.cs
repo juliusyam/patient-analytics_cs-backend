@@ -99,6 +99,12 @@ namespace PatientAnalytics.Utils.Localization {
             }
         }
         
+        public static string AuthError_UserIsDeactivated {
+            get {
+                return ResourceManager.GetString("AuthError_UserIsDeactivated", resourceCulture);
+            }
+        }
+        
         public static string AuthError_WeakPassword_IsHashLeaked {
             get {
                 return ResourceManager.GetString("AuthError_WeakPassword_IsHashLeaked", resourceCulture);

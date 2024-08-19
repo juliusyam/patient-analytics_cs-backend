@@ -45,6 +45,9 @@
     <data name="AuthError_WrongPassword" xml:space="preserve">
         <value>Wrong Password</value>
     </data>
+    <data name="AuthError_UserIsDeactivated" xml:space="preserve">
+        <value>User is deactivated. Please contact your admin for support.</value>
+    </data>
     <data name="AuthError_WeakPassword_IsHashLeaked" xml:space="preserve">
         <value>Weak password. This password has been leaked before. Choose a different password.</value>
     </data>

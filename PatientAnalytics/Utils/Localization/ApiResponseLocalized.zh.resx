@@ -45,6 +45,9 @@
     <data name="AuthError_WrongPassword" xml:space="preserve">
         <value>密碼錯誤</value>
     </data>
+    <data name="AuthError_UserIsDeactivated" xml:space="preserve">
+        <value>用戶已被停用。請聯絡您的管理員尋求支援。</value>
+    </data>
     <data name="AuthError_WeakPassword_IsHashLeaked" xml:space="preserve">
         <value>密碼強度低。該密碼之前曾被洩漏過。請嘗試另一組密碼。</value>
     </data>

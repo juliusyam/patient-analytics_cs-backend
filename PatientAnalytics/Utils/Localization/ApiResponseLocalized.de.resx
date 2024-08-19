@@ -45,6 +45,9 @@
     <data name="AuthError_WrongPassword" xml:space="preserve">
         <value>Falsches Passwort</value>
     </data>
+    <data name="AuthError_UserIsDeactivated" xml:space="preserve">
+        <value>Der Benutzer ist deaktiviert. Bitte wenden Sie sich für Unterstützung an Ihren Administrator.</value>
+    </data>
     <data name="AuthError_WeakPassword_IsHashLeaked" xml:space="preserve">
         <value>Schwaches Passwort. Dieses Passwort wurde schon einmal durchgesickert. Wählen Sie ein anderes Passwort.</value>
     </data>
