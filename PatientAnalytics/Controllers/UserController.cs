@@ -53,6 +53,17 @@ public class UserController
         return _userService.GetSuperAdmins(authorization);
     }
 
+    [HttpPut("user/{userId:int}", Name = "EditUserAccountInfo")]
+    public async Task<User> EditUserAccountInfo(
+        [FromServices] IHttpContextAccessor httpContextAccessor,
+        [FromRoute] int userId,
+        [FromBody] UserAccountInfoPayload payload)
+    {
+        ValidateAuthorization(httpContextAccessor, out var authorization);
+
+        return await _userService.EditUserAccountInfo(authorization, userId, payload);
+    }
+
     [HttpPut("user/{userId:int}/deactivate", Name = "DeactivateUser")]
     public async Task<IActionResult> DeactivateUser(
         [FromServices] IHttpContextAccessor httpContextAccessor,

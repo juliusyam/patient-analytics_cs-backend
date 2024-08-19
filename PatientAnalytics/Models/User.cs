@@ -28,6 +28,16 @@ public class User : Person
         };
     }
 
+    public void UpdateAccountInfo(UserAccountInfoPayload payload)
+    {
+        DateOfBirth = payload.DateOfBirth;
+        Gender = payload.Gender;
+        Address = payload.Address;
+        FirstName = payload.FirstName;
+        LastName = payload.LastName;
+        DateEdited = DateTime.Now;
+    }
+
     public void Deactivate()
     {
         IsDeactivated = true;
@@ -50,4 +60,21 @@ public class User : Person
     public bool IsDeactivated { get; set; }
     
     public ICollection<UserRefresh> UserRefreshes { get; } = new List<UserRefresh>();
+}
+
+public class UserAccountInfoPayload
+{
+    [Required(ErrorMessage = "Date of Birth is required.")]
+    public DateTime DateOfBirth { get; set; } = DateTime.Now;
+    
+    [Required(ErrorMessage = "Gender is required.")]
+    public string Gender { get; set; } = null!;
+    
+    [Required(ErrorMessage = "First Name is required.")]
+    public string? FirstName { get; set; }
+    
+    [Required(ErrorMessage = "Last Name is required.")]
+    public string? LastName { get; set; }
+    
+    public string? Address { get; set; }
 }

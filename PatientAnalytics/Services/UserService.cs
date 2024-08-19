@@ -42,6 +42,19 @@ public class UserService
         
         return _context.Users.Where(u => u.Role == "SuperAdmin").ToList();
     }
+
+    public async Task<User> EditUserAccountInfo(string token, int userId, UserAccountInfoPayload payload)
+    {
+        var user = GetUserById(token, userId);
+        
+        user.UpdateAccountInfo(payload);
+
+        _context.Users.Update(user);
+
+        await _context.SaveChangesAsync();
+
+        return user;
+    }
     
     public async Task<IActionResult> DeactivateUser(string token, int userId)
     {
