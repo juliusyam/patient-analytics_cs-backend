@@ -72,6 +72,9 @@
     <data name="UserError_AlreadyDeactivated" xml:space="preserve">
         <value>Benutzer mit ID: 1 ist bereits deaktiviert</value>
     </data>
+    <data name="UserError_RequesterConflict" xml:space="preserve">
+        <value>Die Anfrage muss von einem anderen Administrator bearbeitet werden.</value>
+    </data>
     <data name="PatientError_NotFound" xml:space="preserve">
         <value>Patient mit ID: {0} konnte nicht gefunden werden</value>
     </data>

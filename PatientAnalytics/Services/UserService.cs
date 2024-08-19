@@ -60,6 +60,8 @@ public class UserService
     {
         var user = GetUserById(token, userId);
 
+        UserIsNotRequester(token, user);
+        
         if (user.IsDeactivated)
         {
             throw new HttpStatusCodeException(StatusCodes.Status409Conflict,
@@ -78,6 +80,8 @@ public class UserService
     public async Task<IActionResult> ActivateUser(string token, int userId)
     {
         var user = GetUserById(token, userId);
+
+        UserIsNotRequester(token, user);
         
         if (!user.IsDeactivated)
         {
@@ -92,6 +96,17 @@ public class UserService
         await _context.SaveChangesAsync();
 
         return new NoContentResult();
+    }
+
+    private void UserIsNotRequester(string token, User user)
+    {
+        var requester = _jwtService.GetUserWithJwt(token);
+
+        if (requester.Id == user.Id)
+        {
+            throw new HttpStatusCodeException(StatusCodes.Status400BadRequest,
+                _localized["UserError_RequesterConflict"]);
+        }
     }
 
     private User GetUserById(string token, int userId)

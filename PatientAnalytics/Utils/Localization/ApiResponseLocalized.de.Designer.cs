@@ -153,6 +153,12 @@ namespace PatientAnalytics.Utils.Localization {
             }
         }
         
+        public static string UserError_RequesterConflict {
+            get {
+                return ResourceManager.GetString("UserError_RequesterConflict", resourceCulture);
+            }
+        }
+        
         public static string PatientError_NotFound {
             get {
                 return ResourceManager.GetString("PatientError_NotFound", resourceCulture);
