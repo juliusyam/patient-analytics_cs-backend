@@ -109,7 +109,7 @@ public class UserService
         }
     }
 
-    private User GetUserById(string token, int userId)
+    public User GetUserById(string token, int userId)
     {
         ValidateIsAdmin(token, out _);
         

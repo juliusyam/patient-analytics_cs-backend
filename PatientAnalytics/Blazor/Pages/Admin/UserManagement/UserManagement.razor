@@ -1,0 +1,94 @@
+@page "/user-management/users/{id:int}"
+@using PatientAnalytics.Blazor.Models
+@inject IStringLocalizer<Localized> Localized
+@inject NavigationManager NavigationManager
+@inject PatientAnalyticsAuthStateProvider PatientAnalyticsAuthStateProvider
+@inject UserService UserService
+
+<AdminDashboardWrapper>
+    <HttpStatusExceptionIndicator Exception="@_exception" />
+
+    @if (_user is not null)
+    {
+        <section class="box is-flex is-flex-direction-row is-justify-content-space-between">
+            <div class="is-flex">
+                <button class="button" @onclick="GoBack">@Localized["Button_Back"]</button>
+            </div>
+            <div class="is-flex is-gap-3">
+                @if (_user.IsDeactivated)
+                {
+                <button class="button is-primary is-outlined" @onclick="OnActivateUser">
+                    @Localized["Button_UserActivate"]
+                </button>
+                }
+                else
+                {
+                <button class="button is-danger is-outlined" @onclick="OnDeactivateUser">
+                    @Localized["Button_UserDeactivate"]
+                </button>
+                }
+            </div>
+        </section>
+    
+        <section class="box">
+            <div class="container">
+                <h1 class="title">@Localized["Title_UserDashboard"]</h1>
+                <h2 class="title is-4">
+                    @string.Format(Localized["Format_FullName"], _user.FirstName, _user.LastName)
+                </h2>
+            </div>
+        </section>
+    }
+    
+    
+    @if (_modal is not null)
+    {
+        <ConfirmationModal
+            Title="@_modal.Title"
+            ConfirmButtonText="@_modal.ConfirmButtonText"
+            CancelButtonText="@_modal.CancelButtonText"
+            OnConfirm="@_modal.OnConfirm"
+            OnCancel="@_modal.OnCancel"
+            IsVisible="true" />
+    }
+</AdminDashboardWrapper>
+
+
+@code {
+    [Parameter] 
+    public int Id { get; set; }
+    
+    private HttpStatusCodeException? _exception;
+    private bool _refreshing;
+
+    private User? _user;
+    private Modal? _modal;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (PatientAnalyticsAuthStateProvider.HasAdminPrivileges())
+        {
+            await PatientAnalyticsAuthStateProvider.ServiceWrapper(
+                _refreshing,
+                token => _user = UserService.GetUserById(token, Id),
+                refreshing => _refreshing = refreshing,
+                exception => _exception = exception, 
+                () => NavigationManager.NavigateTo("/"));
+        }
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/dashboard/admin");
+    }
+
+    private void OnActivateUser()
+    {
+        _modal = Modal.ConfirmUserDeactivation(() => { }, () => _modal = null);
+    }
+
+    private void OnDeactivateUser()
+    {
+        _modal = Modal.ConfirmUserActivation(() => { }, () => _modal = null);
+    }
+}

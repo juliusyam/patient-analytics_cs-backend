@@ -1,4 +1,5 @@
 @inject IStringLocalizer<Localized> Localized
+@inject NavigationManager NavigationManager
 
 <table class="table">
     <thead>
@@ -25,6 +26,11 @@
             <td>@string.Format(Localized["Format_FullName"], user.FirstName, user.LastName)</td>
             <td>@user.Gender</td>
             <td>@user.DateOfBirth.ToString(Localized["DateFormatting_Date"])</td>
+            <td>
+                <button onclick="@(() => NavigationManager.NavigateTo($"/user-management/users/{ user.Id }"))">
+                    View
+                </button>
+            </td>
         </tr>
     }
     </tbody>
