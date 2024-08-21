@@ -53,7 +53,17 @@ public class UserController
         return _userService.GetSuperAdmins(authorization);
     }
 
-    [HttpPut("user/{userId:int}", Name = "EditUserAccountInfo")]
+    [HttpGet("users/{userId:int}", Name = "GetUserById")]
+    public User GetUserBydId(
+        [FromServices] IHttpContextAccessor httpContextAccessor,
+        [FromRoute] int userId)
+    {
+        ValidateAuthorization(httpContextAccessor, out var authorization);
+
+        return _userService.GetUserById(authorization, userId);
+    }
+    
+    [HttpPut("users/{userId:int}", Name = "EditUserAccountInfo")]
     public async Task<User> EditUserAccountInfo(
         [FromServices] IHttpContextAccessor httpContextAccessor,
         [FromRoute] int userId,
@@ -64,7 +74,7 @@ public class UserController
         return await _userService.EditUserAccountInfo(authorization, userId, payload);
     }
 
-    [HttpPut("user/{userId:int}/deactivate", Name = "DeactivateUser")]
+    [HttpPut("users/{userId:int}/deactivate", Name = "DeactivateUser")]
     public async Task<IActionResult> DeactivateUser(
         [FromServices] IHttpContextAccessor httpContextAccessor,
         [FromRoute] int userId)
@@ -74,7 +84,7 @@ public class UserController
         return await _userService.DeactivateUser(authorization, userId);
     }
     
-    [HttpPut("user/{userId:int}/activate", Name = "ActivateUser")]
+    [HttpPut("users/{userId:int}/activate", Name = "ActivateUser")]
     public async Task<IActionResult> ActivateUser(
         [FromServices] IHttpContextAccessor httpContextAccessor,
         [FromRoute] int userId)

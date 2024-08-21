@@ -42,6 +42,26 @@ public class UserService
         
         return _context.Users.Where(u => u.Role == "SuperAdmin").ToList();
     }
+    
+    public User GetUserById(string token, int userId)
+    {
+        ValidateIsAdmin(token, out _);
+        
+        var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+
+        if (user is null)
+        {
+            throw new HttpStatusCodeException(StatusCodes.Status404NotFound,
+                string.Format(_localized["AuthError_DecodeJwt_UserNotFound"], userId));
+        }
+
+        if (user.Role == "SuperAdmin")
+        {
+            ValidateIsSuperAdmin(token, out _);
+        }
+
+        return user;
+    }
 
     public async Task<User> EditUserAccountInfo(string token, int userId, UserAccountInfoPayload payload)
     {
@@ -107,26 +127,6 @@ public class UserService
             throw new HttpStatusCodeException(StatusCodes.Status400BadRequest,
                 _localized["UserError_RequesterConflict"]);
         }
-    }
-
-    public User GetUserById(string token, int userId)
-    {
-        ValidateIsAdmin(token, out _);
-        
-        var user = _context.Users.FirstOrDefault(u => u.Id == userId);
-
-        if (user is null)
-        {
-            throw new HttpStatusCodeException(StatusCodes.Status404NotFound,
-                string.Format(_localized["AuthError_DecodeJwt_UserNotFound"], userId));
-        }
-
-        if (user.Role == "SuperAdmin")
-        {
-            ValidateIsSuperAdmin(token, out _);
-        }
-
-        return user;
     }
 
     private void ValidateIsAdmin(string token, out User verifiedUser)
