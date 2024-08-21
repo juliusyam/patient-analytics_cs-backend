@@ -1,6 +1,5 @@
 @page "/user-management/users/{id:int}"
 @using PatientAnalytics.Blazor.Controllers
-@using PatientAnalytics.Blazor.Models
 @inject IStringLocalizer<Localized> Localized
 @inject NavigationManager NavigationManager
 @inject PatientAnalyticsAuthStateProvider PatientAnalyticsAuthStateProvider
@@ -48,11 +47,11 @@
     @if (_alertController.IsVisible)
     {
         <ConfirmationModal
-            Title="@_alertController.Modal!.Title"
-            ConfirmButtonText="@_alertController.Modal.ConfirmButtonText"
-            CancelButtonText="@_alertController.Modal.CancelButtonText"
-            OnConfirm="@_alertController.Modal.OnConfirm"
-            OnCancel="@_alertController.Modal.OnCancel"
+            Title="@_alertController.Alert!.Title"
+            ConfirmButtonText="@_alertController.Alert.ConfirmButtonText"
+            CancelButtonText="@_alertController.Alert.CancelButtonText"
+            OnConfirm="@_alertController.Alert.OnConfirm"
+            OnCancel="@_alertController.Alert.OnCancel"
             IsVisible="true" />
     }
 </AdminDashboardWrapper>

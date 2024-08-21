@@ -3,9 +3,9 @@ using PatientAnalytics.Blazor.Localization;
 
 namespace PatientAnalytics.Blazor.Models;
 
-public class Modal
+public class Alert
 { 
-    public Modal(
+    public Alert(
         IStringLocalizer<Localized> localized,
         string title,
         Action onConfirm,
