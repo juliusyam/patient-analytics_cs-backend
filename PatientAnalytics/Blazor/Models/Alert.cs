@@ -11,8 +11,7 @@ public class Alert
         Action onConfirm,
         Action onCancel,
         string? confirmButtonText = null,
-        string? cancelButtonText = null
-        )
+        string? cancelButtonText = null)
     {
         Title = title;
         OnConfirm = onConfirm;
