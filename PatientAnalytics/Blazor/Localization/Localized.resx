@@ -288,4 +288,25 @@
     <data name="SignalRMessage_UserLoggedOut">
         <value>{0} has signed off.</value>
     </data>
+    <data name="Title_UserDashboard" xml:space="preserve">
+        <value>User Dashboard</value>
+    </data>
+    <data name="Button_UserEditAccountInfo" xml:space="preserve">
+        <value>Edit Account Info</value>
+    </data>
+    <data name="Button_UserDeactivate" xml:space="preserve">
+        <value>Deactivate User</value>
+    </data>
+    <data name="Button_UserActivate" xml:space="preserve">
+        <value>Activate User</value>
+    </data>
+    <data name="Title_ActivateUser" xml:space="preserve">
+        <value>Activate User</value>
+    </data>
+    <data name="Title_DeactivateUser" xml:space="preserve">
+        <value>Deactivate User</value>
+    </data>
+    <data name="Title_DeleteRecord" xml:space="preserve">
+        <value>Delete Record</value>
+    </data>
 </root>

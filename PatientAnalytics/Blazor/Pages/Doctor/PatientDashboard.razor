@@ -17,36 +17,14 @@
             </div>
             <div class ="is-flex is-gap-3">
                 <button class="button is-success" @onclick="ToggleUpdateDetails">@(_updateDetails ? Localized["Button_Cancel"] : Localized["Button_Edit"])</button>
-                <button class="button is-danger is-outlined" @onclick="ShowDeleteConfirmation">@Localized["Button_Delete"]</button>
+                <button class="button is-danger is-outlined" @onclick="OnDelete">@Localized["Button_Delete"]</button>
             </div>
             <div>
                 <button disabled="@_isDownloadReportDisabled" class="button" @onclick="GetReport">@Localized["Button_Download_Report"]</button>
             </div>
         </section>
         
-        <section class="box">
-            <div class="container">
-                <h1 class="title">@Localized["Title_PatientDashboard"]</h1>
-                <h2 class="title is-4">
-                    @string.Format(Localized["Format_FullName"], _patient.FirstName, _patient.LastName)
-                </h2>
-                <ContentWithLabel Label="@Localized["Label_Email"]">@_patient.Email</ContentWithLabel>
-                <ContentWithLabel Label="@Localized["Label_Gender"]">@_patient.Gender</ContentWithLabel>
-                <ContentWithLabel Label="@Localized["Label_DateOfBirth"]">
-                    @_patient.DateOfBirth.ToString(Localized["DateFormatting_Date"])
-                </ContentWithLabel>
-                <ContentWithLabel Label="@Localized["Label_Address"]">@_patient.Address</ContentWithLabel>
-
-                <div class="divider"></div>
-
-                <ContentWithLabel Label="@Localized["Label_DateCreated"]">
-                    @_patient.DateCreated.ToString(Localized["DateFormatting_DateTime"])
-                </ContentWithLabel>
-                <ContentWithLabel Label="@Localized["Label_DateEdited"]">
-                    @_patient.DateEdited?.ToString(Localized["DateFormatting_DateTime"])
-                </ContentWithLabel>
-            </div>
-        </section>
+        <PersonDetailsDisplay Title="@Localized["Title_PatientDashboard"]" Person="_patient" />
 
         <section class="box is-flex is-flex-direction-row is-justify-content-space-between">
             <div class="buttons">
@@ -62,13 +40,7 @@
 
     <HttpStatusExceptionIndicator Exception="@_exception" />
     
-    <ConfirmationModal
-        Title="@Localized["Title_Delete_Patient"]"
-        ConfirmButtonText="@Localized["Button_Delete"]"
-        CancelButtonText="@Localized["Button_Cancel"]"
-        IsVisible="@_isDeleteConfirmationVisible"
-        OnConfirm="ConfirmDelete"
-        OnCancel="HideDeleteConfirmation" />
+    <ConfirmationModal Alert="_alertController.Alert" />
 </DoctorDashboardWrapper>
 
 @code {
@@ -78,8 +50,9 @@
     
     private Patient? _patient;
     private bool _updateDetails;
-    private bool _isDeleteConfirmationVisible;
     private bool _isDownloadReportDisabled = true;
+    
+    private readonly BlazorAlertController _alertController = new();
     
     private bool _refreshing;
     private HttpStatusCodeException? _exception;
@@ -143,14 +116,12 @@
         NavigationManager.NavigateTo("/dashboard/doctor");
     }
 
-    private void ShowDeleteConfirmation()
+    private void OnDelete()
     {
-        _isDeleteConfirmationVisible = true;
-    }
-
-    private void HideDeleteConfirmation()
-    {
-        _isDeleteConfirmationVisible = false;
+        _alertController.OnDisplayAlert(
+            Localized,
+            "Title_Delete_Patient",
+            async () => await ConfirmDelete());
     }
 
     private async Task ConfirmDelete()

@@ -99,6 +99,12 @@ namespace PatientAnalytics.Utils.Localization {
             }
         }
         
+        public static string AuthError_UserIsDeactivated {
+            get {
+                return ResourceManager.GetString("AuthError_UserIsDeactivated", resourceCulture);
+            }
+        }
+        
         public static string AuthError_WeakPassword_IsHashLeaked {
             get {
                 return ResourceManager.GetString("AuthError_WeakPassword_IsHashLeaked", resourceCulture);
@@ -132,6 +138,24 @@ namespace PatientAnalytics.Utils.Localization {
         public static string AuthError_DecodeJwt_Expired {
             get {
                 return ResourceManager.GetString("AuthError_DecodeJwt_Expired", resourceCulture);
+            }
+        }
+        
+        public static string UserError_AlreadyActivated {
+            get {
+                return ResourceManager.GetString("UserError_AlreadyActivated", resourceCulture);
+            }
+        }
+        
+        public static string UserError_AlreadyDeactivated {
+            get {
+                return ResourceManager.GetString("UserError_AlreadyDeactivated", resourceCulture);
+            }
+        }
+        
+        public static string UserError_RequesterConflict {
+            get {
+                return ResourceManager.GetString("UserError_RequesterConflict", resourceCulture);
             }
         }
         

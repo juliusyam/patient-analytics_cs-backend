@@ -6,3 +6,6 @@
 **/**.db
 **/.DS_Store
 .DS_Store
+
+# DotSettings
+*.sln.DotSettings.user

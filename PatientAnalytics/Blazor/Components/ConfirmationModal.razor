@@ -1,45 +1,23 @@
 ﻿@inject IStringLocalizer<Localized> Localized
 
-<div class="modal @ModalClass">
-    <div class="modal-background"></div>
-    <div class="modal-card">
-        <header class="modal-card-head">
-            <p class="modal-card-title">@Title</p>
-            <button class="delete" aria-label="close" @onclick="Close"></button>
-        </header>
-        <footer class="modal-card-foot">
-            <button class="button is-danger mr-3" @onclick="OnConfirm">@ConfirmButtonText</button>
-            <button class="button" @onclick="Close">@CancelButtonText</button>
-        </footer>
+@if (Alert is not null)
+{
+    <div class="modal is-active">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">@Alert.Title</p>
+                <button class="delete" aria-label="close" @onclick="Alert.OnCancel"></button>
+            </header>
+            <footer class="modal-card-foot">
+                <button class="button is-danger mr-3" @onclick="Alert.OnConfirm">@Alert.ConfirmButtonText</button>
+                <button class="button" @onclick="Alert.OnCancel">@Alert.CancelButtonText</button>
+            </footer>
+        </div>
     </div>
-</div>
+}
 
 @code {
-    [Parameter, EditorRequired] 
-    public string Title { get; set; } = "";
-    [Parameter, EditorRequired]
-    public string ConfirmButtonText { get; set; } = "";
-    [Parameter, EditorRequired]
-    public string CancelButtonText { get; set; } = "";
     [Parameter]
-    public EventCallback OnConfirm { get; set; }
-    [Parameter]
-    public EventCallback OnCancel { get; set; }
-    [Parameter]
-    public bool IsVisible { get; set; }
-
-    private string ModalClass => IsVisible ? "is-active" : string.Empty;
-
-    protected override void OnParametersSet()
-    {
-        if (Title is null) throw new InvalidOperationException("The 'Title' parameter is required.");
-        if (ConfirmButtonText is null) throw new InvalidOperationException("The 'ConfirmButtonText' parameter is required.");
-        if (CancelButtonText is null) throw new InvalidOperationException("The 'CancelButtonText' parameter is required.");
-    }
-
-
-    private void Close()
-    {
-        OnCancel.InvokeAsync();
-    }
+    public Alert? Alert { private get; set; }
 }

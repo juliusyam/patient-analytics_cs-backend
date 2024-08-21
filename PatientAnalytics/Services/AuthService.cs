@@ -91,14 +91,22 @@ public class AuthService
 
         if (currentUser == null)
         {
-            throw new HttpStatusCodeException(StatusCodes.Status404NotFound, _localized["AuthError_UserNotFound"]); 
+            throw new HttpStatusCodeException(StatusCodes.Status404NotFound, 
+                _localized["AuthError_UserNotFound"]); 
         }
 
         var passwordHash = Password.HashPassword(loginPayload.Password, _config);
 
         if (currentUser.PasswordHash != passwordHash) 
         { 
-            throw new HttpStatusCodeException(StatusCodes.Status401Unauthorized, _localized["AuthError_WrongPassword"]); 
+            throw new HttpStatusCodeException(StatusCodes.Status401Unauthorized, 
+                _localized["AuthError_WrongPassword"]); 
+        }
+
+        if (currentUser.IsDeactivated)
+        {
+            throw new HttpStatusCodeException(StatusCodes.Status403Forbidden,
+                _localized["AuthError_UserIsDeactivated"]);
         }
         
         return currentUser;

@@ -185,7 +185,7 @@ public class PatientService
 
         if (user.Role != "Doctor")
         {
-            throw new HttpStatusCodeException(StatusCodes.Status401Unauthorized,
+            throw new HttpStatusCodeException(StatusCodes.Status403Forbidden,
                 _localized["AuthError_Unauthorized"]);
         }
 

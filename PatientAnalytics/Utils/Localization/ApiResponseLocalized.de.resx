@@ -45,6 +45,9 @@
     <data name="AuthError_WrongPassword" xml:space="preserve">
         <value>Falsches Passwort</value>
     </data>
+    <data name="AuthError_UserIsDeactivated" xml:space="preserve">
+        <value>Der Benutzer ist deaktiviert. Bitte wenden Sie sich für Unterstützung an Ihren Administrator.</value>
+    </data>
     <data name="AuthError_WeakPassword_IsHashLeaked" xml:space="preserve">
         <value>Schwaches Passwort. Dieses Passwort wurde schon einmal durchgesickert. Wählen Sie ein anderes Passwort.</value>
     </data>
@@ -62,6 +65,15 @@
     </data>
     <data name="AuthError_DecodeJwt_Expired" xml:space="preserve">
         <value>Token ist abgelaufen. Bitte erneut anmelden.</value>
+    </data>
+    <data name="UserError_AlreadyActivated" xml:space="preserve">
+        <value>Benutzer mit ID: 1 ist bereits aktiviert</value>
+    </data>
+    <data name="UserError_AlreadyDeactivated" xml:space="preserve">
+        <value>Benutzer mit ID: 1 ist bereits deaktiviert</value>
+    </data>
+    <data name="UserError_RequesterConflict" xml:space="preserve">
+        <value>Die Anfrage muss von einem anderen Administrator bearbeitet werden.</value>
     </data>
     <data name="PatientError_NotFound" xml:space="preserve">
         <value>Patient mit ID: {0} konnte nicht gefunden werden</value>

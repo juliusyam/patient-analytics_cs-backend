@@ -88,7 +88,13 @@ public class JwtService
         ValidateToken(token, out var claimsPrincipal);
 
         GetUserFromDatabase(claimsPrincipal, out var user);
-
+        
+        if (user.IsDeactivated)
+        {
+            throw new HttpStatusCodeException(StatusCodes.Status403Forbidden,
+                _localized["AuthError_UserIsDeactivated"]);
+        }
+        
         return user;
     }
 
@@ -97,6 +103,12 @@ public class JwtService
         GetPrincipalFromExpiredToken(token, out var claimsPrincipal);
         
         GetUserFromDatabase(claimsPrincipal, out var user);
+
+        if (user.IsDeactivated)
+        {
+            throw new HttpStatusCodeException(StatusCodes.Status403Forbidden,
+                _localized["AuthError_UserIsDeactivated"]);
+        }
 
         var refreshTokenHash = Password.HashPassword(refreshToken, _config);
         

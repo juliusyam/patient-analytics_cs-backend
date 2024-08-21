@@ -45,6 +45,9 @@
     <data name="AuthError_WrongPassword" xml:space="preserve">
         <value>密碼錯誤</value>
     </data>
+    <data name="AuthError_UserIsDeactivated" xml:space="preserve">
+        <value>用戶已被停用。請聯絡您的管理員尋求支援。</value>
+    </data>
     <data name="AuthError_WeakPassword_IsHashLeaked" xml:space="preserve">
         <value>密碼強度低。該密碼之前曾被洩漏過。請嘗試另一組密碼。</value>
     </data>
@@ -62,6 +65,15 @@
     </data>
     <data name="AuthError_DecodeJwt_Expired" xml:space="preserve">
         <value>加密代幣已過期。請重新登入。</value>
+    </data>
+    <data name="UserError_AlreadyActivated" xml:space="preserve">
+        <value>ID 為 {0} 的用戶已啟動</value>
+    </data>
+    <data name="UserError_AlreadyDeactivated" xml:space="preserve">
+        <value>ID 為 {0} 的使用者已停用</value>
+    </data>
+    <data name="UserError_RequesterConflict" xml:space="preserve">
+        <value>請求必須由其他管理員處理</value>
     </data>
     <data name="PatientError_NotFound" xml:space="preserve">
         <value>無法找到 ID 為 {0} 的患者</value>

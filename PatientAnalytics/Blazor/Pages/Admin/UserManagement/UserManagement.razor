@@ -1,0 +1,126 @@
+@page "/user-management/users/{id:int}"
+@inject IStringLocalizer<Localized> Localized
+@inject NavigationManager NavigationManager
+@inject PatientAnalyticsAuthStateProvider PatientAnalyticsAuthStateProvider
+@inject UserService UserService
+@inject IJSRuntime JSRuntime
+
+<AdminDashboardWrapper>
+    <HttpStatusExceptionIndicator Exception="@_exception" />
+
+    @if (_user is not null)
+    {
+        <section class="box is-flex is-flex-direction-row is-justify-content-space-between">
+            <div class="is-flex">
+                <button class="button" @onclick="GoBack">@Localized["Button_Back"]</button>
+            </div>
+            <div class="is-flex is-gap-3">
+                <button class="button is-success" @onclick="() => _userEditModalRevealed = true">
+                    @Localized["Button_UserEditAccountInfo"]
+                </button>
+                @if (_user.IsDeactivated)
+                {
+                    <button class="button is-primary is-outlined" @onclick="OnActivateUser">
+                        @Localized["Button_UserActivate"]
+                    </button>
+                }
+                else
+                {
+                    <button class="button is-danger is-outlined" @onclick="OnDeactivateUser">
+                        @Localized["Button_UserDeactivate"]
+                    </button>
+                }
+            </div>
+        </section>
+
+        <PersonDetailsDisplay Title="@Localized["Title_UserDashboard"]" Person="_user" />
+        
+        <UserEditAccountInfoModal
+            IsModalOpen="@_userEditModalRevealed"
+            OnClose="() => _userEditModalRevealed = false"
+            OnUserEdited="user => _user = user"
+            User="_user"
+        />
+    }
+    
+    <ConfirmationModal Alert="_alertController.Alert" />
+</AdminDashboardWrapper>
+
+
+@code {
+    [Parameter] 
+    public int Id { get; set; }
+    
+    private HttpStatusCodeException? _exception;
+    private bool _refreshing;
+
+    private User? _user;
+    private bool _userEditModalRevealed;
+
+    private readonly BlazorAlertController _alertController = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (PatientAnalyticsAuthStateProvider.HasAdminPrivileges())
+        {
+            await PatientAnalyticsAuthStateProvider.ServiceWrapper(
+                _refreshing,
+                token => _user = UserService.GetUserById(token, Id),
+                refreshing => _refreshing = refreshing,
+                exception => _exception = exception, 
+                () => NavigationManager.NavigateTo("/"));
+        }
+    }
+
+    private async void GoBack() => await JSRuntime.InvokeVoidAsync("history.back");
+
+    private void OnActivateUser()
+    {
+        _alertController.OnDisplayAlert(
+            Localized, 
+            "Title_ActivateUser", 
+            async () => await HandleActivateUser());
+    }
+
+    private void OnDeactivateUser()
+    {
+        _alertController.OnDisplayAlert(
+            Localized, 
+            "Title_DeactivateUser", 
+            async () => await HandleDeactivateUser());
+    }
+
+    private async Task HandleActivateUser()
+    {
+        await PatientAnalyticsAuthStateProvider.ServiceWrapperAsync(
+            _refreshing,
+            async token =>
+            {
+                await UserService.ActivateUser(token, Id);
+                
+                _alertController.RemovalModal();
+                
+                if (_user is not null) _user.IsDeactivated = false;
+            },
+            refreshing => _refreshing = refreshing,
+            exception => _exception = exception,
+            () => NavigationManager.NavigateTo("/"));
+    }
+    
+    private async Task HandleDeactivateUser()
+    {
+        await PatientAnalyticsAuthStateProvider.ServiceWrapperAsync(
+            _refreshing,
+            async token =>
+            {
+                await UserService.DeactivateUser(token, Id);
+                
+                _alertController.RemovalModal();
+                
+                if (_user is not null) _user.IsDeactivated = true;
+            },
+            refreshing => _refreshing = refreshing,
+            exception => _exception = exception,
+            () => NavigationManager.NavigateTo("/"));
+    }
+}

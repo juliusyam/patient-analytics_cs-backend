@@ -28,6 +28,26 @@ public class User : Person
         };
     }
 
+    public void UpdateAccountInfo(UserAccountInfoPayload payload)
+    {
+        DateOfBirth = payload.DateOfBirth;
+        Gender = payload.Gender;
+        Address = payload.Address;
+        FirstName = payload.FirstName;
+        LastName = payload.LastName;
+        DateEdited = DateTime.Now;
+    }
+
+    public void Deactivate()
+    {
+        IsDeactivated = true;
+    }
+
+    public void Activate()
+    {
+        IsDeactivated = false;
+    }
+
     [MaxLength(30)]
     public string Username { get; set; } = null!;
     
@@ -36,6 +56,37 @@ public class User : Person
     
     [MaxLength(30), RegularExpression("^SuperAdmin$|^Admin$|^Doctor$", ErrorMessage = "Invalid Role Value. Role Value can either be SuperAdmin, Admin or Doctor")]
     public string Role { get; set; } = null!;
+
+    public bool IsDeactivated { get; set; }
     
     public ICollection<UserRefresh> UserRefreshes { get; } = new List<UserRefresh>();
+}
+
+public class UserAccountInfoPayload
+{
+    [Required(ErrorMessage = "Date of Birth is required.")]
+    public DateTime DateOfBirth { get; set; } = DateTime.Now;
+    
+    [Required(ErrorMessage = "Gender is required.")]
+    public string Gender { get; set; } = null!;
+    
+    [Required(ErrorMessage = "First Name is required.")]
+    public string? FirstName { get; set; }
+    
+    [Required(ErrorMessage = "Last Name is required.")]
+    public string? LastName { get; set; }
+    
+    public string? Address { get; set; }
+
+    public static UserAccountInfoPayload CreatePayloadFromUser(User user)
+    {
+        return new UserAccountInfoPayload
+        {
+            DateOfBirth = user.DateOfBirth,
+            Gender = user.Gender,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Address = user.Address
+        };
+    }
 }
