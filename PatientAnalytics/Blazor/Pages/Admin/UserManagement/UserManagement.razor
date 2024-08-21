@@ -1,4 +1,5 @@
 @page "/user-management/users/{id:int}"
+@using PatientAnalytics.Blazor.Controllers
 @using PatientAnalytics.Blazor.Models
 @inject IStringLocalizer<Localized> Localized
 @inject NavigationManager NavigationManager
@@ -44,14 +45,14 @@
         />
     }
     
-    @if (_modal is not null)
+    @if (_alertController.IsVisible)
     {
         <ConfirmationModal
-            Title="@_modal.Title"
-            ConfirmButtonText="@_modal.ConfirmButtonText"
-            CancelButtonText="@_modal.CancelButtonText"
-            OnConfirm="@_modal.OnConfirm"
-            OnCancel="@_modal.OnCancel"
+            Title="@_alertController.Modal!.Title"
+            ConfirmButtonText="@_alertController.Modal.ConfirmButtonText"
+            CancelButtonText="@_alertController.Modal.CancelButtonText"
+            OnConfirm="@_alertController.Modal.OnConfirm"
+            OnCancel="@_alertController.Modal.OnCancel"
             IsVisible="true" />
     }
 </AdminDashboardWrapper>
@@ -65,8 +66,9 @@
     private bool _refreshing;
 
     private User? _user;
-    private Modal? _modal;
     private bool _userEditModalRevealed;
+
+    private readonly BlazorAlertController _alertController = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -85,12 +87,18 @@
 
     private void OnActivateUser()
     {
-        _modal = Modal.ConfirmUserActivation(async () => await HandleActivateUser(), () => _modal = null);
+        _alertController.OnDisplayAlert(
+            Localized, 
+            "Title_ActivateUser", 
+            async () => await HandleActivateUser());
     }
 
     private void OnDeactivateUser()
     {
-        _modal = Modal.ConfirmUserDeactivation(async () => await HandleDeactivateUser(), () => _modal = null);
+        _alertController.OnDisplayAlert(
+            Localized, 
+            "Title_DeactivateUser", 
+            async () => await HandleDeactivateUser());
     }
 
     private async Task HandleActivateUser()
@@ -101,7 +109,7 @@
             {
                 await UserService.ActivateUser(token, Id);
                 
-                _modal = null;
+                _alertController.RemovalModal();
                 
                 if (_user is not null) _user.IsDeactivated = false;
             },
@@ -118,7 +126,7 @@
             {
                 await UserService.DeactivateUser(token, Id);
                 
-                _modal = null;
+                _alertController.RemovalModal();
                 
                 if (_user is not null) _user.IsDeactivated = true;
             },
