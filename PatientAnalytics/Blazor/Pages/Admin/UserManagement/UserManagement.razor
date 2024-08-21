@@ -44,16 +44,7 @@
         />
     }
     
-    @if (_alertController.IsVisible)
-    {
-        <ConfirmationModal
-            Title="@_alertController.Alert!.Title"
-            ConfirmButtonText="@_alertController.Alert.ConfirmButtonText"
-            CancelButtonText="@_alertController.Alert.CancelButtonText"
-            OnConfirm="@_alertController.Alert.OnConfirm"
-            OnCancel="@_alertController.Alert.OnCancel"
-            IsVisible="true" />
-    }
+    <ConfirmationModal Alert="_alertController.Alert" />
 </AdminDashboardWrapper>
 
 

@@ -1,4 +1,5 @@
 ﻿@page "/dashboard/doctor/patients/{id:int}"
+@using PatientAnalytics.Blazor.Controllers
 @inject IStringLocalizer<Localized> Localized
 @inject PatientAnalyticsAuthStateProvider PatientAnalyticsAuthStateProvider
 @inject NavigationManager NavigationManager
@@ -17,7 +18,7 @@
             </div>
             <div class ="is-flex is-gap-3">
                 <button class="button is-success" @onclick="ToggleUpdateDetails">@(_updateDetails ? Localized["Button_Cancel"] : Localized["Button_Edit"])</button>
-                <button class="button is-danger is-outlined" @onclick="ShowDeleteConfirmation">@Localized["Button_Delete"]</button>
+                <button class="button is-danger is-outlined" @onclick="OnDelete">@Localized["Button_Delete"]</button>
             </div>
             <div>
                 <button disabled="@_isDownloadReportDisabled" class="button" @onclick="GetReport">@Localized["Button_Download_Report"]</button>
@@ -40,13 +41,7 @@
 
     <HttpStatusExceptionIndicator Exception="@_exception" />
     
-    <ConfirmationModal
-        Title="@Localized["Title_Delete_Patient"]"
-        ConfirmButtonText="@Localized["Button_Delete"]"
-        CancelButtonText="@Localized["Button_Cancel"]"
-        IsVisible="@_isDeleteConfirmationVisible"
-        OnConfirm="ConfirmDelete"
-        OnCancel="HideDeleteConfirmation" />
+    <ConfirmationModal Alert="_alertController.Alert" />
 </DoctorDashboardWrapper>
 
 @code {
@@ -56,8 +51,9 @@
     
     private Patient? _patient;
     private bool _updateDetails;
-    private bool _isDeleteConfirmationVisible;
     private bool _isDownloadReportDisabled = true;
+    
+    private readonly BlazorAlertController _alertController = new();
     
     private bool _refreshing;
     private HttpStatusCodeException? _exception;
@@ -121,14 +117,12 @@
         NavigationManager.NavigateTo("/dashboard/doctor");
     }
 
-    private void ShowDeleteConfirmation()
+    private void OnDelete()
     {
-        _isDeleteConfirmationVisible = true;
-    }
-
-    private void HideDeleteConfirmation()
-    {
-        _isDeleteConfirmationVisible = false;
+        _alertController.OnDisplayAlert(
+            Localized,
+            "Title_Delete_Patient",
+            async () => await ConfirmDelete());
     }
 
     private async Task ConfirmDelete()

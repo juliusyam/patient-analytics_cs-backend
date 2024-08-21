@@ -10,9 +10,9 @@ public class BlazorAlertController
     
     public Alert? Alert { get; private set; }
 
-    public void OnDisplayAlert(IStringLocalizer<Localized> localized, string titleKey, Action handleProceed)
+    public void OnDisplayAlert(IStringLocalizer<Localized> localized, string titleKey, Action handleAction)
     {
-        Alert = new Alert(localized, localized[titleKey], handleProceed, RemovalModal);
+        Alert = new Alert(localized, localized[titleKey], handleAction, RemovalModal);
     }
 
     public void RemovalModal() => Alert = null;

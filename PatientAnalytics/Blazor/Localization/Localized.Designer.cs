@@ -620,5 +620,11 @@ namespace PatientAnalytics.Blazor.Localization {
                 return ResourceManager.GetString("Title_DeactivateUser", resourceCulture);
             }
         }
+        
+        internal static string Title_DeleteRecord {
+            get {
+                return ResourceManager.GetString("Title_DeleteRecord", resourceCulture);
+            }
+        }
     }
 }

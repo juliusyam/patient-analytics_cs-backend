@@ -306,4 +306,7 @@
     <data name="Title_ActivateUser" xml:space="preserve">
         <value>啟用用戶</value>
     </data>
+    <data name="Title_DeleteRecord" xml:space="preserve">
+        <value>刪除記錄</value>
+    </data>
 </root>

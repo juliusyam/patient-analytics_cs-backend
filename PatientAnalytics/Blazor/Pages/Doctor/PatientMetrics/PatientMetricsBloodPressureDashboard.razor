@@ -1,4 +1,5 @@
 ﻿@page "/patients/{id:int}/bloodpressure"
+@using PatientAnalytics.Blazor.Controllers
 @using PatientAnalytics.Models.PatientMetrics
 @using PatientAnalytics.Services.PatientMetrics
 @inject IStringLocalizer<Localized> Localized
@@ -39,7 +40,11 @@
                                     <td>@patient.Status</td>
                                     <td>@patient.Doctor?.FirstName @patient.Doctor?.LastName @patient.DoctorId</td>
                                     <td>@patient.DateCreated</td>
-                                    <td><button class="button" @onclick="() => ShowDeleteConfirmation(patient.Id)">@Localized["Button_Delete"]</button></td>
+                                    <td>
+                                        <button class="button" @onclick="() => ShowDeleteConfirmation(patient.Id)">
+                                            @Localized["Button_Delete"]
+                                        </button>
+                                    </td>
                                 </tr>
                             }
                         </tbody>
@@ -66,14 +71,9 @@
     }
 
     <HttpStatusExceptionIndicator Exception="@_exception" />
-</DoctorDashboardWrapper>
 
-<ConfirmationModal Title="@($"{Localized["Title_Delete_Patient"]} {Localized["Button_BloodPressure"]}")"
-                   ConfirmButtonText="@Localized["Button_Delete"]"
-                   CancelButtonText="@Localized["Button_Cancel"]"
-                   IsVisible="@_isDeleteConfirmationVisible"
-                   OnConfirm="ConfirmDelete"
-                   OnCancel="HideDeleteConfirmation" />
+    <ConfirmationModal Alert="_alertController.Alert" />
+</DoctorDashboardWrapper>
 
 @code {
     [Parameter]
@@ -85,8 +85,8 @@
     
     private bool _refreshing;
     private HttpStatusCodeException? _exception;
-    
-    private bool _isDeleteConfirmationVisible;
+
+    private readonly BlazorAlertController _alertController = new();
     private string ErrorMessage { get; set; } = string.Empty;
 
     private int? _bloodPressureSystolic;
@@ -154,12 +154,10 @@
     private void ShowDeleteConfirmation(int id)
     {
         _bloodPressureId = id;
-        _isDeleteConfirmationVisible = true;
-    }
-
-    private void HideDeleteConfirmation()
-    {
-        _isDeleteConfirmationVisible = false;
+        _alertController.OnDisplayAlert(
+            Localized,
+            "Title_DeleteRecord",
+            async () => await ConfirmDelete());
     }
 
     private async Task ConfirmDelete()
@@ -171,7 +169,7 @@
                 await PatientMetricsBloodPressureService.DeleteEntryById(token, _bloodPressureId);
                 _patientsBloodPressure.RemoveAll(bp => bp.Id == _bloodPressureId);
                 
-                _isDeleteConfirmationVisible = false;
+                _alertController.RemovalModal();
             },
             refreshing => _refreshing = refreshing,
             exception => _exception = exception, 

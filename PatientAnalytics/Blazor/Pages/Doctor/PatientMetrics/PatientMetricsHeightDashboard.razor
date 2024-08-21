@@ -1,5 +1,6 @@
 ﻿@page "/patients/{id:int}/height"
 @inject IStringLocalizer<Localized> Localized
+@using PatientAnalytics.Blazor.Controllers
 @using PatientAnalytics.Services.PatientMetrics
 @using PatientAnalytics.Models.PatientMetrics
 @inject PatientAnalyticsAuthStateProvider PatientAnalyticsAuthStateProvider
@@ -95,14 +96,9 @@
     }
 
     <HttpStatusExceptionIndicator Exception="@_exception" />
-</DoctorDashboardWrapper>
 
-<ConfirmationModal Title="@($"{Localized["Title_Delete_Patient"]} {Localized["Button_Height"]}")"
-                   ConfirmButtonText="@Localized["Button_Delete"]"
-                   CancelButtonText="@Localized["Button_Cancel"]"
-                   IsVisible="@_isDeleteConfirmationVisible"
-                   OnConfirm="ConfirmDelete"
-                   OnCancel="HideDeleteConfirmation"/>
+    <ConfirmationModal Alert="_alertController.Alert" />
+</DoctorDashboardWrapper>
 
 @code {
     [Parameter]
@@ -114,8 +110,8 @@
     
     private bool _refreshing;
     private HttpStatusCodeException? _exception;
-    
-    private bool _isDeleteConfirmationVisible;
+
+    private readonly BlazorAlertController _alertController = new();
     private string ErrorMessage { get; set; } = string.Empty;
 
     private double? _heightValue;
@@ -187,12 +183,10 @@
     private void ShowDeleteConfirmation(int id)
     {
         _heightId = id;
-        _isDeleteConfirmationVisible = true;
-    }
-
-    private void HideDeleteConfirmation()
-    {
-        _isDeleteConfirmationVisible = false;
+        _alertController.OnDisplayAlert(
+            Localized, 
+            "Title_DeleteRecord", 
+            async () => ConfirmDelete());
     }
 
     private async Task ConfirmDelete()
@@ -204,7 +198,7 @@
                 await PatientMetricsHeightService.DeleteEntryById(token, _heightId);
                 _patientsHeight.RemoveAll(bp => bp.Id == _heightId);
                 
-                _isDeleteConfirmationVisible = false;
+                _alertController.RemovalModal();
             },
             refreshing => _refreshing = refreshing,
             exception => _exception = exception, 

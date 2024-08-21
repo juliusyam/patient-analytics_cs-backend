@@ -306,4 +306,7 @@
     <data name="Title_DeactivateUser" xml:space="preserve">
         <value>Deactivate User</value>
     </data>
+    <data name="Title_DeleteRecord" xml:space="preserve">
+        <value>Delete Record</value>
+    </data>
 </root>
