@@ -14,7 +14,7 @@ namespace PatientAnalytics.Blazor.Localization {
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class Localized {
+    internal class Localized {
         
         private static System.Resources.ResourceManager resourceMan;
         
@@ -582,6 +582,42 @@ namespace PatientAnalytics.Blazor.Localization {
         internal static string SignalRMessage_UserLoggedOut {
             get {
                 return ResourceManager.GetString("SignalRMessage_UserLoggedOut", resourceCulture);
+            }
+        }
+        
+        internal static string Title_UserDashboard {
+            get {
+                return ResourceManager.GetString("Title_UserDashboard", resourceCulture);
+            }
+        }
+        
+        internal static string Button_UserEditAccountInfo {
+            get {
+                return ResourceManager.GetString("Button_UserEditAccountInfo", resourceCulture);
+            }
+        }
+        
+        internal static string Button_UserDeactivate {
+            get {
+                return ResourceManager.GetString("Button_UserDeactivate", resourceCulture);
+            }
+        }
+        
+        internal static string Button_UserActivate {
+            get {
+                return ResourceManager.GetString("Button_UserActivate", resourceCulture);
+            }
+        }
+        
+        internal static string Title_ActivateUser {
+            get {
+                return ResourceManager.GetString("Title_ActivateUser", resourceCulture);
+            }
+        }
+        
+        internal static string Title_DeactivateUser {
+            get {
+                return ResourceManager.GetString("Title_DeactivateUser", resourceCulture);
             }
         }
     }

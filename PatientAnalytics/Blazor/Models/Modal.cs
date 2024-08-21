@@ -27,7 +27,7 @@ public class Modal
     {
         return new Modal()
         {
-            Title = Localized["Title_Deactivate_User"],
+            Title = Localized["Title_DeactivateUser"],
             OnConfirm = onConfirm,
             OnCancel = onCancel
         };
@@ -37,7 +37,7 @@ public class Modal
     {
         return new Modal()
         {
-            Title = Localized["Title_Activate_User"],
+            Title = Localized["Title_ActivateUser"],
             OnConfirm = onConfirm,
             OnCancel = onCancel
         };

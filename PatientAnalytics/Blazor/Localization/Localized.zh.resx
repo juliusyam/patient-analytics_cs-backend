@@ -288,4 +288,22 @@
     <data name="SignalRMessage_UserLoggedOut">
         <value>{0} 已登出。</value>
     </data>
+    <data name="Title_UserDashboard" xml:space="preserve">
+        <value>使用者介面</value>
+    </data>
+    <data name="Button_UserEditAccountInfo" xml:space="preserve">
+        <value>編輯帳戶資訊</value>
+    </data>
+    <data name="Button_UserActivate" xml:space="preserve">
+        <value>啟用用戶</value>
+    </data>
+    <data name="Button_UserDeactivate" xml:space="preserve">
+        <value>停用用戶</value>
+    </data>
+    <data name="Title_DeactivateUser" xml:space="preserve">
+        <value>停用用戶</value>
+    </data>
+    <data name="Title_ActivateUser" xml:space="preserve">
+        <value>啟用用戶</value>
+    </data>
 </root>
