@@ -24,29 +24,7 @@
             </div>
         </section>
         
-        <section class="box">
-            <div class="container">
-                <h1 class="title">@Localized["Title_PatientDashboard"]</h1>
-                <h2 class="title is-4">
-                    @string.Format(Localized["Format_FullName"], _patient.FirstName, _patient.LastName)
-                </h2>
-                <ContentWithLabel Label="@Localized["Label_Email"]">@_patient.Email</ContentWithLabel>
-                <ContentWithLabel Label="@Localized["Label_Gender"]">@_patient.Gender</ContentWithLabel>
-                <ContentWithLabel Label="@Localized["Label_DateOfBirth"]">
-                    @_patient.DateOfBirth.ToString(Localized["DateFormatting_Date"])
-                </ContentWithLabel>
-                <ContentWithLabel Label="@Localized["Label_Address"]">@_patient.Address</ContentWithLabel>
-
-                <div class="divider"></div>
-
-                <ContentWithLabel Label="@Localized["Label_DateCreated"]">
-                    @_patient.DateCreated.ToString(Localized["DateFormatting_DateTime"])
-                </ContentWithLabel>
-                <ContentWithLabel Label="@Localized["Label_DateEdited"]">
-                    @_patient.DateEdited?.ToString(Localized["DateFormatting_DateTime"])
-                </ContentWithLabel>
-            </div>
-        </section>
+        <PersonDetailsDisplay Title="@Localized["Title_PatientDashboard"]" Person="_patient" />
 
         <section class="box is-flex is-flex-direction-row is-justify-content-space-between">
             <div class="buttons">

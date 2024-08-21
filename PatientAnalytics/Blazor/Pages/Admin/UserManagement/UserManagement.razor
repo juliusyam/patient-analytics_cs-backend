@@ -30,15 +30,8 @@
                 }
             </div>
         </section>
-    
-        <section class="box">
-            <div class="container">
-                <h1 class="title">@Localized["Title_UserDashboard"]</h1>
-                <h2 class="title is-4">
-                    @string.Format(Localized["Format_FullName"], _user.FirstName, _user.LastName)
-                </h2>
-            </div>
-        </section>
+
+        <PersonDetailsDisplay Title="@Localized["Title_PatientDashboard"]" Person="_user" />
     }
     
     
@@ -82,12 +75,12 @@
 
     private void OnActivateUser()
     {
-        _modal = Modal.ConfirmUserDeactivation(async () => await HandleActivateUser(), () => _modal = null);
+        _modal = Modal.ConfirmUserActivation(async () => await HandleActivateUser(), () => _modal = null);
     }
 
     private void OnDeactivateUser()
     {
-        _modal = Modal.ConfirmUserActivation(async () => await HandleDeactivateUser(), () => _modal = null);
+        _modal = Modal.ConfirmUserDeactivation(async () => await HandleDeactivateUser(), () => _modal = null);
     }
 
     private async Task HandleActivateUser()
