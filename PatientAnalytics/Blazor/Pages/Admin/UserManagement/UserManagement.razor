@@ -4,6 +4,7 @@
 @inject NavigationManager NavigationManager
 @inject PatientAnalyticsAuthStateProvider PatientAnalyticsAuthStateProvider
 @inject UserService UserService
+@inject IJSRuntime JSRuntime
 
 <AdminDashboardWrapper>
     <HttpStatusExceptionIndicator Exception="@_exception" />
@@ -77,18 +78,49 @@
         }
     }
 
-    private void GoBack()
-    {
-        NavigationManager.NavigateTo("/dashboard/admin");
-    }
+    private async void GoBack() => await JSRuntime.InvokeVoidAsync("history.back");
 
     private void OnActivateUser()
     {
-        _modal = Modal.ConfirmUserDeactivation(() => { }, () => _modal = null);
+        _modal = Modal.ConfirmUserDeactivation(async () => await HandleActivateUser(), () => _modal = null);
     }
 
     private void OnDeactivateUser()
     {
-        _modal = Modal.ConfirmUserActivation(() => { }, () => _modal = null);
+        _modal = Modal.ConfirmUserActivation(async () => await HandleDeactivateUser(), () => _modal = null);
+    }
+
+    private async Task HandleActivateUser()
+    {
+        await PatientAnalyticsAuthStateProvider.ServiceWrapperAsync(
+            _refreshing,
+            async token =>
+            {
+                await UserService.ActivateUser(token, Id);
+                
+                _modal = null;
+                
+                if (_user is not null) _user.IsDeactivated = false;
+            },
+            refreshing => _refreshing = refreshing,
+            exception => _exception = exception,
+            () => NavigationManager.NavigateTo("/"));
+    }
+    
+    private async Task HandleDeactivateUser()
+    {
+        await PatientAnalyticsAuthStateProvider.ServiceWrapperAsync(
+            _refreshing,
+            async token =>
+            {
+                await UserService.DeactivateUser(token, Id);
+                
+                _modal = null;
+                
+                if (_user is not null) _user.IsDeactivated = true;
+            },
+            refreshing => _refreshing = refreshing,
+            exception => _exception = exception,
+            () => NavigationManager.NavigateTo("/"));
     }
 }
