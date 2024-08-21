@@ -77,4 +77,16 @@ public class UserAccountInfoPayload
     public string? LastName { get; set; }
     
     public string? Address { get; set; }
+
+    public static UserAccountInfoPayload CreatePayloadFromUser(User user)
+    {
+        return new UserAccountInfoPayload
+        {
+            DateOfBirth = user.DateOfBirth,
+            Gender = user.Gender,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Address = user.Address
+        };
+    }
 }

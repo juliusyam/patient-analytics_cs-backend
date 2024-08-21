@@ -16,24 +16,33 @@
                 <button class="button" @onclick="GoBack">@Localized["Button_Back"]</button>
             </div>
             <div class="is-flex is-gap-3">
+                <button class="button is-success" @onclick="() => _userEditModalRevealed = true">
+                    @Localized["Button_UserEditAccountInfo"]
+                </button>
                 @if (_user.IsDeactivated)
                 {
-                <button class="button is-primary is-outlined" @onclick="OnActivateUser">
-                    @Localized["Button_UserActivate"]
-                </button>
+                    <button class="button is-primary is-outlined" @onclick="OnActivateUser">
+                        @Localized["Button_UserActivate"]
+                    </button>
                 }
                 else
                 {
-                <button class="button is-danger is-outlined" @onclick="OnDeactivateUser">
-                    @Localized["Button_UserDeactivate"]
-                </button>
+                    <button class="button is-danger is-outlined" @onclick="OnDeactivateUser">
+                        @Localized["Button_UserDeactivate"]
+                    </button>
                 }
             </div>
         </section>
 
         <PersonDetailsDisplay Title="@Localized["Title_PatientDashboard"]" Person="_user" />
+        
+        <UserEditAccountInfoModal
+            IsModalOpen="@_userEditModalRevealed"
+            OnClose="() => _userEditModalRevealed = false"
+            OnUserEdited="user => _user = user"
+            User="_user"
+        />
     }
-    
     
     @if (_modal is not null)
     {
@@ -57,6 +66,7 @@
 
     private User? _user;
     private Modal? _modal;
+    private bool _userEditModalRevealed;
 
     protected override async Task OnInitializedAsync()
     {
