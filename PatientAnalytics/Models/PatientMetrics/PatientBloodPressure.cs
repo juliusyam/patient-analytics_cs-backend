@@ -30,7 +30,7 @@ public class PatientBloodPressure
         {
             PatientId = patientId,
             DoctorId = doctorId,
-            DateCreated = DateTime.Now,
+            DateCreated = DateTime.UtcNow,
             BloodPressureSystolic = payload.BloodPressureSystolic,
             BloodPressureDiastolic = payload.BloodPressureDiastolic
         };

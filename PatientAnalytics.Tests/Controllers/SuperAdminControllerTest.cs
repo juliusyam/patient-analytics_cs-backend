@@ -22,7 +22,7 @@ public class SuperAdminControllerTest : BaseTest
     
     private static readonly RegistrationPayload Payload = new()
     {
-        DateOfBirth = DateTime.Now,
+        DateOfBirth = DateTime.UtcNow,
         Gender = "Male",
         Email = "email1@email.com",
         Username = "testUserAdmin1",

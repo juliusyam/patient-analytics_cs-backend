@@ -1,6 +1,7 @@
 ﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
 using PatientAnalytics.Utils;
+using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -13,28 +14,50 @@ namespace PatientAnalytics.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Patients",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    DoctorId = table.Column<int>(type: "integer", nullable: false),
+                    DateOfBirth = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Gender = table.Column<string>(type: "text", nullable: false),
+                    FirstName = table.Column<string>(type: "text", nullable: true),
+                    LastName = table.Column<string>(type: "text", nullable: true),
+                    Email = table.Column<string>(type: "text", nullable: false),
+                    Address = table.Column<string>(type: "text", nullable: true),
+                    DateCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DateEdited = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Patients", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Username = table.Column<string>(type: "TEXT", nullable: false),
-                    PasswordHash = table.Column<string>(type: "TEXT", nullable: false),
-                    Role = table.Column<string>(type: "TEXT", nullable: false),
-                    DateOfBirth = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Gender = table.Column<string>(type: "TEXT", nullable: false),
-                    FirstName = table.Column<string>(type: "TEXT", nullable: true),
-                    LastName = table.Column<string>(type: "TEXT", nullable: true),
-                    Email = table.Column<string>(type: "TEXT", nullable: false),
-                    Address = table.Column<string>(type: "TEXT", nullable: true),
-                    DateCreated = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    DateEdited = table.Column<DateTime>(type: "TEXT", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Username = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
+                    PasswordHash = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    Role = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
+                    IsDeactivated = table.Column<bool>(type: "boolean", nullable: false),
+                    DateOfBirth = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Gender = table.Column<string>(type: "text", nullable: false),
+                    FirstName = table.Column<string>(type: "text", nullable: true),
+                    LastName = table.Column<string>(type: "text", nullable: true),
+                    Email = table.Column<string>(type: "text", nullable: false),
+                    Address = table.Column<string>(type: "text", nullable: true),
+                    DateCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DateEdited = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
                 });
-
+            
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
                 .AddJsonFile("appsettings.json")
@@ -46,42 +69,20 @@ namespace PatientAnalytics.Migrations
             
             migrationBuilder.InsertData(
                 table: "Users",
-                columns: new[] { "Id", "Username", "PasswordHash", "Role", "DateOfBirth", "Gender", "FirstName", "LastName", "Email", "Address", "DateCreated", "DateEdited" },
-                values: new object[] { 1, username, hashed, "SuperAdmin", new DateTime(1980, 1, 1), "Male", "Super", "Admin", "superadmin@example.com", "123 Admin St", DateTime.UtcNow, null });
-            
-            migrationBuilder.CreateTable(
-                name: "Patients",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    DoctorId = table.Column<int>(type: "INTEGER", nullable: false),
-                    DateOfBirth = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Gender = table.Column<string>(type: "TEXT", nullable: false),
-                    FirstName = table.Column<string>(type: "TEXT", nullable: true),
-                    LastName = table.Column<string>(type: "TEXT", nullable: true),
-                    Email = table.Column<string>(type: "TEXT", nullable: false),
-                    Address = table.Column<string>(type: "TEXT", nullable: true),
-                    DateCreated = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    DateEdited = table.Column<DateTime>(type: "TEXT", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Patients", x => x.Id);
-                });
-
+                columns: new[] { "Id", "Username", "PasswordHash", "Role", "DateOfBirth", "Gender", "FirstName", "LastName", "Email", "Address", "DateCreated", "DateEdited", "IsDeactivated" },
+                values: new object[] { 1, username, hashed, "SuperAdmin", new DateTime(1980, 1, 1, 0, 0 , 0, DateTimeKind.Utc), "Male", "Super", "Admin", "superadmin@example.com", "123 Admin St", DateTime.UtcNow, null, false });
 
             migrationBuilder.CreateTable(
                 name: "PatientBloodPressures",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    PatientId = table.Column<int>(type: "INTEGER", nullable: false),
-                    DoctorId = table.Column<int>(type: "INTEGER", nullable: false),
-                    DateCreated = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    BloodPressureSystolic = table.Column<double>(type: "REAL", nullable: false),
-                    BloodPressureDiastolic = table.Column<double>(type: "REAL", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    PatientId = table.Column<int>(type: "integer", nullable: false),
+                    DoctorId = table.Column<int>(type: "integer", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    BloodPressureSystolic = table.Column<double>(type: "double precision", nullable: false),
+                    BloodPressureDiastolic = table.Column<double>(type: "double precision", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -104,12 +105,12 @@ namespace PatientAnalytics.Migrations
                 name: "PatientHeights",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    PatientId = table.Column<int>(type: "INTEGER", nullable: false),
-                    DoctorId = table.Column<int>(type: "INTEGER", nullable: false),
-                    DateCreated = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    HeightCm = table.Column<double>(type: "REAL", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    PatientId = table.Column<int>(type: "integer", nullable: false),
+                    DoctorId = table.Column<int>(type: "integer", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    HeightCm = table.Column<double>(type: "double precision", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -132,12 +133,12 @@ namespace PatientAnalytics.Migrations
                 name: "PatientTemperatures",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    PatientId = table.Column<int>(type: "INTEGER", nullable: false),
-                    DoctorId = table.Column<int>(type: "INTEGER", nullable: false),
-                    DateCreated = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    TemperatureCelsius = table.Column<double>(type: "REAL", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    PatientId = table.Column<int>(type: "integer", nullable: false),
+                    DoctorId = table.Column<int>(type: "integer", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    TemperatureCelsius = table.Column<double>(type: "double precision", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -160,12 +161,12 @@ namespace PatientAnalytics.Migrations
                 name: "PatientWeights",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    PatientId = table.Column<int>(type: "INTEGER", nullable: false),
-                    DoctorId = table.Column<int>(type: "INTEGER", nullable: false),
-                    DateCreated = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    WeightKg = table.Column<double>(type: "REAL", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    PatientId = table.Column<int>(type: "integer", nullable: false),
+                    DoctorId = table.Column<int>(type: "integer", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    WeightKg = table.Column<double>(type: "double precision", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -188,12 +189,12 @@ namespace PatientAnalytics.Migrations
                 name: "UserRefreshes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    UserId = table.Column<int>(type: "INTEGER", nullable: false),
-                    RefreshTokenHash = table.Column<string>(type: "TEXT", nullable: false),
-                    RefreshTokenExpiry = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    DateCreated = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    RefreshTokenHash = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    RefreshTokenExpiry = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {

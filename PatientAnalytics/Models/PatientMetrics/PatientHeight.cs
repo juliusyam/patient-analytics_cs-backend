@@ -45,7 +45,7 @@ public class PatientHeight
         {
             PatientId = patientId,
             DoctorId = doctorId,
-            DateCreated = DateTime.Now,
+            DateCreated = DateTime.UtcNow,
             HeightCm = heightCm
         };
     }

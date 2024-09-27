@@ -6,12 +6,12 @@ public class Patient : Person
 {
     public static Patient CreatePatient(int doctorId, PersonPayload payload)
     {
-        var dateCreated = DateTime.Now;
+        var dateCreated = DateTime.UtcNow;
 
         return new Patient
         {
             DoctorId = doctorId,
-            DateOfBirth = payload.DateOfBirth,
+            DateOfBirth = payload.DateOfBirth.ToUniversalTime(),
             Gender = payload.Gender,
             Email = payload.Email,
             Address = payload.Address,
@@ -24,13 +24,13 @@ public class Patient : Person
 
     public void UpdatePatient(PersonPayload payload)
     {
-        DateOfBirth = payload.DateOfBirth;
+        DateOfBirth = payload.DateOfBirth.ToUniversalTime();
         Gender = payload.Gender;
         Email = payload.Email;
         Address = payload.Address;
         FirstName = payload.FirstName;
         LastName = payload.LastName;
-        DateEdited = DateTime.Now;
+        DateEdited = DateTime.UtcNow;
     }
     
     public int DoctorId { get; private set; }

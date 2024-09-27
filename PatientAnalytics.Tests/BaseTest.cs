@@ -25,8 +25,8 @@ public abstract class BaseTest
     private static readonly Dictionary<string, string> TestConfiguration = new()
     {
         { "Jwt:Key", "tp6osj2CoTOIz8pvIUV0Vg1T0vlkZFD14nEtLYZ75FFfaQWQ7qMcU6byLyIkqArgVQT3P1YGvwHumjqZJtOtW3VMG2OLR9tpHKcC" },
-        { "Jwt:Issuer", "http://localhost:5272/" },
-        { "Jwt:Audience", "http://localhost:5272/" },
+        { "Jwt:Issuer", "http://localhost:8080/" },
+        { "Jwt:Audience", "http://localhost:8080/" },
         { "Jwt:ExpirationTime", "1" },
         { "Auth:Salt", "passwordSalt" }
     };
@@ -73,7 +73,7 @@ public abstract class BaseTest
             PasswordHash,
             new RegistrationPayload
             {
-                DateOfBirth = DateTime.Now,
+                DateOfBirth = DateTime.UtcNow,
                 Gender = "Male",
                 Email = "email@email.com",
                 Username = "testUserSuper",
@@ -106,7 +106,7 @@ public abstract class BaseTest
             PasswordHash,
             new RegistrationPayload
             {
-                DateOfBirth = DateTime.Now,
+                DateOfBirth = DateTime.UtcNow,
                 Gender = "Female",
                 Email = "email2@email.com",
                 Username = "testUserAdmin",
@@ -126,7 +126,7 @@ public abstract class BaseTest
             PasswordHash,
             new RegistrationPayload
             {
-                DateOfBirth = DateTime.Now,
+                DateOfBirth = DateTime.UtcNow,
                 Gender = "Male",
                 Email = "email3@email.com",
                 Username = "testUserDoctor",

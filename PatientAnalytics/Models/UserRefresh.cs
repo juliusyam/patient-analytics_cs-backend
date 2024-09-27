@@ -35,7 +35,7 @@ public class UserRefresh
             UserId = userId,
             RefreshTokenHash = refreshTokenHash,
             RefreshTokenExpiry = DateTime.UtcNow.AddDays(refreshExpirationTime),
-            DateCreated = DateTime.Now
+            DateCreated = DateTime.UtcNow
         });
     }
 }

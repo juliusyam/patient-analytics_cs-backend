@@ -5,7 +5,7 @@ namespace PatientAnalytics.Models.Auth;
 public class RegistrationPayload
 {
     [Required(ErrorMessage = "Date of Birth is required.")]
-    public DateTime DateOfBirth { get; set; } = DateTime.Now;
+    public DateTime DateOfBirth { get; set; } = DateTime.UtcNow;
     
     [Required(ErrorMessage = "Gender is required.")]
     public string Gender { get; set; } = null!;

@@ -1,4 +1,3 @@
-using System.Data;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -101,7 +100,7 @@ public class PatientService
 
         await _context.SaveChangesAsync();
 
-        var userNameIdentifier = _jwtService.DecodeJwt(token)?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userNameIdentifier = _jwtService.DecodeJwt(token).FindFirst(ClaimTypes.NameIdentifier)?.Value;
         
         if (userNameIdentifier is not null)
         {
@@ -128,7 +127,7 @@ public class PatientService
         
         await _context.SaveChangesAsync();
 
-        var userNameIdentifier = _jwtService.DecodeJwt(token)?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userNameIdentifier = _jwtService.DecodeJwt(token).FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
         if (userNameIdentifier is not null)
         {
@@ -147,7 +146,7 @@ public class PatientService
 
         await _context.SaveChangesAsync();
 
-        var userNameIdentifier = _jwtService.DecodeJwt(token)?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userNameIdentifier = _jwtService.DecodeJwt(token).FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
         if (userNameIdentifier is not null)
         {

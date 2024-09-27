@@ -42,7 +42,7 @@ public class PatientTemperature
         {
             PatientId = patientId,
             DoctorId = doctorId,
-            DateCreated = DateTime.Now,
+            DateCreated = DateTime.UtcNow,
             TemperatureCelsius = temperatureCelsius
         };
     }

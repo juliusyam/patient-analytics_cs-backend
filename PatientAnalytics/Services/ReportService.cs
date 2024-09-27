@@ -120,7 +120,7 @@ public class ReportService
                 page.Content()
                     .Table(table =>
                     {
-                        var now = DateTime.Now;
+                        var now = DateTime.UtcNow;
                         table.ColumnsDefinition(columns =>
                         {
                             columns.RelativeColumn();
@@ -179,7 +179,7 @@ public class ReportService
             });
         }).GeneratePdf(stream);
 
-        var now = DateTime.Now;
+        var now = DateTime.UtcNow;
         var formattedDate = now.ToString(_localized["DateFormatting_DateTime"]);
         var reportTitle = $"{patient.LastName}_{patient.FirstName}_{formattedDate}.pdf";
         var response = new ReportResponse(stream.ToArray(), reportTitle);

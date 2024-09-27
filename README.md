@@ -42,11 +42,16 @@ Verify installation with the following command.
 
 `dotnet ef`
 
-### Step 4: Setup Database Connection
-For this example we will be connecting to a local Sqlite Database.
+### Step 4: Setup Postgres Database Connection
+For this example we will be a generating a Postgres database via Docker.
 
-1. Install [DB Browser for Sqlite](https://sqlitebrowser.org/).
-2. Create a database titled `PatientAnalytics.db` within the `PatientAnalytics` directory of the project, with DB Browser.
+1. Install [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+2. Retrieve the [Postgres Docker Image](https://hub.docker.com/_/postgres) and start a postgres instance
+
+> To establish connection with credentials as found on appsettings.json, run the following command: 
+> `docker run --name patientanalytics-postgres -p 5432:5432 -e POSTGRES_PASSWORD=mysecretpassword -d postgres`
+
+3. Establish connection with database via your preferred IDE
 
 ### Step 5: Migrate the Database
 Run the following command within the `PatientAnalytics` directory of the project to execute database migration.

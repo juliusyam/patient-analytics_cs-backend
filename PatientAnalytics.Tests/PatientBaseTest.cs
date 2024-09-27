@@ -73,7 +73,7 @@ public abstract class PatientBaseTest : BaseTest
 
     protected static readonly PersonPayload PersonPayload = new()
     {
-        DateOfBirth = DateTime.Now,
+        DateOfBirth = DateTime.UtcNow,
         Gender = "gender",
         Email = "email2",
         Address = "address02",
@@ -83,7 +83,7 @@ public abstract class PatientBaseTest : BaseTest
 
     protected static readonly PersonPayload UpdatedPersonPayload = new()
     {
-        DateOfBirth = DateTime.Now,
+        DateOfBirth = DateTime.UtcNow,
         Gender = "gender",
         Email = "email2",
         Address = "address03",
@@ -93,7 +93,7 @@ public abstract class PatientBaseTest : BaseTest
 
     protected static readonly PersonPayload UpdatedPersonPayload02 = new()
     {
-        DateOfBirth = DateTime.Now,
+        DateOfBirth = DateTime.UtcNow,
         Gender = "gender",
         Email = "email01",
         Address = "address03",
@@ -103,7 +103,7 @@ public abstract class PatientBaseTest : BaseTest
 
     protected static readonly PersonPayload PersonPayload02 = new()
     {
-        DateOfBirth = DateTime.Now,
+        DateOfBirth = DateTime.UtcNow,
         Gender = "gender",
         Email = "email04",
         Address = "address02",
@@ -118,7 +118,7 @@ public abstract class PatientBaseTest : BaseTest
             doctorId,
             new PersonPayload()
             {
-                DateOfBirth = DateTime.Now,
+                DateOfBirth = DateTime.UtcNow,
                 Gender = "gender01",
                 Email = "email01",
                 Address = "address01",

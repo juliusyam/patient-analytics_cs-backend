@@ -15,7 +15,7 @@ public class User : Person
 
         return new User
         {
-            DateOfBirth = payload.DateOfBirth,
+            DateOfBirth = payload.DateOfBirth.ToUniversalTime(),
             Gender = payload.Gender,
             Email = payload.Email,
             PasswordHash = passwordHash,
@@ -24,18 +24,18 @@ public class User : Person
             Address = payload.Address,
             FirstName = payload.FirstName,
             LastName = payload.LastName,
-            DateCreated = DateTime.Now
+            DateCreated = DateTime.UtcNow
         };
     }
 
     public void UpdateAccountInfo(UserAccountInfoPayload payload)
     {
-        DateOfBirth = payload.DateOfBirth;
+        DateOfBirth = payload.DateOfBirth.ToUniversalTime();
         Gender = payload.Gender;
         Address = payload.Address;
         FirstName = payload.FirstName;
         LastName = payload.LastName;
-        DateEdited = DateTime.Now;
+        DateEdited = DateTime.UtcNow;
     }
 
     public void Deactivate()
@@ -65,7 +65,7 @@ public class User : Person
 public class UserAccountInfoPayload
 {
     [Required(ErrorMessage = "Date of Birth is required.")]
-    public DateTime DateOfBirth { get; set; } = DateTime.Now;
+    public DateTime DateOfBirth { get; set; } = DateTime.UtcNow;
     
     [Required(ErrorMessage = "Gender is required.")]
     public string Gender { get; set; } = null!;

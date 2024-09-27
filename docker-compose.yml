@@ -1,0 +1,22 @@
+services:
+  webapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: patientanalytics
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_URLS=http://+:8080;
+      - ASPNETCORE_ENVIRONMENT=Development
+  postgres:
+    container_name: patientanalytics-postgres
+    image: postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_HOST=localhost
+      - POSTGRES_PASSWORD=mysecretpassword
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
