@@ -96,8 +96,6 @@ builder.Services.AddResponseCompression(options =>
 
 var connectionString = builder.Configuration.GetConnectionString("PatientAnalyticsContext");
 
-//SqliteConnectionAccess.EstablishConnection(connectionString);
-
 builder.Services.AddDbContext<Context>(opt =>
     opt.UseNpgsql(connectionString));
 builder.Services.AddScoped<JwtService>();
