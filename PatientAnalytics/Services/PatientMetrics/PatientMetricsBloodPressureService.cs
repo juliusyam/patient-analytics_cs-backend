@@ -36,7 +36,7 @@ public class PatientMetricsBloodPressureService
         _context.PatientBloodPressures.Add(bloodPressureRecord);
 
         await _context.SaveChangesAsync();
-
+        
         return bloodPressureRecord.Formatted();
     }
 
@@ -46,7 +46,8 @@ public class PatientMetricsBloodPressureService
 
         var bloodPressureRecords = _context.Patients
             .Where(p => p.Id == patientId)
-            .SelectMany(p => p.BloodPressures);
+            .SelectMany(p => p.BloodPressures)
+            .OrderByDescending(r => r.DateCreated);
 
         await bloodPressureRecords.ForEachAsync(pbp => pbp.Formatted());
 

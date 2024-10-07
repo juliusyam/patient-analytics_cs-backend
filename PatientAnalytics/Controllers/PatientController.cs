@@ -28,11 +28,11 @@ public class PatientController
     }
     
     [HttpGet("{patientId:int}", Name = "GetPatient")]
-    public Patient GetPatientById([FromServices] IHttpContextAccessor httpContextAccessor, [FromRoute] int patientId)
+    public async Task<Patient> GetPatientById([FromServices] IHttpContextAccessor httpContextAccessor, [FromRoute] int patientId)
     {
         ValidateAuthorization(httpContextAccessor, out var authorization);
 
-        return _patientService.GetPatientById(authorization, patientId);
+        return await _patientService.GetPatientById(authorization, patientId);
     }
 
     [HttpGet(Name = "GetPatients")]
@@ -72,11 +72,11 @@ public class PatientController
     }
     
     [HttpGet("{patientId:int}/report", Name = "GetPatientReport")]
-    public ReportResponse GetPatientReportById([FromServices] IHttpContextAccessor httpContextAccessor, [FromRoute] int patientId)
+    public async Task<ReportResponse> GetPatientReportById([FromServices] IHttpContextAccessor httpContextAccessor, [FromRoute] int patientId)
     {
         ValidateAuthorization(httpContextAccessor, out var authorization);
 
-        var patient = _patientService.GetPatientById(authorization, patientId);
+        var patient = await _patientService.GetPatientById(authorization, patientId);
         var reportResponse = _reportService.GenerateReportForPatient(patient);
 
         return reportResponse;

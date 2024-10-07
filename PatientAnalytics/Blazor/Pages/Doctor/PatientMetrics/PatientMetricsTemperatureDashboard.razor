@@ -119,7 +119,7 @@
                 _refreshing,
                 async token =>
                 {
-                    _patient = PatientService.GetPatientById(token, Id);
+                    _patient = await PatientService.GetPatientById(token, Id);
                     
                     if (_patient is not null)
                     {
@@ -162,8 +162,7 @@
             async token =>
             {
                 var newTemperatureEntry = await PatientMetricsTemperatureService.CreateEntry(token, Id, _patientTemperaturePayload);
-                
-                _patientsTemperature.Add(newTemperatureEntry);
+                _patientsTemperature.Insert(0, newTemperatureEntry);
             },
             refreshing => _refreshing = refreshing,
             exception => ErrorMessage = exception.Message, 

@@ -63,11 +63,11 @@
         
         if (PatientAnalyticsAuthStateProvider.IsDoctor())
         {
-            await PatientAnalyticsAuthStateProvider.ServiceWrapper(
+            await PatientAnalyticsAuthStateProvider.ServiceWrapperAsync(
                 _refreshing,
-                token =>
+                async token =>
                 {
-                    _patient = PatientService.GetPatientById(token, Id);
+                    _patient = await PatientService.GetPatientById(token, Id);
                     if (_patient is not null) 
                         _pageTitle = string.Format(Localized["Title_PatientDashboard_WithPatientName"], _patient.FirstName, _patient.LastName);
                     _isDownloadReportDisabled = false;

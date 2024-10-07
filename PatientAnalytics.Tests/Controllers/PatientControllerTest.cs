@@ -43,7 +43,7 @@ public class PatientControllerTest : PatientBaseTest
 
     [Test]
     public void CreatePatient_WithNotLoggedInUser_ThrowsMessage()
-    {        
+    {
         var exception = Assert.ThrowsAsync<HttpStatusCodeException>(async () =>
         {
             await PatientController.CreatePatient(CreateHttpContextAccessor("Bob"), PersonPayload);
@@ -67,8 +67,10 @@ public class PatientControllerTest : PatientBaseTest
     public async Task EditPatient_WrongPatientId_ThrowException()
     {
         await PatientController.CreatePatient(DoctorHttpContextAccessor, PersonPayload);
-        
-        async Task Action() => await PatientController.EditPatient(DoctorHttpContextAccessor, FakePatientId, UpdatedPersonPayload);
+
+        async Task Action() =>
+            await PatientController.EditPatient(DoctorHttpContextAccessor, FakePatientId, UpdatedPersonPayload);
+
         var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
 
         Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status400BadRequest));
@@ -82,11 +84,14 @@ public class PatientControllerTest : PatientBaseTest
 
         var patients = DbContext.Patients.ToList();
 
-        async Task Action() => await PatientController.EditPatient(DoctorHttpContextAccessor, patients[0].Id, UpdatedPersonPayload);
+        async Task Action() =>
+            await PatientController.EditPatient(DoctorHttpContextAccessor, patients[0].Id, UpdatedPersonPayload);
+
         var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
 
         Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status403Forbidden));
-        Assert.That(exception.Message, Is.EqualTo($"This user is forbidden from viewing and modifying patient with id: {patients[0].Id}"));
+        Assert.That(exception.Message,
+            Is.EqualTo($"This user is forbidden from viewing and modifying patient with id: {patients[0].Id}"));
     }
 
     [Test]
@@ -96,7 +101,9 @@ public class PatientControllerTest : PatientBaseTest
 
         var patients = DbContext.Patients.ToList();
 
-        async Task Action() => await PatientController.EditPatient(DoctorHttpContextAccessor, patients[1].Id, UpdatedPersonPayload02);
+        async Task Action() =>
+            await PatientController.EditPatient(DoctorHttpContextAccessor, patients[1].Id, UpdatedPersonPayload02);
+
         var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
 
         Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status403Forbidden));
@@ -121,7 +128,9 @@ public class PatientControllerTest : PatientBaseTest
     {
         var patients = DbContext.Patients.ToList();
 
-        async Task Action() => await PatientController.EditPatient(SuperAdminHttpContextAccessor, patients[0].Id, UpdatedPersonPayload); 
+        async Task Action() =>
+            await PatientController.EditPatient(SuperAdminHttpContextAccessor, patients[0].Id, UpdatedPersonPayload);
+
         var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
 
         Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status403Forbidden));
@@ -133,7 +142,9 @@ public class PatientControllerTest : PatientBaseTest
     {
         var patients = DbContext.Patients.ToList();
 
-        async Task Action() => await PatientController.EditPatient(SuperAdminHttpContextAccessor, patients[0].Id, UpdatedPersonPayload); 
+        async Task Action() =>
+            await PatientController.EditPatient(SuperAdminHttpContextAccessor, patients[0].Id, UpdatedPersonPayload);
+
         var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
 
         Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status403Forbidden));
@@ -144,8 +155,8 @@ public class PatientControllerTest : PatientBaseTest
     public async Task GetPatientById_WithLoggedInDoctor_SuccessfullyRetrievePatient()
     {
         var response = await PatientController.CreatePatient(DoctorHttpContextAccessor, PersonPayload);
-        
-        var patient = PatientController.GetPatientById(DoctorHttpContextAccessor, response!.Id);
+
+        var patient = await PatientController.GetPatientById(DoctorHttpContextAccessor, response!.Id);
 
         Assert.That(patient, Is.EqualTo(response));
     }
@@ -155,11 +166,13 @@ public class PatientControllerTest : PatientBaseTest
     {
         var patients = DbContext.Patients.ToList();
 
-        Task Action() { PatientController.GetPatientById(DoctorHttpContextAccessor, patients[0].Id); return Task.CompletedTask; }
+        async Task Action() => await PatientController.GetPatientById(DoctorHttpContextAccessor, patients[0].Id);
+
         var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
 
         Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status403Forbidden));
-        Assert.That(exception.Message, Is.EqualTo($"This user is forbidden from viewing and modifying patient with id: {patients[0].Id}"));
+        Assert.That(exception.Message,
+            Is.EqualTo($"This user is forbidden from viewing and modifying patient with id: {patients[0].Id}"));
     }
 
     [Test]
@@ -167,10 +180,9 @@ public class PatientControllerTest : PatientBaseTest
     {
         var patients = DbContext.Patients.ToList();
 
-        var exception = Assert.ThrowsAsync<HttpStatusCodeException>(() => {
-            PatientController.GetPatientById(CreateHttpContextAccessor("Bob"), patients[0].Id);
-            return Task.CompletedTask;
-        });
+        async Task Action() => await PatientController.GetPatientById(CreateHttpContextAccessor("Bob"), patients[0].Id);
+
+        var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
 
         Assert.That(exception!.Message, Is.EqualTo("Token format is invalid"));
     }
@@ -180,7 +192,7 @@ public class PatientControllerTest : PatientBaseTest
     {
         var patients = DbContext.Patients.ToList();
 
-        Task Action() { PatientController.GetPatientById(SuperAdminHttpContextAccessor, patients[0].Id); return Task.CompletedTask; }
+        async Task Action() => await PatientController.GetPatientById(AdminHttpContextAccessor, patients[0].Id);
         var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
 
         Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status403Forbidden));
@@ -192,7 +204,7 @@ public class PatientControllerTest : PatientBaseTest
     {
         var patients = DbContext.Patients.ToList();
 
-        Task Action() { PatientController.GetPatientById(AdminHttpContextAccessor, patients[0].Id); return Task.CompletedTask; }
+        async Task Action() => await PatientController.GetPatientById(AdminHttpContextAccessor, patients[0].Id);
         var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
 
         Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status403Forbidden));
@@ -208,7 +220,8 @@ public class PatientControllerTest : PatientBaseTest
         var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
 
         Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status403Forbidden));
-        Assert.That(exception.Message, Is.EqualTo($"This user is forbidden from viewing and modifying patient with id: {patients[0].Id}"));
+        Assert.That(exception.Message,
+            Is.EqualTo($"This user is forbidden from viewing and modifying patient with id: {patients[0].Id}"));
     }
 
     [Test]
@@ -225,7 +238,7 @@ public class PatientControllerTest : PatientBaseTest
     public void DeletePatient_WithNotLoggedInUser_ThrowsMessage()
     {
         var patients = DbContext.Patients.ToList();
-        
+
         var exception = Assert.ThrowsAsync<HttpStatusCodeException>(async () =>
         {
             await PatientController.DeletePatient(CreateHttpContextAccessor("Bob"), patients[0].Id);
@@ -239,7 +252,7 @@ public class PatientControllerTest : PatientBaseTest
     {
         var patients = DbContext.Patients.ToList();
 
-        async Task Action() => await PatientController.DeletePatient(SuperAdminHttpContextAccessor, patients[0].Id);  
+        async Task Action() => await PatientController.DeletePatient(SuperAdminHttpContextAccessor, patients[0].Id);
         var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
 
         Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status403Forbidden));
@@ -263,8 +276,9 @@ public class PatientControllerTest : PatientBaseTest
     {
         var response = await PatientController.CreatePatient(DoctorHttpContextAccessor, PersonPayload);
 
-        var results = PatientController.GetPatients(DoctorHttpContextAccessor, response!.Email, response.FirstName + " " + response.LastName, response.Address);
-        
+        var results = PatientController.GetPatients(DoctorHttpContextAccessor, response!.Email,
+            response.FirstName + " " + response.LastName, response.Address);
+
         Assert.That(results.Count, Is.EqualTo(1));
         Assert.That(results[0].Email, Is.EqualTo(response.Email));
         Assert.That(results[0].FirstName, Is.EqualTo(response.FirstName));
@@ -289,9 +303,9 @@ public class PatientControllerTest : PatientBaseTest
     {
         var patients = DbContext.Patients.ToList();
 
-        var exception = Assert.ThrowsAsync<HttpStatusCodeException>(() => {
-            PatientController.GetPatientById(CreateHttpContextAccessor("Bob"), patients[0].Id);
-            return Task.CompletedTask;
+        var exception = Assert.ThrowsAsync<HttpStatusCodeException>(async () =>
+        {
+            await PatientController.GetPatientById(CreateHttpContextAccessor("Bob"), patients[0].Id);
         });
 
         Assert.That(exception!.Message, Is.EqualTo("Token format is invalid"));
@@ -302,15 +316,21 @@ public class PatientControllerTest : PatientBaseTest
     {
         var response = await PatientController.CreatePatient(DoctorHttpContextAccessor, PersonPayload);
 
-        var results = PatientController.GetPatients(DoctorHttpContextAccessor, response!.Email, $"{response.FirstName} {response.LastName}", response.Address);
-        
+        var results = PatientController.GetPatients(DoctorHttpContextAccessor, response!.Email,
+            $"{response.FirstName} {response.LastName}", response.Address);
+
         Assert.That(results[0].DoctorId, Is.EqualTo(DoctorUser.Id));
     }
 
     [Test]
     public void GetPatients_SuperUser_ThrowsException()
     {
-        Task Action() { PatientController.GetPatients(SuperAdminHttpContextAccessor, null, null, null); return Task.CompletedTask; }
+        Task Action()
+        {
+            PatientController.GetPatients(SuperAdminHttpContextAccessor, null, null, null);
+            return Task.CompletedTask;
+        }
+
         var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
 
         Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status403Forbidden));
@@ -320,7 +340,12 @@ public class PatientControllerTest : PatientBaseTest
     [Test]
     public void GetPatients_AdminUser_ThrowsException()
     {
-        Task Action() { PatientController.GetPatients(AdminHttpContextAccessor, null, null, null); return Task.CompletedTask; }
+        Task Action()
+        {
+            PatientController.GetPatients(AdminHttpContextAccessor, null, null, null);
+            return Task.CompletedTask;
+        }
+
         var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
 
         Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status403Forbidden));

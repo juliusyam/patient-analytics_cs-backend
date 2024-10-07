@@ -53,7 +53,9 @@ public class PatientHeight
     public PatientHeight Formatted()
     {
         HeightIn = HeightCm / 2.54;
+        
         HeightFtFormatted = $"{(HeightIn - HeightIn % 12) / 12}'{(int)HeightIn % 12}";
+        
         return this;
     }
 }

@@ -98,7 +98,7 @@
                 _refreshing,
                 async token =>
                 {
-                    _patient = PatientService.GetPatientById(token, Id);
+                    _patient = await PatientService.GetPatientById(token, Id);
                     
                     if (_patient is not null)
                     {
@@ -141,7 +141,7 @@
             async token =>
             {
                 var newBloodPressure = await PatientMetricsBloodPressureService.CreateEntry(token, Id, _patientBloodPressurePayload);
-                _patientsBloodPressure.Add(newBloodPressure);
+                _patientsBloodPressure.Insert(0, newBloodPressure);
             },
             refreshing => _refreshing = refreshing,
             exception => ErrorMessage = exception.Message, 

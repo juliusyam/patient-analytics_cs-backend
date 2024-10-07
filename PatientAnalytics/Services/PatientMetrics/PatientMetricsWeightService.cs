@@ -43,7 +43,8 @@ public class PatientMetricsWeightService
 
         var weightRecords = _context.Patients
             .Where(p => p.Id == patientId)
-            .SelectMany(p => p.Weights);
+            .SelectMany(p => p.Weights)
+            .OrderByDescending(r => r.DateCreated);
 
         await weightRecords.ForEachAsync(pw => pw.Formatted());
 

@@ -43,7 +43,8 @@ public class PatientMetricsTemperatureService
 
         var temperatures = _context.Patients
             .Where(p => p.Id == patientId)
-            .SelectMany(p => p.Temperatures);
+            .SelectMany(p => p.Temperatures)
+            .OrderByDescending(r => r.DateCreated);
 
         await temperatures.ForEachAsync(pt => pt.Formatted());
         

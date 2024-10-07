@@ -29,17 +29,11 @@ public class PatientService
         _localized = localized;
     }
 
-    public Patient GetPatientById(string token, int patientId)
+    public async Task<Patient> GetPatientById(string token, int patientId)
     {
         ValidateIsDoctor(token, out var user);
         
-        var patient = _context
-            .Patients
-            .Include(p => p.BloodPressures)
-            .Include(p => p.Temperatures)
-            .Include(p => p.Heights)
-            .Include(p => p.Weights)
-            .FirstOrDefault(p => p.Id == patientId);
+        var patient = _context.Patients.FirstOrDefault(p => p.Id == patientId);
 
         if (patient is null)
         {
@@ -52,6 +46,42 @@ public class PatientService
             throw new HttpStatusCodeException(StatusCodes.Status403Forbidden, 
                 string.Format(_localized["PatientError_Forbidden"], patientId));
         }
+
+        // Return the most recent 5 Blood Pressure records
+        await _context
+            .Entry(patient)
+            .Collection(p => p.BloodPressures)
+            .Query()
+            .OrderByDescending(r => r.DateCreated)
+            .Take(5)
+            .ForEachAsync(r => r.Formatted());
+        
+        // Return the most recent 5 Height records
+        await _context
+            .Entry(patient)
+            .Collection(p => p.Heights)
+            .Query()
+            .OrderByDescending(r => r.DateCreated)
+            .Take(5)
+            .ForEachAsync(r => r.Formatted());
+        
+        // Return the most recent 5 Weight records
+        await _context
+            .Entry(patient)
+            .Collection(p => p.Weights)
+            .Query()
+            .OrderByDescending(r => r.DateCreated)
+            .Take(5)
+            .ForEachAsync(r => r.Formatted());
+        
+        // Return the most recent 5 Temperature records
+        await _context
+            .Entry(patient)
+            .Collection(p => p.Temperatures)
+            .Query()
+            .OrderByDescending(r => r.DateCreated)
+            .Take(5)
+            .ForEachAsync(r => r.Formatted());
         
         return patient;
     }

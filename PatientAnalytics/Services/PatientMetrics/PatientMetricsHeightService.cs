@@ -43,7 +43,8 @@ public class PatientMetricsHeightService
 
         var heightRecords = _context.Patients
             .Where(p => p.Id == patientId)
-            .SelectMany(p => p.Heights);
+            .SelectMany(p => p.Heights)
+            .OrderByDescending(r => r.DateCreated);
 
         await heightRecords.ForEachAsync(ph => ph.Formatted());
 

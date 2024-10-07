@@ -57,7 +57,9 @@ public class PatientWeight
     public PatientWeight Formatted()
     {
         WeightLb = WeightKg * 2.2046226218;
+        
         WeightSt = WeightKg * 0.157473;
+        
         return this;
     }
 }

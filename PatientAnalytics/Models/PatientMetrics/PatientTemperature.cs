@@ -50,6 +50,7 @@ public class PatientTemperature
     public PatientTemperature Formatted()
     {
         TemperatureFahrenheit = (TemperatureCelsius * 1.8) + 32;
+        
         return this;
     }
 }
