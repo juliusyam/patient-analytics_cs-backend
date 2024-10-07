@@ -110,6 +110,7 @@ builder.Services.AddScoped<PatientMetricsTemperatureService>();
 builder.Services.AddScoped<PatientMetricsBloodPressureService>();
 builder.Services.AddScoped<PatientMetricsHeightService>();
 builder.Services.AddScoped<PatientMetricsWeightService>();
+builder.Services.AddHostedService<DatabasePopulateService>();
 
 builder.Services.AddCors(options =>
 {

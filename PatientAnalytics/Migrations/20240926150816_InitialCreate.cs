@@ -63,15 +63,6 @@ namespace PatientAnalytics.Migrations
                 .AddJsonFile("appsettings.json")
                 .Build();
 
-            var username = "superadmin";
-            var password = Password.GeneratePassword();
-            var hashed = Password.HashPassword(password, configuration);
-            
-            migrationBuilder.InsertData(
-                table: "Users",
-                columns: new[] { "Id", "Username", "PasswordHash", "Role", "DateOfBirth", "Gender", "FirstName", "LastName", "Email", "Address", "DateCreated", "DateEdited", "IsDeactivated" },
-                values: new object[] { 1, username, hashed, "SuperAdmin", new DateTime(1980, 1, 1, 0, 0 , 0, DateTimeKind.Utc), "Male", "Super", "Admin", "superadmin@example.com", "123 Admin St", DateTime.UtcNow, null, false });
-
             migrationBuilder.CreateTable(
                 name: "PatientBloodPressures",
                 columns: table => new
@@ -251,8 +242,6 @@ namespace PatientAnalytics.Migrations
                 name: "IX_UserRefreshes_UserId",
                 table: "UserRefreshes",
                 column: "UserId");
-            
-            Console.WriteLine($"Initial Super Admin account created with username: {username} password: {password}");
         }
 
         /// <inheritdoc />
