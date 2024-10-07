@@ -5,28 +5,21 @@ using PatientAnalytics.Utils;
 
 namespace PatientAnalytics.Services;
 
-public class DatabasePopulateService : IHostedService
+public class DatabasePopulateService(IServiceScopeFactory scopeFactory, IConfiguration configuration) : IHostedService
 {
-    private readonly IServiceScopeFactory _scopeFactory;
-    private readonly IConfiguration _configuration;
-
-    public DatabasePopulateService(IServiceScopeFactory scopeFactory, IConfiguration configuration)
-    {
-        _scopeFactory = scopeFactory;
-        _configuration = configuration;
-    }
-    
     public async Task StartAsync(CancellationToken stoppingToken)
     {
-        using var scope = _scopeFactory.CreateScope();
-        
+        using var scope = scopeFactory.CreateScope();
+
         await using var context = scope.ServiceProvider.GetRequiredService<Context>();
 
         await context.Database.EnsureCreatedAsync(stoppingToken);
 
-        if (context.Database.GetPendingMigrations().Any())
+        var isMigrationNeeded = (await context.Database.GetPendingMigrationsAsync(stoppingToken)).Any();
+
+        if (isMigrationNeeded)
         {
-            context.Database.Migrate();
+            await context.Database.MigrateAsync(stoppingToken);
         }
 
         if (!context.Users.Any(u => u.Role == "SuperAdmin"))
@@ -39,11 +32,11 @@ public class DatabasePopulateService : IHostedService
     {
         const string username = "superadmin";
         var password = Password.GeneratePassword();
-        var hashed = Password.HashPassword(password, _configuration);
+        var hashed = Password.HashPassword(password, configuration);
 
         var payload = new RegistrationPayload
         {
-            DateOfBirth = new DateTime(1980, 1, 1, 0, 0 , 0, DateTimeKind.Utc),
+            DateOfBirth = new DateTime(1980, 1, 1, 0, 0, 0, DateTimeKind.Utc),
             Gender = "Male",
             Username = username,
             FirstName = "Super",
@@ -60,7 +53,7 @@ public class DatabasePopulateService : IHostedService
 
         Console.WriteLine($"Initial Super Admin account created with username: {username} password: {password}");
     }
-    
+
     public Task StopAsync(CancellationToken stoppingToken)
     {
         return Task.CompletedTask;
