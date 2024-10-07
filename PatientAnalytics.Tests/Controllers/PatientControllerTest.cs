@@ -27,7 +27,7 @@ public class PatientControllerTest : PatientBaseTest
         async Task Action() => await PatientController.CreatePatient(SuperAdminHttpContextAccessor, PersonPayload);
         var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
 
-        Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
+        Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status403Forbidden));
         Assert.That(exception.Message, Is.EqualTo("You don't have the correct authorization"));
     }
 
@@ -37,7 +37,7 @@ public class PatientControllerTest : PatientBaseTest
         async Task Action() => await PatientController.CreatePatient(AdminHttpContextAccessor, PersonPayload);
         var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
 
-        Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
+        Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status403Forbidden));
         Assert.That(exception.Message, Is.EqualTo("You don't have the correct authorization"));
     }
 
@@ -124,7 +124,7 @@ public class PatientControllerTest : PatientBaseTest
         async Task Action() => await PatientController.EditPatient(SuperAdminHttpContextAccessor, patients[0].Id, UpdatedPersonPayload); 
         var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
 
-        Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
+        Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status403Forbidden));
         Assert.That(exception.Message, Is.EqualTo($"You don't have the correct authorization"));
     }
 
@@ -136,7 +136,7 @@ public class PatientControllerTest : PatientBaseTest
         async Task Action() => await PatientController.EditPatient(SuperAdminHttpContextAccessor, patients[0].Id, UpdatedPersonPayload); 
         var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
 
-        Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
+        Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status403Forbidden));
         Assert.That(exception.Message, Is.EqualTo($"You don't have the correct authorization"));
     }
 
@@ -183,7 +183,7 @@ public class PatientControllerTest : PatientBaseTest
         Task Action() { PatientController.GetPatientById(SuperAdminHttpContextAccessor, patients[0].Id); return Task.CompletedTask; }
         var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
 
-        Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
+        Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status403Forbidden));
         Assert.That(exception.Message, Is.EqualTo($"You don't have the correct authorization"));
     }
 
@@ -195,7 +195,7 @@ public class PatientControllerTest : PatientBaseTest
         Task Action() { PatientController.GetPatientById(AdminHttpContextAccessor, patients[0].Id); return Task.CompletedTask; }
         var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
 
-        Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
+        Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status403Forbidden));
         Assert.That(exception.Message, Is.EqualTo($"You don't have the correct authorization"));
     }
 
@@ -242,7 +242,7 @@ public class PatientControllerTest : PatientBaseTest
         async Task Action() => await PatientController.DeletePatient(SuperAdminHttpContextAccessor, patients[0].Id);  
         var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
 
-        Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
+        Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status403Forbidden));
         Assert.That(exception.Message, Is.EqualTo($"You don't have the correct authorization"));
     }
 
@@ -254,7 +254,7 @@ public class PatientControllerTest : PatientBaseTest
         async Task Action() => await PatientController.DeletePatient(AdminHttpContextAccessor, patients[0].Id);
         var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
 
-        Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
+        Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status403Forbidden));
         Assert.That(exception.Message, Is.EqualTo($"You don't have the correct authorization"));
     }
 
@@ -313,7 +313,7 @@ public class PatientControllerTest : PatientBaseTest
         Task Action() { PatientController.GetPatients(SuperAdminHttpContextAccessor, null, null, null); return Task.CompletedTask; }
         var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
 
-        Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
+        Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status403Forbidden));
         Assert.That(exception.Message, Is.EqualTo($"You don't have the correct authorization"));
     }
 
@@ -323,7 +323,7 @@ public class PatientControllerTest : PatientBaseTest
         Task Action() { PatientController.GetPatients(AdminHttpContextAccessor, null, null, null); return Task.CompletedTask; }
         var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
 
-        Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
+        Assert.That(exception!.StatusCode, Is.EqualTo(StatusCodes.Status403Forbidden));
         Assert.That(exception.Message, Is.EqualTo($"You don't have the correct authorization"));
     }
 

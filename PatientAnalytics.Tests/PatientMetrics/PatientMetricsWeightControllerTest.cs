@@ -74,7 +74,7 @@ public class PatientMetricsWeightControllerTest : WeightBaseTest
         var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
 
         Assert.That(exception.Message, Is.EqualTo("You don't have the correct authorization"));
-        Assert.That(exception.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
+        Assert.That(exception.StatusCode, Is.EqualTo(StatusCodes.Status403Forbidden));
 
         var finalCount = DbContext.PatientBloodPressures.Count();
 
@@ -91,7 +91,7 @@ public class PatientMetricsWeightControllerTest : WeightBaseTest
         var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
 
         Assert.That(exception.Message, Is.EqualTo("You don't have the correct authorization"));
-        Assert.That(exception.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
+        Assert.That(exception.StatusCode, Is.EqualTo(StatusCodes.Status403Forbidden));
 
         var finalCount = DbContext.PatientBloodPressures.Count();
 
@@ -153,7 +153,7 @@ public class PatientMetricsWeightControllerTest : WeightBaseTest
         var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
         
         Assert.That(exception.Message, Is.EqualTo($"You don't have the correct authorization"));
-        Assert.That(exception.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
+        Assert.That(exception.StatusCode, Is.EqualTo(StatusCodes.Status403Forbidden));
 
         var finalCount = DbContext.PatientBloodPressures.Count();
 
@@ -170,7 +170,7 @@ public class PatientMetricsWeightControllerTest : WeightBaseTest
         var exception = Assert.ThrowsAsync<HttpStatusCodeException>(Action);
         
         Assert.That(exception.Message, Is.EqualTo($"You don't have the correct authorization"));
-        Assert.That(exception.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
+        Assert.That(exception.StatusCode, Is.EqualTo(StatusCodes.Status403Forbidden));
 
         var finalCount = DbContext.PatientBloodPressures.Count();
 
@@ -234,7 +234,7 @@ public class PatientMetricsWeightControllerTest : WeightBaseTest
         var exception = Assert.Throws<HttpStatusCodeException>(Action);
         
         Assert.That(exception.Message, Is.EqualTo($"You don't have the correct authorization"));
-        Assert.That(exception.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
+        Assert.That(exception.StatusCode, Is.EqualTo(StatusCodes.Status403Forbidden));
 
         var finalCount = DbContext.PatientBloodPressures.Count();
 
@@ -251,7 +251,7 @@ public class PatientMetricsWeightControllerTest : WeightBaseTest
         var exception = Assert.Throws<HttpStatusCodeException>(Action);
 
         Assert.That(exception.Message, Is.EqualTo($"You don't have the correct authorization"));
-        Assert.That(exception.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
+        Assert.That(exception.StatusCode, Is.EqualTo(StatusCodes.Status403Forbidden));
 
         var finalCount = DbContext.PatientBloodPressures.Count();
 
