@@ -7,22 +7,26 @@ namespace PatientAnalytics.Services;
 
 public class DatabasePopulateService(IServiceScopeFactory scopeFactory, IConfiguration configuration) : IHostedService
 {
-    public async Task StartAsync(CancellationToken stoppingToken)
+    public async Task StartAsync(CancellationToken cancellationToken)
     {
         using var scope = scopeFactory.CreateScope();
 
         await using var context = scope.ServiceProvider.GetRequiredService<Context>();
 
-        await context.Database.EnsureCreatedAsync(stoppingToken);
+        await context.Database.EnsureCreatedAsync(cancellationToken);
 
-        var isMigrationNeeded = (await context.Database.GetPendingMigrationsAsync(stoppingToken)).Any();
+        var isMigrationNeeded = (await context.Database.GetPendingMigrationsAsync(cancellationToken)).Any();
 
         if (isMigrationNeeded)
         {
-            await context.Database.MigrateAsync(stoppingToken);
+            await context.Database.MigrateAsync(cancellationToken);
         }
 
-        if (!context.Users.Any(u => u.Role == "SuperAdmin"))
+        var superAdminExists = await context.Users.AnyAsync(
+            u => u.Role == "SuperAdmin",
+            cancellationToken);
+
+        if (!superAdminExists)
         {
             await CreateInitialSuperAdmin(context);
         }
@@ -31,6 +35,7 @@ public class DatabasePopulateService(IServiceScopeFactory scopeFactory, IConfigu
     private async Task CreateInitialSuperAdmin(Context context)
     {
         const string username = "superadmin";
+        // TODO: Remove Password generation and pass this as an environment variable
         var password = Password.GeneratePassword();
         var hashed = Password.HashPassword(password, configuration);
 
