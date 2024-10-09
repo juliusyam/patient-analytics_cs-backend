@@ -96,8 +96,6 @@ builder.Services.AddResponseCompression(options =>
 
 var connectionString = builder.Configuration.GetConnectionString("PatientAnalyticsContext");
 
-//SqliteConnectionAccess.EstablishConnection(connectionString);
-
 builder.Services.AddDbContext<Context>(opt =>
     opt.UseNpgsql(connectionString));
 builder.Services.AddScoped<JwtService>();
@@ -110,6 +108,7 @@ builder.Services.AddScoped<PatientMetricsTemperatureService>();
 builder.Services.AddScoped<PatientMetricsBloodPressureService>();
 builder.Services.AddScoped<PatientMetricsHeightService>();
 builder.Services.AddScoped<PatientMetricsWeightService>();
+builder.Services.AddHostedService<DatabasePopulateService>();
 
 builder.Services.AddCors(options =>
 {
