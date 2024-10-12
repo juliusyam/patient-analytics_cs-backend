@@ -32,8 +32,8 @@ public class PatientMetricsHeightControllerTest : HeightBaseTest
         var patients = DbContext.PatientHeights.ToList();
         var savedEntry = patients.Find(x => x.Id == response.Id);
 
-        Assert.That(response!.HeightIn, Is.EqualTo(HeightInPayload.Height));
-        Assert.That(response!.HeightIn, Is.EqualTo(savedEntry.HeightIn));
+        Assert.That(response!.HeightInFormatted, Is.EqualTo(HeightInPayload.Height.ToString("0.##")));
+        Assert.That(response!.HeightInFormatted, Is.EqualTo(savedEntry.HeightInFormatted));
     }
 
     [Test]
@@ -208,7 +208,7 @@ public class PatientMetricsHeightControllerTest : HeightBaseTest
         Assert.That(PatientHeight.PatientId, Is.EqualTo(_patientHeight01.PatientId));
         Assert.That(PatientHeight.DoctorId, Is.EqualTo(_patientHeight01.DoctorId));
         Assert.That(PatientHeight.HeightCm, Is.EqualTo(_patientHeight01.HeightCm));
-        Assert.That(PatientHeight.HeightIn, Is.EqualTo(_patientHeight01.HeightIn));
+        Assert.That(PatientHeight.HeightInFormatted, Is.EqualTo(_patientHeight01.HeightInFormatted));
         Assert.That(PatientHeight.HeightFtFormatted, Is.EqualTo(_patientHeight01.HeightFtFormatted));
     }
 

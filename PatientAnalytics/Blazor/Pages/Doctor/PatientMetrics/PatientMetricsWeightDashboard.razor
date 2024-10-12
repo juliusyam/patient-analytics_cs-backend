@@ -202,9 +202,9 @@
     {
         return _selectedDisplayUnit switch
         {
-            var unit when unit == $"{Localized["Unit_Kg"]}" => $"{patientWeight.WeightKg:F1} {Localized["Unit_Kg"]}",
-            var unit when unit == $"{Localized["Unit_St"]}" => $"{patientWeight.WeightSt:F1} {Localized["Unit_St"]}",
-            var unit when unit == $"{Localized["Unit_Lb"]}" => $"{patientWeight.WeightLb:F1} {Localized["Unit_Lb"]}",
+            var unit when unit == $"{Localized["Unit_Kg"]}" => $"{patientWeight.WeightKgFormatted} {Localized["Unit_Kg"]}",
+            var unit when unit == $"{Localized["Unit_St"]}" => $"{patientWeight.WeightStFormatted} {Localized["Unit_St"]}",
+            var unit when unit == $"{Localized["Unit_Lb"]}" => $"{patientWeight.WeightLbFormatted} {Localized["Unit_Lb"]}",
             _ => $"{patientWeight.WeightKg:F1} {Localized["Unit_Kg"]}"
         };
     }

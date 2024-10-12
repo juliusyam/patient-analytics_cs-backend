@@ -32,8 +32,8 @@ public class PatientMetricsWeightControllerTest : WeightBaseTest
         var patients = DbContext.PatientWeights.ToList();
         var savedEntry = patients.Find(x => x.Id == response.Id);
 
-        Assert.That(response!.WeightSt, Is.EqualTo(WeightStPayload.Weight).Within(0.1));
-        Assert.That(response!.WeightSt, Is.EqualTo(savedEntry.WeightSt).Within(0.1));
+        Assert.That(response!.WeightStFormatted, Is.EqualTo(WeightStPayload.Weight.ToString("0.##")));
+        Assert.That(response!.WeightStFormatted, Is.EqualTo(savedEntry.WeightStFormatted).Within(0.1));
     }
 
     [Test]
@@ -43,8 +43,8 @@ public class PatientMetricsWeightControllerTest : WeightBaseTest
         var patients = DbContext.PatientWeights.ToList();
         var savedEntry = patients.Find(x => x.Id == response.Id);
         
-        Assert.That(response!.WeightLb, Is.EqualTo(WeightLbPayload.Weight).Within(0.1));
-        Assert.That(response!.WeightLb, Is.EqualTo(savedEntry.WeightLb).Within(0.1));
+        Assert.That(response!.WeightLbFormatted, Is.EqualTo(WeightLbPayload.Weight.ToString("0.##")));
+        Assert.That(response!.WeightLbFormatted, Is.EqualTo(savedEntry.WeightLbFormatted).Within(0.1));
     }
 
     [Test]
@@ -220,8 +220,8 @@ public class PatientMetricsWeightControllerTest : WeightBaseTest
         Assert.That(PatientWeight.PatientId, Is.EqualTo(_patientWeight01.PatientId));
         Assert.That(PatientWeight.DoctorId, Is.EqualTo(_patientWeight01.DoctorId));
         Assert.That(PatientWeight.WeightKg, Is.EqualTo(_patientWeight01.WeightKg));
-        Assert.That(PatientWeight.WeightLb, Is.EqualTo(_patientWeight01.WeightLb));
-        Assert.That(PatientWeight.WeightSt, Is.EqualTo(_patientWeight01.WeightSt));
+        Assert.That(PatientWeight.WeightLbFormatted, Is.EqualTo(_patientWeight01.WeightLbFormatted));
+        Assert.That(PatientWeight.WeightStFormatted, Is.EqualTo(_patientWeight01.WeightStFormatted));
     }
 
     [Test]

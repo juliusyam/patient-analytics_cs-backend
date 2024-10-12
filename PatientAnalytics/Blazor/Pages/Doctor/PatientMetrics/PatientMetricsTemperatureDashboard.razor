@@ -198,8 +198,8 @@
     {
         return _selectedDisplayUnit switch
         {
-            var unit when unit == $"{Localized["Unit_Celsius"]}" => $"{patientTemperature.TemperatureCelsius:F1} {Localized["Unit_Celsius"]}",
-            var unit when unit == $"{Localized["Unit_Fahrenheit"]}" => $"{patientTemperature.TemperatureFahrenheit:F1} {Localized["Unit_Fahrenheit"]}",
+            var unit when unit == $"{Localized["Unit_Celsius"]}" => $"{patientTemperature.TemperatureCelsiusFormatted} {Localized["Unit_Celsius"]}",
+            var unit when unit == $"{Localized["Unit_Fahrenheit"]}" => $"{patientTemperature.TemperatureFahrenheitFormatted} {Localized["Unit_Fahrenheit"]}",
             _ => $"{patientTemperature.TemperatureCelsius:F1} {Localized["Unit_Celsius"]}"
         };
     }

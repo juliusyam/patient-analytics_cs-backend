@@ -19,7 +19,10 @@ public class PatientTemperature
     public double TemperatureCelsius { get; protected set; }
     
     [NotMapped]
-    public double TemperatureFahrenheit { get; protected set; }
+    public string? TemperatureCelsiusFormatted { get; protected set; }
+    
+    [NotMapped]
+    public string? TemperatureFahrenheitFormatted { get; protected set; }
 
     public static PatientTemperature CreateFromPayload(int patientId, int doctorId, PatientTemperaturePayload payload)
     {
@@ -49,7 +52,9 @@ public class PatientTemperature
 
     public PatientTemperature Formatted()
     {
-        TemperatureFahrenheit = (TemperatureCelsius * 1.8) + 32;
+        TemperatureCelsiusFormatted = TemperatureCelsius.ToString("0.##");
+        
+        TemperatureFahrenheitFormatted = (TemperatureCelsius * 1.8 + 32).ToString("0.##");
         
         return this;
     }

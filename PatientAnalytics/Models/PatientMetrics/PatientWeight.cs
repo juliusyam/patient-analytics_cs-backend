@@ -20,10 +20,13 @@ public class PatientWeight
     public double WeightKg { get; protected set; }
     
     [NotMapped]
-    public double WeightSt { get; protected set; }
+    public string? WeightKgFormatted { get; protected set; }
     
     [NotMapped]
-    public double WeightLb { get; protected set; }
+    public string? WeightStFormatted { get; protected set; }
+    
+    [NotMapped]
+    public string? WeightLbFormatted { get; protected set; }
 
     public static PatientWeight CreateFromPayload(int patientId, int doctorId, PatientWeightPayload payload)
     {
@@ -56,9 +59,11 @@ public class PatientWeight
 
     public PatientWeight Formatted()
     {
-        WeightLb = WeightKg * 2.2046226218;
+        WeightKgFormatted = WeightKg.ToString("0.##");
         
-        WeightSt = WeightKg * 0.157473;
+        WeightLbFormatted = (WeightKg * 2.2046226218).ToString("0.##");
+        
+        WeightStFormatted = (WeightKg * 0.157473).ToString("0.##");
         
         return this;
     }
