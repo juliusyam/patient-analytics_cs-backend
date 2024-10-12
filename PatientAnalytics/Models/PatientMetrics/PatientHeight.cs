@@ -19,7 +19,10 @@ public class PatientHeight
     public double HeightCm { get; protected set; }
     
     [NotMapped]
-    public double HeightIn { get; protected set; }
+    public string? HeightInFormatted { get; protected set; }
+    
+    [NotMapped]
+    public string? HeightCmFormatted { get; protected set; }
     
     [NotMapped]
     public string? HeightFtFormatted { get; protected set; }
@@ -52,9 +55,13 @@ public class PatientHeight
 
     public PatientHeight Formatted()
     {
-        HeightIn = HeightCm / 2.54;
+        var heightIn = HeightCm / 2.54;
         
-        HeightFtFormatted = $"{(HeightIn - HeightIn % 12) / 12}'{(int)HeightIn % 12}";
+        HeightCmFormatted = HeightCm.ToString("0.##");
+        
+        HeightInFormatted = heightIn.ToString("0.##");
+        
+        HeightFtFormatted = $"{(heightIn - heightIn % 12) / 12}'{(int)heightIn % 12}";
         
         return this;
     }

@@ -19,6 +19,12 @@ public class PatientBloodPressure
     public double BloodPressureDiastolic { get; protected set; }
     
     [NotMapped]
+    public string? BloodPressureSystolicFormatted { get; protected set; }
+    
+    [NotMapped]
+    public string? BloodPressureDiastolicFormatted { get; protected set; }
+    
+    [NotMapped]
     public string? Status { get; protected set; }
 
     public static PatientBloodPressure CreateFromPayload(
@@ -38,6 +44,10 @@ public class PatientBloodPressure
 
     public PatientBloodPressure Formatted()
     {
+        BloodPressureSystolicFormatted = BloodPressureSystolic.ToString("0.##");
+        
+        BloodPressureDiastolicFormatted = BloodPressureDiastolic.ToString("0.##");
+        
         if (BloodPressureSystolic < 120 && BloodPressureDiastolic < 80)
         {
             Status = "Normal";

@@ -27,7 +27,7 @@ public class PatientMetricsTemperatureControllerTest : TemperatureBaseTest
     {
         var response = await PatientMetricsTemperatureController.CreateEntry(DoctorHttpContextAccessor, _patientOne.Id, TempFahrenheitPayload);
 
-        Assert.That(response!.TemperatureFahrenheit, Is.EqualTo(TempFahrenheitPayload.Temperature));
+        Assert.That(response!.TemperatureFahrenheitFormatted, Is.EqualTo(TempFahrenheitPayload.Temperature.ToString("0.##")));
     }
 
     [Test]
@@ -206,7 +206,7 @@ public class PatientMetricsTemperatureControllerTest : TemperatureBaseTest
         Assert.That(PatientTemperature.PatientId, Is.EqualTo(_patientTemperature01.PatientId));
         Assert.That(PatientTemperature.DoctorId, Is.EqualTo(_patientTemperature01.DoctorId));
         Assert.That(PatientTemperature.TemperatureCelsius, Is.EqualTo(_patientTemperature01.TemperatureCelsius));
-        Assert.That(PatientTemperature.TemperatureFahrenheit, Is.EqualTo(_patientTemperature01.TemperatureFahrenheit));
+        Assert.That(PatientTemperature.TemperatureFahrenheitFormatted, Is.EqualTo(_patientTemperature01.TemperatureFahrenheitFormatted));
     }
 
     [Test]

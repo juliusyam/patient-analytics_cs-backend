@@ -206,8 +206,8 @@
     {
         return _selectedDisplayUnit switch
         {
-            var unit when unit == $"{Localized["Unit_Cm"]}" => $"{patientHeight.HeightCm:F1} {Localized["Unit_Cm"]}",
-            var unit when unit == $"{Localized["Unit_In"]}" => $"{patientHeight.HeightIn:F1} {Localized["Unit_In"]}",
+            var unit when unit == $"{Localized["Unit_Cm"]}" => $"{patientHeight.HeightCmFormatted} {Localized["Unit_Cm"]}",
+            var unit when unit == $"{Localized["Unit_In"]}" => $"{patientHeight.HeightInFormatted} {Localized["Unit_In"]}",
             var unit when unit == $"{Localized["Unit_Ft"]}" => $"{patientHeight.HeightFtFormatted} {Localized["Unit_Ft"]}",
             _ => $"{patientHeight.HeightCm:F1} {Localized["Unit_Cm"]}"
         };
