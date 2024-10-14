@@ -12,7 +12,7 @@ using PatientAnalytics.Models;
 namespace PatientAnalytics.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20241012002110_UsersTableIndexing")]
+    [Migration("20241014185912_UsersTableIndexing")]
     partial class UsersTableIndexing
     {
         /// <inheritdoc />
@@ -240,7 +240,10 @@ namespace PatientAnalytics.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Username", "Email")
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("Username")
                         .IsUnique();
 
                     b.ToTable("Users");

@@ -6,7 +6,6 @@ using PatientAnalytics.Models.Auth;
 
 namespace PatientAnalytics.Models;
 
-[Index(nameof(Username), nameof(Email), IsUnique = true)]
 public class User : Person
 {
     public static User CreateUser(string passwordHash, RegistrationPayload payload, string role)

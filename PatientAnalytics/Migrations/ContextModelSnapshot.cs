@@ -237,7 +237,10 @@ namespace PatientAnalytics.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Username", "Email")
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("Username")
                         .IsUnique();
 
                     b.ToTable("Users");

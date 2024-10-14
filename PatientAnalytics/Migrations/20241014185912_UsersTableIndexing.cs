@@ -11,9 +11,15 @@ namespace PatientAnalytics.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateIndex(
-                name: "IX_Users_Username_Email",
+                name: "IX_Users_Email",
                 table: "Users",
-                columns: new[] { "Username", "Email" },
+                column: "Email",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Username",
+                table: "Users",
+                column: "Username",
                 unique: true);
         }
 
@@ -21,7 +27,11 @@ namespace PatientAnalytics.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropIndex(
-                name: "IX_Users_Username_Email",
+                name: "IX_Users_Email",
+                table: "Users");
+
+            migrationBuilder.DropIndex(
+                name: "IX_Users_Username",
                 table: "Users");
         }
     }
