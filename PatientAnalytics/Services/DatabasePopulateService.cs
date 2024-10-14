@@ -13,6 +13,13 @@ public class DatabasePopulateService(IServiceScopeFactory scopeFactory, IConfigu
 
         await using var context = scope.ServiceProvider.GetRequiredService<Context>();
 
+        await ConductDatabaseMigrations(context, cancellationToken);
+        
+        await CreateInitialSuperAdmin(context, cancellationToken);
+    }
+
+    private static async Task ConductDatabaseMigrations(Context context, CancellationToken cancellationToken)
+    {
         await context.Database.EnsureCreatedAsync(cancellationToken);
 
         var isMigrationNeeded = (await context.Database.GetPendingMigrationsAsync(cancellationToken)).Any();
@@ -21,20 +28,18 @@ public class DatabasePopulateService(IServiceScopeFactory scopeFactory, IConfigu
         {
             await context.Database.MigrateAsync(cancellationToken);
         }
-
-        var superAdminExists = await context.Users.AnyAsync(
-            u => u.Role == "SuperAdmin",
-            cancellationToken);
-
-        if (!superAdminExists)
-        {
-            await CreateInitialSuperAdmin(context);
-        }
     }
-
-    private async Task CreateInitialSuperAdmin(Context context)
+    
+    private async Task CreateInitialSuperAdmin(Context context, CancellationToken cancellationToken)
     {
         const string username = "superadmin";
+        
+        var superAdminExists = await context.Users.AnyAsync(
+            u => u.Username == username,
+            cancellationToken);
+
+        if (superAdminExists) return;
+        
         // TODO: Remove Password generation and pass this as an environment variable
         var password = Password.GeneratePassword();
         var hashed = Password.HashPassword(password, configuration);
@@ -54,12 +59,12 @@ public class DatabasePopulateService(IServiceScopeFactory scopeFactory, IConfigu
 
         context.Users.Add(superAdmin);
 
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(cancellationToken);
 
         Console.WriteLine($"Initial Super Admin account created with username: {username} password: {password}");
     }
 
-    public Task StopAsync(CancellationToken stoppingToken)
+    public Task StopAsync(CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
     }
