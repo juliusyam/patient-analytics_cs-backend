@@ -25,7 +25,7 @@ namespace PatientAnalytics.Blazor.Localization {
         }
         
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static System.Resources.ResourceManager ResourceManager {
+        public static System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.Equals(null, resourceMan)) {
                     System.Resources.ResourceManager temp = new System.Resources.ResourceManager("PatientAnalytics.Blazor.Localization.Localized", typeof(Localized).Assembly);
@@ -36,7 +36,7 @@ namespace PatientAnalytics.Blazor.Localization {
         }
         
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static System.Globalization.CultureInfo Culture {
+        public static System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -45,583 +45,583 @@ namespace PatientAnalytics.Blazor.Localization {
             }
         }
         
-        internal static string AppTitle {
+        public static string AppTitle {
             get {
                 return ResourceManager.GetString("AppTitle", resourceCulture);
             }
         }
         
-        internal static string Title_DoctorDashboard {
+        public static string Title_DoctorDashboard {
             get {
                 return ResourceManager.GetString("Title_DoctorDashboard", resourceCulture);
             }
         }
         
-        internal static string Title_AdminDashboard {
+        public static string Title_AdminDashboard {
             get {
                 return ResourceManager.GetString("Title_AdminDashboard", resourceCulture);
             }
         }
         
-        internal static string Title_PatientDashboard {
+        public static string Title_PatientDashboard {
             get {
                 return ResourceManager.GetString("Title_PatientDashboard", resourceCulture);
             }
         }
         
-        internal static string Title_PatientDashboard_WithPatientName {
+        public static string Title_PatientDashboard_WithPatientName {
             get {
                 return ResourceManager.GetString("Title_PatientDashboard_WithPatientName", resourceCulture);
             }
         }
         
-        internal static string Title_UserManagement_Doctors {
+        public static string Title_UserManagement_Doctors {
             get {
                 return ResourceManager.GetString("Title_UserManagement_Doctors", resourceCulture);
             }
         }
         
-        internal static string Title_UserManagement_Admins {
+        public static string Title_UserManagement_Admins {
             get {
                 return ResourceManager.GetString("Title_UserManagement_Admins", resourceCulture);
             }
         }
         
-        internal static string Title_UserManagement_SuperAdmins {
+        public static string Title_UserManagement_SuperAdmins {
             get {
                 return ResourceManager.GetString("Title_UserManagement_SuperAdmins", resourceCulture);
             }
         }
         
-        internal static string Title_Doctors {
+        public static string Title_Doctors {
             get {
                 return ResourceManager.GetString("Title_Doctors", resourceCulture);
             }
         }
         
-        internal static string Title_Admins {
+        public static string Title_Admins {
             get {
                 return ResourceManager.GetString("Title_Admins", resourceCulture);
             }
         }
         
-        internal static string Title_SuperAdmins {
+        public static string Title_SuperAdmins {
             get {
                 return ResourceManager.GetString("Title_SuperAdmins", resourceCulture);
             }
         }
         
-        internal static string Title_DoctorCreate {
+        public static string Title_DoctorCreate {
             get {
                 return ResourceManager.GetString("Title_DoctorCreate", resourceCulture);
             }
         }
         
-        internal static string Title_AdminCreate {
+        public static string Title_AdminCreate {
             get {
                 return ResourceManager.GetString("Title_AdminCreate", resourceCulture);
             }
         }
         
-        internal static string Title_SuperAdminCreate {
+        public static string Title_SuperAdminCreate {
             get {
                 return ResourceManager.GetString("Title_SuperAdminCreate", resourceCulture);
             }
         }
         
-        internal static string Title_Login {
+        public static string Title_Login {
             get {
                 return ResourceManager.GetString("Title_Login", resourceCulture);
             }
         }
         
-        internal static string Title_Patients {
+        public static string Title_Patients {
             get {
                 return ResourceManager.GetString("Title_Patients", resourceCulture);
             }
         }
         
-        internal static string Label_Username {
+        public static string Label_Username {
             get {
                 return ResourceManager.GetString("Label_Username", resourceCulture);
             }
         }
         
-        internal static string Label_Password {
+        public static string Label_Password {
             get {
                 return ResourceManager.GetString("Label_Password", resourceCulture);
             }
         }
         
-        internal static string Label_ID {
+        public static string Label_ID {
             get {
                 return ResourceManager.GetString("Label_ID", resourceCulture);
             }
         }
         
-        internal static string Label_Email {
+        public static string Label_Email {
             get {
                 return ResourceManager.GetString("Label_Email", resourceCulture);
             }
         }
         
-        internal static string Label_Name {
+        public static string Label_Name {
             get {
                 return ResourceManager.GetString("Label_Name", resourceCulture);
             }
         }
         
-        internal static string Label_Gender {
+        public static string Label_Gender {
             get {
                 return ResourceManager.GetString("Label_Gender", resourceCulture);
             }
         }
         
-        internal static string Label_DateOfBirth {
+        public static string Label_DateOfBirth {
             get {
                 return ResourceManager.GetString("Label_DateOfBirth", resourceCulture);
             }
         }
         
-        internal static string Label_DateOfBirth_Abbreviated {
+        public static string Label_DateOfBirth_Abbreviated {
             get {
                 return ResourceManager.GetString("Label_DateOfBirth_Abbreviated", resourceCulture);
             }
         }
         
-        internal static string Label_DateCreated {
+        public static string Label_DateCreated {
             get {
                 return ResourceManager.GetString("Label_DateCreated", resourceCulture);
             }
         }
         
-        internal static string Label_DateEdited {
+        public static string Label_DateEdited {
             get {
                 return ResourceManager.GetString("Label_DateEdited", resourceCulture);
             }
         }
         
-        internal static string Label_Address {
+        public static string Label_Address {
             get {
                 return ResourceManager.GetString("Label_Address", resourceCulture);
             }
         }
         
-        internal static string Label_ViewDetails {
+        public static string Label_ViewDetails {
             get {
                 return ResourceManager.GetString("Label_ViewDetails", resourceCulture);
             }
         }
         
-        internal static string Label_Loading {
+        public static string Label_Loading {
             get {
                 return ResourceManager.GetString("Label_Loading", resourceCulture);
             }
         }
         
-        internal static string Placeholder_Username {
+        public static string Placeholder_Username {
             get {
                 return ResourceManager.GetString("Placeholder_Username", resourceCulture);
             }
         }
         
-        internal static string Placeholder_Password {
+        public static string Placeholder_Password {
             get {
                 return ResourceManager.GetString("Placeholder_Password", resourceCulture);
             }
         }
         
-        internal static string Format_WithColon {
+        public static string Format_WithColon {
             get {
                 return ResourceManager.GetString("Format_WithColon", resourceCulture);
             }
         }
         
-        internal static string Format_FullName {
+        public static string Format_FullName {
             get {
                 return ResourceManager.GetString("Format_FullName", resourceCulture);
             }
         }
         
-        internal static string Button_Submit {
+        public static string Button_Submit {
             get {
                 return ResourceManager.GetString("Button_Submit", resourceCulture);
             }
         }
         
-        internal static string Button_View {
+        public static string Button_View {
             get {
                 return ResourceManager.GetString("Button_View", resourceCulture);
             }
         }
         
-        internal static string Button_Logout {
+        public static string Button_Logout {
             get {
                 return ResourceManager.GetString("Button_Logout", resourceCulture);
             }
         }
         
-        internal static string Button_UserCreate {
+        public static string Button_UserCreate {
             get {
                 return ResourceManager.GetString("Button_UserCreate", resourceCulture);
             }
         }
         
-        internal static string Message_UnauthorizedRedirect {
+        public static string Message_UnauthorizedRedirect {
             get {
                 return ResourceManager.GetString("Message_UnauthorizedRedirect", resourceCulture);
             }
         }
         
-        internal static string Message_DashboardWelcome {
+        public static string Message_DashboardWelcome {
             get {
                 return ResourceManager.GetString("Message_DashboardWelcome", resourceCulture);
             }
         }
         
-        internal static string DateFormatting_Date {
+        public static string DateFormatting_Date {
             get {
                 return ResourceManager.GetString("DateFormatting_Date", resourceCulture);
             }
         }
         
-        internal static string DateFormatting_DateTime {
+        public static string DateFormatting_DateTime {
             get {
                 return ResourceManager.GetString("DateFormatting_DateTime", resourceCulture);
             }
         }
         
-        internal static string Button_Back {
+        public static string Button_Back {
             get {
                 return ResourceManager.GetString("Button_Back", resourceCulture);
             }
         }
         
-        internal static string Button_Cancel {
+        public static string Button_Cancel {
             get {
                 return ResourceManager.GetString("Button_Cancel", resourceCulture);
             }
         }
         
-        internal static string Button_Confirm {
+        public static string Button_Confirm {
             get {
                 return ResourceManager.GetString("Button_Confirm", resourceCulture);
             }
         }
         
-        internal static string Button_Create {
+        public static string Button_Create {
             get {
                 return ResourceManager.GetString("Button_Create", resourceCulture);
             }
         }
         
-        internal static string Button_Create_New_Patient {
+        public static string Button_Create_New_Patient {
             get {
                 return ResourceManager.GetString("Button_Create_New_Patient", resourceCulture);
             }
         }
         
-        internal static string Button_Create_Patient {
+        public static string Button_Create_Patient {
             get {
                 return ResourceManager.GetString("Button_Create_Patient", resourceCulture);
             }
         }
         
-        internal static string Button_Delete {
+        public static string Button_Delete {
             get {
                 return ResourceManager.GetString("Button_Delete", resourceCulture);
             }
         }
         
-        internal static string Button_Edit {
+        public static string Button_Edit {
             get {
                 return ResourceManager.GetString("Button_Edit", resourceCulture);
             }
         }
         
-        internal static string Button_Update {
+        public static string Button_Update {
             get {
                 return ResourceManager.GetString("Button_Update", resourceCulture);
             }
         }
         
-        internal static string Label_First_Name {
+        public static string Label_First_Name {
             get {
                 return ResourceManager.GetString("Label_First_Name", resourceCulture);
             }
         }
         
-        internal static string Label_Last_Name {
+        public static string Label_Last_Name {
             get {
                 return ResourceManager.GetString("Label_Last_Name", resourceCulture);
             }
         }
         
-        internal static string Placeholder_Address {
+        public static string Placeholder_Address {
             get {
                 return ResourceManager.GetString("Placeholder_Address", resourceCulture);
             }
         }
         
-        internal static string Placeholder_DateOfBirth {
+        public static string Placeholder_DateOfBirth {
             get {
                 return ResourceManager.GetString("Placeholder_DateOfBirth", resourceCulture);
             }
         }
         
-        internal static string Placeholder_Email {
+        public static string Placeholder_Email {
             get {
                 return ResourceManager.GetString("Placeholder_Email", resourceCulture);
             }
         }
         
-        internal static string Placeholder_First_Name {
+        public static string Placeholder_First_Name {
             get {
                 return ResourceManager.GetString("Placeholder_First_Name", resourceCulture);
             }
         }
         
-        internal static string Placeholder_Gender {
+        public static string Placeholder_Gender {
             get {
                 return ResourceManager.GetString("Placeholder_Gender", resourceCulture);
             }
         }
         
-        internal static string Placeholder_Last_Name {
+        public static string Placeholder_Last_Name {
             get {
                 return ResourceManager.GetString("Placeholder_Last_Name", resourceCulture);
             }
         }
         
-        internal static string Title_Delete_Patient {
+        public static string Title_Delete_Patient {
             get {
                 return ResourceManager.GetString("Title_Delete_Patient", resourceCulture);
             }
         }
         
-        internal static string Button_BloodPressure {
+        public static string Button_BloodPressure {
             get {
                 return ResourceManager.GetString("Button_BloodPressure", resourceCulture);
             }
         }
         
-        internal static string Button_Height {
+        public static string Button_Height {
             get {
                 return ResourceManager.GetString("Button_Height", resourceCulture);
             }
         }
         
-        internal static string Button_Weight {
+        public static string Button_Weight {
             get {
                 return ResourceManager.GetString("Button_Weight", resourceCulture);
             }
         }
         
-        internal static string Button_Temperature {
+        public static string Button_Temperature {
             get {
                 return ResourceManager.GetString("Button_Temperature", resourceCulture);
             }
         }
         
-        internal static string Label_BP_Systolic {
+        public static string Label_BP_Systolic {
             get {
                 return ResourceManager.GetString("Label_BP_Systolic", resourceCulture);
             }
         }
         
-        internal static string Label_BP_Diastolic {
+        public static string Label_BP_Diastolic {
             get {
                 return ResourceManager.GetString("Label_BP_Diastolic", resourceCulture);
             }
         }
         
-        internal static string Label_Status {
+        public static string Label_Status {
             get {
                 return ResourceManager.GetString("Label_Status", resourceCulture);
             }
         }
         
-        internal static string Label_Doctor {
+        public static string Label_Doctor {
             get {
                 return ResourceManager.GetString("Label_Doctor", resourceCulture);
             }
         }
         
-        internal static string Label_Selected_Unit {
+        public static string Label_Selected_Unit {
             get {
                 return ResourceManager.GetString("Label_Selected_Unit", resourceCulture);
             }
         }
         
-        internal static string Label_Unit {
+        public static string Label_Unit {
             get {
                 return ResourceManager.GetString("Label_Unit", resourceCulture);
             }
         }
         
-        internal static string Label_Celsius {
+        public static string Label_Celsius {
             get {
                 return ResourceManager.GetString("Label_Celsius", resourceCulture);
             }
         }
         
-        internal static string Label_Fahrenheit {
+        public static string Label_Fahrenheit {
             get {
                 return ResourceManager.GetString("Label_Fahrenheit", resourceCulture);
             }
         }
         
-        internal static string Error_InvalidRole {
+        public static string Error_InvalidRole {
             get {
                 return ResourceManager.GetString("Error_InvalidRole", resourceCulture);
             }
         }
         
-        internal static string Error_HeightRequired {
+        public static string Error_HeightRequired {
             get {
                 return ResourceManager.GetString("Error_HeightRequired", resourceCulture);
             }
         }
         
-        internal static string Error_UnitRequired {
+        public static string Error_UnitRequired {
             get {
                 return ResourceManager.GetString("Error_UnitRequired", resourceCulture);
             }
         }
         
-        internal static string Error_BloodPressureSystolicRequired {
+        public static string Error_BloodPressureSystolicRequired {
             get {
                 return ResourceManager.GetString("Error_BloodPressureSystolicRequired", resourceCulture);
             }
         }
         
-        internal static string Error_BloodPressureDiastolicRequired {
+        public static string Error_BloodPressureDiastolicRequired {
             get {
                 return ResourceManager.GetString("Error_BloodPressureDiastolicRequired", resourceCulture);
             }
         }
         
-        internal static string Error_WeightRequired {
+        public static string Error_WeightRequired {
             get {
                 return ResourceManager.GetString("Error_WeightRequired", resourceCulture);
             }
         }
         
-        internal static string Error_TemperatureRequired {
+        public static string Error_TemperatureRequired {
             get {
                 return ResourceManager.GetString("Error_TemperatureRequired", resourceCulture);
             }
         }
         
-        internal static string Unit_Cm {
+        public static string Unit_Cm {
             get {
                 return ResourceManager.GetString("Unit_Cm", resourceCulture);
             }
         }
         
-        internal static string Unit_In {
+        public static string Unit_In {
             get {
                 return ResourceManager.GetString("Unit_In", resourceCulture);
             }
         }
         
-        internal static string Unit_Ft {
+        public static string Unit_Ft {
             get {
                 return ResourceManager.GetString("Unit_Ft", resourceCulture);
             }
         }
         
-        internal static string Unit_Kg {
+        public static string Unit_Kg {
             get {
                 return ResourceManager.GetString("Unit_Kg", resourceCulture);
             }
         }
         
-        internal static string Unit_St {
+        public static string Unit_St {
             get {
                 return ResourceManager.GetString("Unit_St", resourceCulture);
             }
         }
         
-        internal static string Unit_Lb {
+        public static string Unit_Lb {
             get {
                 return ResourceManager.GetString("Unit_Lb", resourceCulture);
             }
         }
         
-        internal static string Unit_Celsius {
+        public static string Unit_Celsius {
             get {
                 return ResourceManager.GetString("Unit_Celsius", resourceCulture);
             }
         }
         
-        internal static string Unit_Fahrenheit {
+        public static string Unit_Fahrenheit {
             get {
                 return ResourceManager.GetString("Unit_Fahrenheit", resourceCulture);
             }
         }
         
-        internal static string Message_No_Email {
+        public static string Message_No_Email {
             get {
                 return ResourceManager.GetString("Message_No_Email", resourceCulture);
             }
         }
         
-        internal static string Button_Download_Report {
+        public static string Button_Download_Report {
             get {
                 return ResourceManager.GetString("Button_Download_Report", resourceCulture);
             }
         }
         
-        internal static string SignalRMessage_UserLoggedIn {
+        public static string SignalRMessage_UserLoggedIn {
             get {
                 return ResourceManager.GetString("SignalRMessage_UserLoggedIn", resourceCulture);
             }
         }
         
-        internal static string SignalRMessage_UserLoggedOut {
+        public static string SignalRMessage_UserLoggedOut {
             get {
                 return ResourceManager.GetString("SignalRMessage_UserLoggedOut", resourceCulture);
             }
         }
         
-        internal static string Title_UserDashboard {
+        public static string Title_UserDashboard {
             get {
                 return ResourceManager.GetString("Title_UserDashboard", resourceCulture);
             }
         }
         
-        internal static string Button_UserEditAccountInfo {
+        public static string Button_UserEditAccountInfo {
             get {
                 return ResourceManager.GetString("Button_UserEditAccountInfo", resourceCulture);
             }
         }
         
-        internal static string Button_UserDeactivate {
+        public static string Button_UserDeactivate {
             get {
                 return ResourceManager.GetString("Button_UserDeactivate", resourceCulture);
             }
         }
         
-        internal static string Button_UserActivate {
+        public static string Button_UserActivate {
             get {
                 return ResourceManager.GetString("Button_UserActivate", resourceCulture);
             }
         }
         
-        internal static string Title_ActivateUser {
+        public static string Title_ActivateUser {
             get {
                 return ResourceManager.GetString("Title_ActivateUser", resourceCulture);
             }
         }
         
-        internal static string Title_DeactivateUser {
+        public static string Title_DeactivateUser {
             get {
                 return ResourceManager.GetString("Title_DeactivateUser", resourceCulture);
             }
         }
         
-        internal static string Title_DeleteRecord {
+        public static string Title_DeleteRecord {
             get {
                 return ResourceManager.GetString("Title_DeleteRecord", resourceCulture);
             }

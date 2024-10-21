@@ -20,24 +20,24 @@
                         <div class="control">
                             <label class="radio-button">
                                 <input type="radio" 
-                                        value="@Localized[$"Unit_Kg"]"
+                                        value="@Localized["Unit_Kg"]"
                                         @onchange="UpdateDisplayUnit" 
-                                        checked="@IsSelectedUnit(@Localized[$"Unit_Kg"])">
-                                <span>@Localized[$"Unit_Kg"]</span>
+                                        checked="@IsSelectedUnit(Localized[$"Unit_Kg"])">
+                                <span>@Localized["Unit_Kg"]</span>
                             </label>
                             <label class="radio-button">
                                 <input type="radio" 
-                                        value="@Localized[$"Unit_St"]" 
+                                        value="@Localized["Unit_St"]" 
                                         @onchange="UpdateDisplayUnit" 
-                                        checked="@IsSelectedUnit(@Localized[$"Unit_St"])">
-                                <span>@Localized[$"Unit_St"]</span>
+                                        checked="@IsSelectedUnit(Localized[$"Unit_St"])">
+                                <span>@Localized["Unit_St"]</span>
                             </label>
                             <label class="radio-button">
                                 <input type="radio" 
-                                        value="@Localized[$"Unit_Lb"]"
+                                        value="@Localized["Unit_Lb"]"
                                         @onchange="UpdateDisplayUnit" 
-                                        checked="@IsSelectedUnit(@Localized[$"Unit_Lb"])">
-                                <span>@Localized[$"Unit_Lb"]</span>
+                                        checked="@IsSelectedUnit(Localized[$"Unit_Lb"])">
+                                <span>@Localized["Unit_Lb"]</span>
                             </label>
                         </div>
                     </div>
@@ -70,14 +70,18 @@
                         <ValidationSummary class="text-danger" />
                         <div class="field">
                             <label class="label">@Localized["Button_Weight"]</label>
-                            <InputNumber class="input" placeholder=60 @bind-Value="_weightValue" />
+                            <InputNumber 
+                                class="input"
+                                placeholder=60
+                                @bind-Value="_patientWeightPayload.Weight"
+                                @bind-Value:format="F2" />
                         </div>
                         <div class="field">
                             <label class="label">@Localized["Label_Unit"]</label>
-                            <select class="input" placeholder=cm @bind="_selectedUnit">
-                                <option value=@Localized[$"Unit_Kg"]>@Localized[$"Unit_Kg"]</option>
-                                <option value=@Localized[$"Unit_St"]>@Localized[$"Unit_St"]</option>
-                                <option value=@Localized[$"Unit_Lb"]>@Localized[$"Unit_Lb"]</option>
+                            <select class="input" placeholder=cm @bind="_patientWeightPayload.Unit">
+                                <option value=@Localized["Unit_Kg"]>@Localized["Unit_Kg"]</option>
+                                <option value=@Localized["Unit_St"]>@Localized["Unit_St"]</option>
+                                <option value=@Localized["Unit_Lb"]>@Localized["Unit_Lb"]</option>
                             </select>
                         </div>
                         <button type="submit" class="button is-primary">@Localized["Button_Create"]</button>
@@ -99,23 +103,21 @@
     private string _pageTitle = "";
     private Patient? _patient;
     private List<PatientWeight> _patientsWeight = new();
-    private PatientWeightPayload _patientWeightPayload = new();
+    private readonly PatientWeightPayload _patientWeightPayload = new();
     
     private bool _refreshing;
     private HttpStatusCodeException? _exception;
 
     private readonly BlazorAlertController _alertController = new();
     private string ErrorMessage { get; set; } = string.Empty;
-
-    private double? _weightValue;
-    private string? _selectedUnit;
+    
     private string? _selectedDisplayUnit;
     private int _weightId;
 
     protected override async Task OnInitializedAsync()
     {
-        _selectedUnit = @Localized["Unit_Kg"];
-        _selectedDisplayUnit = @Localized["Unit_Kg"];
+        _patientWeightPayload.Unit = Localized["Unit_Kg"];
+        _selectedDisplayUnit = Localized["Unit_Kg"];
 
         if (PatientAnalyticsAuthStateProvider.IsDoctor())
         {
@@ -147,19 +149,17 @@
     {
         ErrorMessage = string.Empty;
 
-        if (!_weightValue.HasValue)
+        if (_patientWeightPayload.Weight <= 0.0)
         {
             ErrorMessage = Localized["Error_WeightRequired"];
             return;
         }
 
-        if (string.IsNullOrEmpty(_selectedUnit))
+        if (string.IsNullOrEmpty(_patientWeightPayload.Unit))
         {
             ErrorMessage = Localized["Error_UnitRequired"];
             return;
         }
-
-        _patientWeightPayload.SetWeight(_weightValue.Value, _selectedUnit);
 
         await PatientAnalyticsAuthStateProvider.ServiceWrapperAsync(
             _refreshing,
@@ -167,6 +167,7 @@
             {
                 var newWeightEntry = await PatientMetricsWeightService.CreateEntry(token, Id, _patientWeightPayload);
                 _patientsWeight.Insert(0, newWeightEntry);
+                _patientWeightPayload.Weight = 0.0;
             },
             refreshing => _refreshing = refreshing,
             exception => ErrorMessage = exception.Message, 
@@ -176,13 +177,10 @@
     private void ShowDeleteConfirmation(int id)
     {
         _weightId = id;
-        _alertController.OnDisplayAlert(
-            Localized,
-            "Title_DeleteRecord",
-            async () => await ConfirmDelete());
+        _alertController.OnDisplayAlert(Localized, "Title_DeleteRecord", ConfirmDelete);
     }
 
-    private async Task ConfirmDelete()
+    private async void ConfirmDelete()
     {
         await PatientAnalyticsAuthStateProvider.ServiceWrapperAsync(
             _refreshing,

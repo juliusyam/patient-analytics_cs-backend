@@ -241,16 +241,16 @@
         <value>Einheit ist erforderlich.</value>
     </data>
     <data name="Error_BloodPressureSystolicRequired" xml:space="preserve">
-        <value>Der systolische Blutdruckwert ist erforderlich.</value>
+        <value>Der systolische Blutdruckwert ist erforderlich, und muss größer als 0 sein.</value>
     </data>
     <data name="Error_BloodPressureDiastolicRequired" xml:space="preserve">
-        <value>Der diastolische Blutdruckwert ist erforderlich.</value>
+        <value>Der diastolische Blutdruckwert ist erforderlich, und muss größer als 0 sein.</value>
     </data>
     <data name="Error_WeightRequired" xml:space="preserve">
-        <value>Gewichtswert ist erforderlich.</value>
+        <value>Gewichtswert ist erforderlich, und muss größer als 0 sein.</value>
     </data>
     <data name="Error_TemperatureRequired" xml:space="preserve">
-        <value>Temperaturwert ist erforderlich.</value>
+        <value>Temperaturwert ist erforderlich, und muss größer als 0 sein.</value>
     </data>
     <data name="Unit_Cm" xml:space="preserve">
         <value>Cm</value>

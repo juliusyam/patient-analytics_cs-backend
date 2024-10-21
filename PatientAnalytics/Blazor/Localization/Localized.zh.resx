@@ -241,16 +241,16 @@
         <value>單位為必填項。</value>
     </data>
     <data name="Error_BloodPressureSystolicRequired" xml:space="preserve">
-        <value>血壓 需要收縮值。</value>
+        <value>需要血壓收縮值，數字必須大於0。</value>
     </data>
     <data name="Error_BloodPressureDiastolicRequired" xml:space="preserve">
-        <value>血壓 需要舒張值。</value>
+        <value>需要血壓舒張值，數字必須大於0。</value>
     </data>
     <data name="Error_WeightRequired" xml:space="preserve">
-        <value>重量值是必需的。</value>
+        <value>需要重量值，數字必須大於0。</value>
     </data>
     <data name="Error_TemperatureRequired" xml:space="preserve">
-        <value>需要溫度值。</value>
+        <value>需要溫度值，數字必須大於0。</value>
     </data>
     <data name="Unit_Cm" xml:space="preserve">
         <value>厘米</value>

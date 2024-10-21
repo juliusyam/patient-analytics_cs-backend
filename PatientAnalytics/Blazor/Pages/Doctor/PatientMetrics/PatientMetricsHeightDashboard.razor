@@ -20,24 +20,24 @@
                         <div class="control">
                             <label class="radio-button">
                                 <input type="radio" 
-                                        value="@Localized[$"Unit_Cm"]"
+                                        value="@Localized["Unit_Cm"]"
                                         @onchange="UpdateDisplayUnit" 
-                                        checked="@IsSelectedUnit(@Localized[$"Unit_Cm"])">
-                                <span>@Localized[$"Unit_Cm"]</span>
+                                        checked="@IsSelectedUnit(Localized["Unit_Cm"])">
+                                <span>@Localized["Unit_Cm"]</span>
                             </label>
                             <label class="radio-button">
                                 <input type="radio"
-                                        value="@Localized[$"Unit_In"]"
+                                        value="@Localized["Unit_In"]"
                                         @onchange="UpdateDisplayUnit" 
-                                        checked="@IsSelectedUnit(@Localized[$"Unit_In"])">
-                                <span>@Localized[$"Unit_In"]</span>
+                                        checked="@IsSelectedUnit(Localized["Unit_In"])">
+                                <span>@Localized["Unit_In"]</span>
                             </label>
                             <label class="radio-button">
                                 <input type="radio"
-                                        value="@Localized[$"Unit_Ft"]"
+                                        value="@Localized["Unit_Ft"]"
                                         @onchange="UpdateDisplayUnit" 
-                                        checked="@IsSelectedUnit(@Localized[$"Unit_Ft"])">
-                                <span>@Localized[$"Unit_Ft"]</span>
+                                        checked="@IsSelectedUnit(Localized["Unit_Ft"])">
+                                <span>@Localized["Unit_Ft"]</span>
                             </label>
                         </div>
                     </div>
@@ -75,13 +75,17 @@
                         <ValidationSummary class="text-danger" />
                         <div class="field">
                             <label class="label">@Localized["Button_Height"]</label>
-                            <InputNumber class="input" placeholder=120 @bind-Value="_heightValue" />
+                            <InputNumber 
+                                class="input" 
+                                placeholder=120 
+                                @bind-Value="_patientHeightPayload.Height"
+                                @bind-Value:format="F2" />
                         </div>
                         <div class="field">
                             <label class="label">@Localized["Label_Unit"]</label>
-                            <select class="input" placeholder=cm @bind="_selectedUnit">
-                                <option value=@Localized[$"Unit_{"Cm"}"]>@Localized[$"Unit_{"Cm"}"]</option>
-                                <option value=@Localized[$"Unit_{"In"}"]>@Localized[$"Unit_{"In"}"]</option>
+                            <select class="input" placeholder=cm @bind="_patientHeightPayload.Unit">
+                                <option value=@Localized["Unit_Cm"]>@Localized["Unit_Cm"]</option>
+                                <option value=@Localized["Unit_In"]>@Localized["Unit_In"]</option>
                             </select>
                         </div>
                         <button type="submit" class="button is-primary">@Localized["Button_Create"]</button>
@@ -103,7 +107,7 @@
     private string _pageTitle = "";
     private Patient? _patient;
     private List<PatientHeight> _patientsHeight = new();
-    private PatientHeightPayload _patientHeightPayload = new();
+    private readonly PatientHeightPayload _patientHeightPayload = new();
     
     private bool _refreshing;
     private HttpStatusCodeException? _exception;
@@ -111,15 +115,13 @@
     private readonly BlazorAlertController _alertController = new();
     private string ErrorMessage { get; set; } = string.Empty;
 
-    private double? _heightValue;
-    private string? _selectedUnit;
     private string? _selectedDisplayUnit;
     private int _heightId;
 
     protected override async Task OnInitializedAsync()
     {
-        _selectedUnit = @Localized["Unit_Cm"];
-        _selectedDisplayUnit = @Localized["Unit_Cm"];
+        _patientHeightPayload.Unit= Localized["Unit_Cm"];
+        _selectedDisplayUnit = Localized["Unit_Cm"];
 
         if (PatientAnalyticsAuthStateProvider.IsDoctor())
         {
@@ -131,7 +133,10 @@
                     
                     if (_patient is not null)
                     {
-                        _pageTitle = string.Format(Localized["Title_PatientDashboard_WithPatientName"], _patient.FirstName, _patient.LastName);
+                        _pageTitle = string.Format(
+                            Localized["Title_PatientDashboard_WithPatientName"],
+                            _patient.FirstName,
+                            _patient.LastName);
 
                         _patientsHeight = await PatientMetricsHeightService.GetPatientHeights(token, Id);
                     }
@@ -151,26 +156,27 @@
     {
         ErrorMessage = string.Empty;
 
-        if (!_heightValue.HasValue)
+        if (_patientHeightPayload.Height <= 0.0)
         {
             ErrorMessage = Localized["Error_HeightRequired"];
             return;
         }
 
-        if (string.IsNullOrEmpty(_selectedUnit))
+        if (string.IsNullOrEmpty(_patientHeightPayload.Unit))
         {
             ErrorMessage = Localized["Error_UnitRequired"];
             return;
         }
 
-        _patientHeightPayload.SetPatientHeight(_heightValue.Value, _selectedUnit);
-
         await PatientAnalyticsAuthStateProvider.ServiceWrapperAsync(
             _refreshing,
             async token =>
             {
-                var newHeightEntry = await PatientMetricsHeightService.CreateEntry(token, Id, _patientHeightPayload);
+                var newHeightEntry = await PatientMetricsHeightService.CreateEntry(
+                    token, Id, _patientHeightPayload);
+                
                 _patientsHeight.Insert(0, newHeightEntry);
+                _patientHeightPayload.Height = 0.0;
             },
             refreshing => _refreshing = refreshing,
             exception => ErrorMessage = exception.Message, 
@@ -180,13 +186,10 @@
     private void ShowDeleteConfirmation(int id)
     {
         _heightId = id;
-        _alertController.OnDisplayAlert(
-            Localized, 
-            "Title_DeleteRecord", 
-            async () => ConfirmDelete());
+        _alertController.OnDisplayAlert(Localized, "Title_DeleteRecord", ConfirmDelete);
     }
 
-    private async Task ConfirmDelete()
+    private async void ConfirmDelete()
     {
         await PatientAnalyticsAuthStateProvider.ServiceWrapperAsync(
             _refreshing,

@@ -32,8 +32,8 @@
                             {
                                 <tr>
                                     <td>@patient.Id</td>
-                                    <td>@patient.BloodPressureSystolic</td>
-                                    <td>@patient.BloodPressureDiastolic</td>
+                                    <td>@patient.BloodPressureSystolicFormatted</td>
+                                    <td>@patient.BloodPressureDiastolicFormatted</td>
                                     <td>@patient.Status</td>
                                     <td>@patient.Doctor?.FirstName @patient.Doctor?.LastName @patient.DoctorId</td>
                                     <td>@patient.DateCreated</td>
@@ -53,11 +53,19 @@
                         <ValidationSummary class="text-danger" />
                         <div class="field">
                             <label class="label">@Localized["Label_BP_Systolic"]</label>
-                            <InputNumber class="input" placeholder=120 @bind-Value="_bloodPressureSystolic" />
+                            <InputNumber 
+                                class="input" 
+                                placeholder=120 
+                                @bind-Value="_patientBloodPressurePayload.BloodPressureSystolic" 
+                                @bind-Value:format="F2" />
                         </div>
                         <div class="field">
                             <label class="label">@Localized["Label_BP_Diastolic"]</label>
-                            <InputNumber class="input" placeholder=60 @bind-Value="_bloodPressureDiastolic" />
+                            <InputNumber 
+                                class="input" 
+                                placeholder=60 
+                                @bind-Value="_patientBloodPressurePayload.BloodPressureDiastolic" 
+                                @bind-Value:format="F2" />
                         </div>
                         <button type="submit" class="button is-primary">@Localized["Button_Create"]</button>
                         <p class="has-text-danger">@ErrorMessage</p>
@@ -85,9 +93,7 @@
 
     private readonly BlazorAlertController _alertController = new();
     private string ErrorMessage { get; set; } = string.Empty;
-
-    private int? _bloodPressureSystolic;
-    private int? _bloodPressureDiastolic;
+    
     private int _bloodPressureId;
 
     protected override async Task OnInitializedAsync()
@@ -122,19 +128,17 @@
     {
         ErrorMessage = string.Empty;
 
-        if (!_bloodPressureSystolic.HasValue)
+        if (_patientBloodPressurePayload.BloodPressureSystolic <= 0.0)
         {
             ErrorMessage = Localized["Error_BloodPressureSystolicRequired"];
             return;
         }
 
-        if (!_bloodPressureDiastolic.HasValue)
+        if (_patientBloodPressurePayload.BloodPressureDiastolic <= 0.0)
         {
             ErrorMessage = Localized["Error_BloodPressureDiastolicRequired"];
             return;
         }
-
-        _patientBloodPressurePayload.SetBloodPressure(_bloodPressureSystolic.Value, _bloodPressureDiastolic.Value);
 
         await PatientAnalyticsAuthStateProvider.ServiceWrapperAsync(
             _refreshing,
@@ -142,6 +146,7 @@
             {
                 var newBloodPressure = await PatientMetricsBloodPressureService.CreateEntry(token, Id, _patientBloodPressurePayload);
                 _patientsBloodPressure.Insert(0, newBloodPressure);
+                _patientBloodPressurePayload = new();
             },
             refreshing => _refreshing = refreshing,
             exception => ErrorMessage = exception.Message, 
@@ -151,13 +156,10 @@
     private void ShowDeleteConfirmation(int id)
     {
         _bloodPressureId = id;
-        _alertController.OnDisplayAlert(
-            Localized,
-            "Title_DeleteRecord",
-            async () => await ConfirmDelete());
+        _alertController.OnDisplayAlert(Localized, "Title_DeleteRecord", ConfirmDelete);
     }
 
-    private async Task ConfirmDelete()
+    private async void ConfirmDelete()
     {
         await PatientAnalyticsAuthStateProvider.ServiceWrapperAsync(
             _refreshing,

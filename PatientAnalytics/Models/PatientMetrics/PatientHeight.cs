@@ -73,10 +73,4 @@ public class PatientHeightPayload
 
     [RegularExpression("^Cm$|^In$", ErrorMessage = "Invalid Unit Value. Unit must be either Cm or In.")]
     public string Unit { get; set; } = null!;
-
-    public void SetPatientHeight(double height, string unit)
-    {
-        Height = height;
-        Unit = unit;
-    }
 }
