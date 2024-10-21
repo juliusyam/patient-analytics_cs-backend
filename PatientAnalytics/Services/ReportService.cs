@@ -287,8 +287,8 @@ public class ReportService
             yLabels = yLabels + item.Item1.Day + "/" + item.Item1.Month + "/" + item.Item1.Year + "|";
 
             var split = item.Item2.Split("/");
-            var high = Int32.Parse(split.First());
-            var low = Int32.Parse(split.Last());
+            var high = Double.Parse(split.First());
+            var low = Double.Parse(split.Last());
 
             highValues += high + ",";
             lowValues += low + ",";

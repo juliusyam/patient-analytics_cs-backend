@@ -72,14 +72,14 @@ public class PatientController
     }
     
     [HttpGet("{patientId:int}/report", Name = "GetPatientReport")]
-    public async Task<ReportResponse> GetPatientReportById([FromServices] IHttpContextAccessor httpContextAccessor, [FromRoute] int patientId)
+    public async Task<IResult> GetPatientReportById([FromServices] IHttpContextAccessor httpContextAccessor, [FromRoute] int patientId)
     {
         ValidateAuthorization(httpContextAccessor, out var authorization);
 
         var patient = await _patientService.GetPatientById(authorization, patientId);
         var reportResponse = _reportService.GenerateReportForPatient(patient);
 
-        return reportResponse;
+        return Results.File(reportResponse.fileStream, "application/pdf", reportResponse.fileName);
     }
 
     private void ValidateAuthorization(IHttpContextAccessor httpContextAccessor, out string verifiedAuthorization)
