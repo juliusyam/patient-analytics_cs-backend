@@ -9,7 +9,7 @@ using PatientAnalytics.Utils.Localization;
 namespace PatientAnalytics.Controllers;
 
 [ApiController]
-[Authorize(Roles = "Doctor")]
+[Authorize(Roles = $"{nameof(Role.Doctor)}")]
 [Route("/api/patients")]
 public class PatientController
 {

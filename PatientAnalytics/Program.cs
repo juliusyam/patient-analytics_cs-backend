@@ -56,7 +56,10 @@ builder.Services.AddSwaggerGen(opt =>
     opt.OperationFilter<AddRequiredHeaderParameter>();
 });
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddMvc();
+builder.Services.AddMvc().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
         {

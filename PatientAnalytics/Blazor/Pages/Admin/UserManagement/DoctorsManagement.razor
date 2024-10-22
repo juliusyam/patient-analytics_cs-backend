@@ -63,7 +63,7 @@
             _refreshing,
             async token =>
             {
-                var registerResponse = await RegistrationService.RegisterUser(token, args.Item1, "Doctor");
+                var registerResponse = await RegistrationService.RegisterUser(token, args.Item1, Role.Doctor);
 
                 _createDoctorException = null;
             

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using PatientAnalytics.Middleware;
+using PatientAnalytics.Models;
 using PatientAnalytics.Models.Auth;
 using PatientAnalytics.Services;
 using PatientAnalytics.Utils.Localization;
@@ -10,7 +11,7 @@ namespace PatientAnalytics.Controllers;
 
 [Tags("Registration")]
 [ApiController]
-[Authorize(Roles = "SuperAdmin, Admin")]
+[Authorize(Roles = $"{nameof(Role.SuperAdmin)}, ${nameof(Role.Admin)}")]
 [Route("/api/auth/register")]
 public class RegistrationController
 {
@@ -32,7 +33,7 @@ public class RegistrationController
     {
         ValidateAuthorization(httpContextAccessor, out var authorization);
         
-        return await _registrationService.RegisterUser(authorization, payload, "Admin");
+        return await _registrationService.RegisterUser(authorization, payload, Role.Admin);
     }
     
     [HttpPost("doctor", Name = "RegisterDoctor")]
@@ -42,7 +43,7 @@ public class RegistrationController
     {
         ValidateAuthorization(httpContextAccessor, out var authorization);
         
-        return await _registrationService.RegisterUser(authorization, payload, "Doctor");
+        return await _registrationService.RegisterUser(authorization, payload, Role.Doctor);
     }
 
     private void ValidateAuthorization(IHttpContextAccessor httpContextAccessor, out string verifiedAuthorization)

@@ -55,7 +55,7 @@ public class DatabasePopulateService(IServiceScopeFactory scopeFactory, IConfigu
             Email = "superadmin@example.com",
             Address = "123 Admin St"
         };
-        var superAdmin = User.CreateUser(hashed, payload, "SuperAdmin");
+        var superAdmin = User.CreateUser(hashed, payload, Role.SuperAdmin);
 
         context.Users.Add(superAdmin);
 

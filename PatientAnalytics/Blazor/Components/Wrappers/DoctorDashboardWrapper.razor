@@ -2,7 +2,7 @@
 @inject PatientAnalyticsAuthStateProvider PatientAnalyticsAuthStateProvider
 @inject NavigationManager NavigationManager
 
-<AuthorizeView Roles="Doctor">
+<AuthorizeView Roles="@nameof(Role.Doctor)">
     <Authorized>
         <NotificationToasts />
         

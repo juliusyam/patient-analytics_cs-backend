@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
 using PatientAnalytics.Middleware;
+using PatientAnalytics.Models;
 using PatientAnalytics.Models.Auth;
 
 namespace PatientAnalytics.Services;
@@ -258,14 +259,16 @@ public class PatientAnalyticsAuthStateProvider : AuthenticationStateProvider, ID
     {
         var userPrincipal = _patientAnalyticsUserService.GetAuthenticationDataMemoryStorage().UserPrincipal;
 
-        return userPrincipal is not null && (userPrincipal.HasClaim(ClaimTypes.Role, "SuperAdmin") || userPrincipal.HasClaim(ClaimTypes.Role, "Admin"));
+        return userPrincipal is not null && 
+               (userPrincipal.HasClaim(ClaimTypes.Role, nameof(Role.SuperAdmin)) || 
+                userPrincipal.HasClaim(ClaimTypes.Role, nameof(Role.Admin)));
     }
     
     public bool IsDoctor()
     {
         var userPrincipal = _patientAnalyticsUserService.GetAuthenticationDataMemoryStorage().UserPrincipal;
 
-        return userPrincipal is not null && userPrincipal.HasClaim(ClaimTypes.Role, "Doctor");
+        return userPrincipal is not null && userPrincipal.HasClaim(ClaimTypes.Role, nameof(Role.Doctor));
     }
     
     
@@ -273,7 +276,7 @@ public class PatientAnalyticsAuthStateProvider : AuthenticationStateProvider, ID
     {
         var userPrincipal = _patientAnalyticsUserService.GetAuthenticationDataMemoryStorage().UserPrincipal;
 
-        return userPrincipal is not null && userPrincipal.HasClaim(ClaimTypes.Role, "SuperAdmin");
+        return userPrincipal is not null && userPrincipal.HasClaim(ClaimTypes.Role, nameof(Role.SuperAdmin));
     }
 
     public void Dispose()

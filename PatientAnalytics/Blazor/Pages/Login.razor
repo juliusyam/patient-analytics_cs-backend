@@ -45,9 +45,11 @@
         
         if (userPrincipal is not null)
         {
-            var role = userPrincipal.FindFirst(ClaimTypes.Role)?.Value;
+            var roleString = userPrincipal.FindFirst(ClaimTypes.Role)?.Value;
 
-            if (role is not null) OnRedirect(role);
+            var isValid = Enum.TryParse(roleString, out Role role);
+
+            if (isValid) OnRedirect(role);
         }
     }
 
@@ -65,15 +67,15 @@
         }
     }
 
-    private void OnRedirect(string role)
+    private void OnRedirect(Role role)
     {
         switch (role)
         {
-            case "Doctor":
+            case Role.Doctor:
                 NavigationManager.NavigateTo("/dashboard/doctor");
                 break;
-            case "Admin":
-            case "SuperAdmin":
+            case Role.Admin:
+            case Role.SuperAdmin:
                 NavigationManager.NavigateTo("/dashboard/admin");
                 break;
             default:

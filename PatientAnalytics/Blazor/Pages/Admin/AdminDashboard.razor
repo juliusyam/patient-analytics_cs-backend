@@ -6,7 +6,7 @@
 
 <AdminDashboardWrapper>
     <section class="box columns">
-        <AuthorizeView Roles="SuperAdmin" Context="innerContext">
+        <AuthorizeView Roles="@nameof(Role.SuperAdmin)" Context="innerContext">
             <button class="column" onclick="@(() => NavigationManager.NavigateTo("/user-management/super-admins"))">
                 @Localized["Title_UserManagement_SuperAdmins"]
             </button>

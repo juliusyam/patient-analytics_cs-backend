@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using PatientAnalytics.Middleware;
+using PatientAnalytics.Models;
 using PatientAnalytics.Models.PatientMetrics;
 using PatientAnalytics.Services.PatientMetrics;
 using PatientAnalytics.Utils.Localization;
@@ -9,7 +10,7 @@ using PatientAnalytics.Utils.Localization;
 namespace PatientAnalytics.Controllers.PatientMetrics;
 
 [ApiController]
-[Authorize(Roles = "Doctor")]
+[Authorize(Roles = $"{nameof(Role.Doctor)}")]
 [Route("/api")]
 public class PatientMetricsHeightController : Controller
 {

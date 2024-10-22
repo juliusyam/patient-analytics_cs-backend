@@ -63,7 +63,7 @@
             _refreshing,
             async token =>
             {
-                var registerResponse = await RegistrationService.RegisterUser(token, args.Item1, "SuperAdmin");
+                var registerResponse = await RegistrationService.RegisterUser(token, args.Item1, Role.SuperAdmin);
 
                 _createSuperAdminException = null;
             

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using PatientAnalytics.Middleware;
+using PatientAnalytics.Models;
 using PatientAnalytics.Models.Auth;
 using PatientAnalytics.Services;
 using PatientAnalytics.Utils.Localization;
@@ -10,7 +11,7 @@ namespace PatientAnalytics.Controllers;
 
 [Tags("SuperAdmin")]
 [ApiController]
-[Authorize(Roles = "SuperAdmin")]
+[Authorize(Roles = $"{nameof(Role.SuperAdmin)}")]
 [Route("/api/internal-only")]
 public class SuperAdminController : Controller
 {
@@ -32,7 +33,7 @@ public class SuperAdminController : Controller
     {
         ValidateAuthorization(httpContextAccessor, out var authorization);
 
-        return await _registrationService.RegisterUser(authorization, payload, "SuperAdmin");
+        return await _registrationService.RegisterUser(authorization, payload, Role.SuperAdmin);
     }
 
     private void ValidateAuthorization(IHttpContextAccessor httpContextAccessor, out string verifiedAuthorization)

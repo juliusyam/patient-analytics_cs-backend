@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PatientAnalytics.Models.PatientMetrics;
 
 namespace PatientAnalytics.Models;
@@ -32,6 +33,10 @@ public class Context : DbContext
             .WithOne(e => e.User)
             .HasForeignKey(e => e.UserId)
             .IsRequired(false);
+
+        modelBuilder.Entity<User>()
+            .Property(e => e.Role)
+            .HasConversion<string>();
 
         modelBuilder.Entity<UserRefresh>().Ignore(e => e.User);
 

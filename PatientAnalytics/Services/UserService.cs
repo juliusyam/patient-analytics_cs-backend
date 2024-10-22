@@ -26,21 +26,21 @@ public class UserService
     {
         ValidateIsAdmin(token, out _);
 
-        return _context.Users.Where(u => u.Role == "Doctor").ToList();
+        return _context.Users.Where(u => u.Role == Role.Doctor).ToList();
     }
 
     public List<User> GetAdmins(string token)
     {
         ValidateIsAdmin(token, out _);
 
-        return _context.Users.Where(u => u.Role == "Admin").ToList();
+        return _context.Users.Where(u => u.Role == Role.Admin).ToList();
     }
 
     public List<User> GetSuperAdmins(string token)
     {
         ValidateIsSuperAdmin(token, out _);
         
-        return _context.Users.Where(u => u.Role == "SuperAdmin").ToList();
+        return _context.Users.Where(u => u.Role == Role.SuperAdmin).ToList();
     }
     
     public User GetUserById(string token, int userId)
@@ -55,7 +55,7 @@ public class UserService
                 string.Format(_localized["AuthError_DecodeJwt_UserNotFound"], userId));
         }
 
-        if (user.Role == "SuperAdmin")
+        if (user.Role == Role.SuperAdmin)
         {
             ValidateIsSuperAdmin(token, out _);
         }
@@ -133,7 +133,7 @@ public class UserService
     {
         var user = _jwtService.GetUserWithJwt(token);
 
-        if (user.Role != "SuperAdmin" && user.Role != "Admin")
+        if (user.Role != Role.SuperAdmin && user.Role != Role.Admin)
         {
             throw new HttpStatusCodeException(StatusCodes.Status403Forbidden, 
                 _localized["AuthError_Unauthorized"]);
@@ -146,7 +146,7 @@ public class UserService
     {
         var user = _jwtService.GetUserWithJwt(token);
 
-        if (user.Role != "SuperAdmin")
+        if (user.Role != Role.SuperAdmin)
         {
             throw new HttpStatusCodeException(StatusCodes.Status403Forbidden, 
                 _localized["AuthError_Unauthorized_SuperAdmin"]);

@@ -10,7 +10,7 @@ namespace PatientAnalytics.Controllers;
 
 [Tags("Users")]
 [ApiController]
-[Authorize(Roles = "SuperAdmin, Admin")]
+[Authorize(Roles = $"{nameof(Role.SuperAdmin)}, {nameof(Role.Admin)}")]
 [Route("/api")]
 public class UserController
 {
@@ -43,7 +43,7 @@ public class UserController
         return _userService.GetDoctors(authorization);
     }
 
-    [Authorize(Roles = "SuperAdmin")]
+    [Authorize(Roles = $"{nameof(Role.SuperAdmin)}")]
     [HttpGet("super-admins", Name = "GetSuperAdmins")]
     public List<User> GetSuperAdmins(
         [FromServices] IHttpContextAccessor httpContextAccessor)

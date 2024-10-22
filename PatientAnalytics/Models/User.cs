@@ -1,20 +1,14 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
-using Microsoft.EntityFrameworkCore;
-using PatientAnalytics.Middleware;
 using PatientAnalytics.Models.Auth;
 
 namespace PatientAnalytics.Models;
 
 public class User : Person
 {
-    public static User CreateUser(string passwordHash, RegistrationPayload payload, string role)
+    public static User CreateUser(string passwordHash, RegistrationPayload payload, Role role)
     {
-        var userRoles = new[] { "SuperAdmin", "Admin", "Doctor" };
-        if (!userRoles.Contains(role))
-            throw new HttpStatusCodeException(StatusCodes.Status400BadRequest,
-                "Invalid Role Value. Role Value can either be SuperAdmin, Admin or Doctor");
-
         return new User
         {
             DateOfBirth = payload.DateOfBirth.ToUniversalTime(),
@@ -52,16 +46,16 @@ public class User : Person
 
     [MaxLength(30)] public string Username { get; set; } = null!;
 
-    [JsonIgnore, MaxLength(255)] public string PasswordHash { get; set; } = null!;
+    [JsonIgnore, MaxLength(255)]
+    public string PasswordHash { get; set; } = null!;
 
-    [MaxLength(30),
-     RegularExpression("^SuperAdmin$|^Admin$|^Doctor$",
-         ErrorMessage = "Invalid Role Value. Role Value can either be SuperAdmin, Admin or Doctor")]
-    public string Role { get; set; } = null!;
+    [MaxLength(30)]
+    public Role Role { get; set; }
 
     public bool IsDeactivated { get; set; }
-    
-    [JsonIgnore] public ICollection<UserRefresh> UserRefreshes { get; } = new List<UserRefresh>();
+
+    [JsonIgnore]
+    public ICollection<UserRefresh> UserRefreshes { get; } = new List<UserRefresh>();
 }
 
 public class UserAccountInfoPayload

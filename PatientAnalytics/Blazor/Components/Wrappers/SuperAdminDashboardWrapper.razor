@@ -2,7 +2,7 @@
 @inject PatientAnalyticsAuthStateProvider PatientAnalyticsAuthStateProvider
 @inject NavigationManager NavigationManager
 
-<AuthorizeView Roles="SuperAdmin">
+<AuthorizeView Roles="@nameof(Role.SuperAdmin)">
     <Authorized>
         <NotificationToasts />
         

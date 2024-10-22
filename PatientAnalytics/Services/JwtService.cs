@@ -36,7 +36,7 @@ public class JwtService
             new Claim(ClaimTypes.Email, user.Email),
             new Claim(ClaimTypes.NameIdentifier, user.Username),
             new Claim(ClaimTypes.Sid, user.Id.ToString()),
-            new Claim(ClaimTypes.Role, user.Role),
+            new Claim(ClaimTypes.Role, user.Role.ToString()),
         };
 
         var expirationTime = Int32.Parse(_config["Jwt:ExpirationTime"] ?? "1");

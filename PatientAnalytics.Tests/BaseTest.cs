@@ -82,7 +82,7 @@ public abstract class BaseTest
                 FirstName = "firstname1",
                 LastName = "lastname1"
             },
-            "SuperAdmin"
+            Role.SuperAdmin
         );
     }
 
@@ -115,7 +115,7 @@ public abstract class BaseTest
                 FirstName ="firstname2",
                 LastName = "lastname2"
             },
-            "Admin"
+            Role.Admin
         );
     }
 
@@ -135,7 +135,7 @@ public abstract class BaseTest
                 FirstName = "firstname3",
                 LastName = "lastname3"
             },
-            "Doctor"
+            Role.Doctor
         );
     }
 

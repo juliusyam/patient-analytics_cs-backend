@@ -212,7 +212,7 @@ public class PatientService
     {
         var user = _jwtService.GetUserWithJwt(token);
 
-        if (user.Role != "Doctor")
+        if (user.Role != Role.Doctor)
         {
             throw new HttpStatusCodeException(StatusCodes.Status403Forbidden,
                 _localized["AuthError_Unauthorized"]);

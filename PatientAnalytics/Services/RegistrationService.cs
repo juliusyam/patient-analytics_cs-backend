@@ -32,15 +32,15 @@ public class RegistrationService
         _localized = localized;
     }
     
-    public async Task<RegisterResponse> RegisterUser(string authorization, RegistrationPayload payload, string role)
+    public async Task<RegisterResponse> RegisterUser(string authorization, RegistrationPayload payload, Role role)
     {
         switch (role)
         {
-            case "SuperAdmin":
+            case Role.SuperAdmin:
                 ValidateIsSuperAdmin(authorization, out _);
                 break;
-            case "Admin":
-            case "Doctor":
+            case Role.Admin:
+            case Role.Doctor:
                 ValidateIsAdmin(authorization, out _);
                 break;
             default:
@@ -83,13 +83,13 @@ public class RegistrationService
         {
             switch (role)
             {
-                case "SuperAdmin":
+                case Role.SuperAdmin:
                     await _hubContext.Clients.Group("SuperAdmin").SendAsync("ReceiveNewSuperAdmin", user);
                     break;
-                case "Admin":
+                case Role.Admin:
                     await _hubContext.Clients.Group("Admin").SendAsync("ReceiveNewAdmin", user);
                     break;
-                case "Doctor":
+                case Role.Doctor:
                     await _hubContext.Clients.Group("Admin").SendAsync("ReceiveNewDoctor", user);
                     break;
             }
@@ -124,7 +124,7 @@ public class RegistrationService
     {
         var user = _jwtService.GetUserWithJwt(token);
 
-        if (user.Role != "SuperAdmin" && user.Role != "Admin")
+        if (user.Role != Role.SuperAdmin && user.Role != Role.Admin)
         {
             throw new HttpStatusCodeException(StatusCodes.Status401Unauthorized, 
                 _localized["AuthError_Unauthorized"]);
@@ -137,7 +137,7 @@ public class RegistrationService
     {
         var user = _jwtService.GetUserWithJwt(token);
 
-        if (user.Role != "SuperAdmin")
+        if (user.Role != Role.SuperAdmin)
         {
             throw new HttpStatusCodeException(StatusCodes.Status401Unauthorized, 
                 _localized["AuthError_Unauthorized"]);
