@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using PatientAnalytics.Middleware;
+using PatientAnalytics.Models.PatientMetrics.Units;
 
 namespace PatientAnalytics.Models.PatientMetrics;
 
@@ -30,23 +31,16 @@ public class PatientWeight
 
     public static PatientWeight CreateFromPayload(int patientId, int doctorId, PatientWeightPayload payload)
     {
-        double weightKg;
+        Enum.TryParse(payload.Unit, out WeightUnit unit);
 
-        switch (payload.Unit)
+        var weightKg = unit switch
         {
-            case "Kg":
-                weightKg = payload.Weight;
-                break;
-            case "Lb":
-                weightKg = payload.Weight * 0.45359237;
-                break;
-            case "St":
-                weightKg = payload.Weight * 6.35029497;
-                break;
-            default:
-                throw new HttpStatusCodeException(StatusCodes.Status422UnprocessableEntity,
-                    "Invalid Unit Value. Unit must be either Kg, Lb or St.");
-        }
+            WeightUnit.Kg => payload.Weight,
+            WeightUnit.Lb => payload.Weight * 0.45359237,
+            WeightUnit.St => payload.Weight * 6.35029497,
+            _ => throw new HttpStatusCodeException(StatusCodes.Status422UnprocessableEntity,
+                "Invalid Unit Value. Unit must be either Kg, Lb or St.")
+        };
 
         return new PatientWeight
         {
@@ -69,10 +63,57 @@ public class PatientWeight
     }
 }
 
-public class PatientWeightPayload
+public class PatientWeightPayload : IValidatableObject
 {
-    public double Weight { get; set; }
+    public double Weight { get; init; }
 
-    [RegularExpression("^Kg$|^Lb$|^St$", ErrorMessage = "Invalid Unit Value. Unit must be either Kg, Lb or St.")]
-    public string Unit { get; set; } = null!;
+    public string Unit { get; init; } = null!;
+
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        var unitIsValid = Enum.TryParse(Unit, out WeightUnit _);
+
+        if (Weight <= 0.0)
+        {
+            yield return new ValidationResult(
+                "Weight value must be higher than 0.",
+                new[] { nameof(Weight) });
+        }
+
+        if (!unitIsValid)
+        {
+            yield return new ValidationResult(
+                "Invalid Unit Value. Unit must be either Kg, Lb or St.",
+                new[] { nameof(Unit) });
+        }
+    }
+
+    public static bool TryParse(PatientWeightFormValues formValues, out PatientWeightPayload payload)
+    {
+        if (formValues.Weight > 0.0)
+        {
+            payload = new PatientWeightPayload
+            {
+                Weight = formValues.Weight.Value,
+                Unit = formValues.Unit.ToString()
+            };
+            return true;
+        }
+
+        payload = new();
+        return false;
+    }
+}
+
+public class PatientWeightFormValues
+{
+    public double? Weight { get; set; }
+
+    public WeightUnit Unit { get; set; } = WeightUnit.Lb;
+
+    public void Reset()
+    {
+        Weight = null;
+        Unit = WeightUnit.Lb;
+    }
 }

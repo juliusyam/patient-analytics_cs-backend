@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using PatientAnalytics.Middleware;
+using PatientAnalytics.Models.PatientMetrics.Units;
 
 namespace PatientAnalytics.Models.PatientMetrics;
 
@@ -29,20 +30,15 @@ public class PatientHeight
 
     public static PatientHeight CreateFromPayload(int patientId, int doctorId, PatientHeightPayload payload)
     {
-        double heightCm;
+        Enum.TryParse(payload.Unit, out HeightUnit unit);
 
-        switch (payload.Unit)
+        var heightCm = unit switch
         {
-            case "Cm":
-                heightCm = payload.Height;
-                break;
-            case "In":
-                heightCm = payload.Height * 2.54;
-                break;
-            default:
-                throw new HttpStatusCodeException(StatusCodes.Status422UnprocessableEntity,
-                    "Invalid Unit Value. Unit must be either Cm or In.");
-        }
+            HeightUnit.Cm => payload.Height,
+            HeightUnit.In => payload.Height * 2.54,
+            _ => throw new HttpStatusCodeException(StatusCodes.Status422UnprocessableEntity,
+                "Invalid Unit Value. Unit must be either Cm or In.")
+        };
 
         return new PatientHeight
         {
@@ -67,10 +63,57 @@ public class PatientHeight
     }
 }
 
-public class PatientHeightPayload
+public class PatientHeightPayload : IValidatableObject
 {
-    public double Height { get; set; }
+    public double Height { get; init; }
 
-    [RegularExpression("^Cm$|^In$", ErrorMessage = "Invalid Unit Value. Unit must be either Cm or In.")]
-    public string Unit { get; set; } = null!;
+    public string Unit { get; init; } = null!;
+
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        var unitIsValid = Enum.TryParse(Unit, out HeightUnit unit) && unit != HeightUnit.Ft;
+
+        if (Height <= 0.0)
+        {
+            yield return new ValidationResult(
+                "Height value must be higher than 0.",
+                new[] { nameof(Height) });
+        }
+
+        if (!unitIsValid)
+        {
+            yield return new ValidationResult(
+                "Invalid Unit Value. Unit must be either Cm or In.",
+                new[] { nameof(Unit) });
+        }
+    }
+
+    public static bool TryParse(PatientHeightFormValues formValues, out PatientHeightPayload payload)
+    {
+        if (formValues.Height > 0.0 && formValues.Unit != HeightUnit.Ft)
+        {
+            payload = new PatientHeightPayload
+            {
+                Height = formValues.Height.Value,
+                Unit = formValues.Unit.ToString()
+            };
+            return true;
+        }
+
+        payload = new();
+        return false;
+    }
+}
+
+public class PatientHeightFormValues
+{
+    public double? Height { get; set; }
+
+    public HeightUnit Unit { get; set; } = HeightUnit.Cm;
+
+    public void Reset()
+    {
+        Height = null;
+        Unit = HeightUnit.Cm;
+    }
 }

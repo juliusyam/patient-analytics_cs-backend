@@ -18,20 +18,18 @@
                     <div class="field">
                         <label class="label">@Localized["Label_Selected_Unit"]</label>
                         <div class="control">
-                            <label class="radio-button">
-                                <input type="radio"
-                                        value="@Localized["Label_Celsius"]"
-                                        @onchange="UpdateDisplayUnit" 
-                                        checked="@IsSelectedUnit(Localized["Label_Celsius"])">
-                                <span>@Localized["Label_Celsius"]</span>
-                            </label>
-                            <label class="radio-button">
-                                <input type="radio" 
-                                        value="@Localized["Label_Fahrenheit"]"
-                                        @onchange="UpdateDisplayUnit" 
-                                        checked="@IsSelectedUnit(Localized["Label_Fahrenheit"])">
-                                <span>@Localized["Label_Fahrenheit"]</span>
-                            </label>
+                            @foreach (var unit in Enum.GetValues<TemperatureUnit>())
+                            {
+                                var displayValue = Localized[unit.ToLabel()];
+                                
+                                <label class="radio-button">
+                                    <input type="radio"
+                                           value="@displayValue"
+                                           @onchange="UpdateDisplayUnit"
+                                           checked="@IsSelectedUnit(unit)">
+                                    <span>@displayValue</span>
+                                </label>
+                            }
                         </div>
                     </div>
                     <table class="table">
@@ -48,7 +46,7 @@
                             {
                                 <tr>
                                     <td>@patient.Id</td>
-                                    <td>@GetTemperatureDisplay(patient)</td>
+                                    <td>@_selectedDisplayUnit.SelectEntryValueForUnit(patient)</td>
                                     <td>@patient.Doctor?.FirstName @patient.Doctor?.LastName</td>
                                     <td>@patient.DateCreated</td>
                                     <td>
@@ -62,7 +60,7 @@
                     </table>
                 </div>
                 <div class="container">
-                    <EditForm Model="_patientTemperaturePayload" OnValidSubmit="HandleSubmit">
+                    <EditForm Model="_formValues" OnValidSubmit="HandleSubmit">
                         <DataAnnotationsValidator />
                         <ValidationSummary class="text-danger" />
                         <div class="field">
@@ -70,14 +68,17 @@
                             <InputNumber 
                                 class="input" 
                                 placeholder=37 
-                                @bind-Value="_patientTemperaturePayload.Temperature"
+                                @bind-Value="_formValues.Temperature"
                                 @bind-Value:format="F2" />
                         </div>
                         <div class="field">
                             <label class="label">@Localized["Label_Unit"]</label>
-                            <select class="input" placeholder=cm @bind="_patientTemperaturePayload.Unit">
-                                <option value=@Localized["Label_Celsius"]>@Localized["Label_Celsius"]</option>
-                                <option value=@Localized["Label_Fahrenheit"]>@Localized["Label_Fahrenheit"]</option>
+                            <select class="input" placeholder=cm @bind="_formValues.Unit">
+                                @foreach (var unit in Enum.GetValues<TemperatureUnit>())
+                                {
+                                    var displayValue = Localized[unit.ToLabel()];
+                                    <option value=@displayValue>@displayValue</option>
+                                }
                             </select>
                         </div>
                         <button type="submit" class="button is-primary">@Localized["Button_Create"]</button>
@@ -99,7 +100,7 @@
     private string _pageTitle = "";
     private Patient? _patient;
     private List<PatientTemperature> _patientsTemperature = new();
-    private readonly PatientTemperaturePayload _patientTemperaturePayload = new();
+    private readonly PatientTemperatureFormValues _formValues = new();
     
     private bool _refreshing;
     private HttpStatusCodeException? _exception;
@@ -107,14 +108,11 @@
     private readonly BlazorAlertController _alertController = new();
     private string ErrorMessage { get; set; } = string.Empty;
 
-    private string? _selectedDisplayUnit;
+    private TemperatureUnit _selectedDisplayUnit = TemperatureUnit.Celsius;
     private int _temperatureId;
 
     protected override async Task OnInitializedAsync()
     {
-        _patientTemperaturePayload.Unit = Localized["Unit_Celsius"];
-        _selectedDisplayUnit = Localized["Unit_Celsius"];
-
         if (PatientAnalyticsAuthStateProvider.IsDoctor())
         {
             await PatientAnalyticsAuthStateProvider.ServiceWrapperAsync(
@@ -148,15 +146,9 @@
     {
         ErrorMessage = string.Empty;
 
-        if (_patientTemperaturePayload.Temperature <= 0.0)
+        if (!_formValues.Temperature.HasValue || _formValues.Temperature <= 0.0)
         {
             ErrorMessage = Localized["Error_TemperatureRequired"];
-            return;
-        }
-
-        if (string.IsNullOrEmpty(_patientTemperaturePayload.Unit))
-        {
-            ErrorMessage = Localized["Error_UnitRequired"];
             return;
         }
 
@@ -164,11 +156,12 @@
             _refreshing,
             async token =>
             {
-                var newTemperatureEntry = await PatientMetricsTemperatureService.CreateEntry(
-                    token, Id, _patientTemperaturePayload);
+                PatientTemperaturePayload.TryParse(_formValues, out var payload);
+                
+                var newTemperatureEntry = await PatientMetricsTemperatureService.CreateEntry(token, Id, payload);
                 
                 _patientsTemperature.Insert(0, newTemperatureEntry);
-                _patientTemperaturePayload.Temperature = 0.0;
+                _formValues.Reset();
             },
             refreshing => _refreshing = refreshing,
             exception => ErrorMessage = exception.Message, 
@@ -197,17 +190,7 @@
             () => NavigationManager.NavigateTo("/"));
     }
 
-    private string GetTemperatureDisplay(PatientTemperature patientTemperature)
-    {
-        return _selectedDisplayUnit switch
-        {
-            var unit when unit == $"{Localized["Unit_Celsius"]}" => $"{patientTemperature.TemperatureCelsiusFormatted} {Localized["Unit_Celsius"]}",
-            var unit when unit == $"{Localized["Unit_Fahrenheit"]}" => $"{patientTemperature.TemperatureFahrenheitFormatted} {Localized["Unit_Fahrenheit"]}",
-            _ => $"{patientTemperature.TemperatureCelsius:F1} {Localized["Unit_Celsius"]}"
-        };
-    }
-
-    private bool IsSelectedUnit(string unit)
+    private bool IsSelectedUnit(TemperatureUnit unit)
     {
         return _selectedDisplayUnit == unit;
     }
@@ -216,7 +199,9 @@
     {
         if (e.Value is not null)
         {
-            _selectedDisplayUnit = e.Value.ToString();
+            Enum.TryParse(e.Value.ToString(), out TemperatureUnit temperatureUnit);
+            
+            _selectedDisplayUnit = temperatureUnit;
         }
     }
 }

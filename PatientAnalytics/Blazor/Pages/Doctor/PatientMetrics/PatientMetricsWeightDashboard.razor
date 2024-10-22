@@ -18,27 +18,18 @@
                     <div class="field">
                         <label class="label">@Localized["Label_Selected_Unit"]</label>
                         <div class="control">
-                            <label class="radio-button">
-                                <input type="radio" 
-                                        value="@Localized["Unit_Kg"]"
-                                        @onchange="UpdateDisplayUnit" 
-                                        checked="@IsSelectedUnit(Localized[$"Unit_Kg"])">
-                                <span>@Localized["Unit_Kg"]</span>
-                            </label>
-                            <label class="radio-button">
-                                <input type="radio" 
-                                        value="@Localized["Unit_St"]" 
-                                        @onchange="UpdateDisplayUnit" 
-                                        checked="@IsSelectedUnit(Localized[$"Unit_St"])">
-                                <span>@Localized["Unit_St"]</span>
-                            </label>
-                            <label class="radio-button">
-                                <input type="radio" 
-                                        value="@Localized["Unit_Lb"]"
-                                        @onchange="UpdateDisplayUnit" 
-                                        checked="@IsSelectedUnit(Localized[$"Unit_Lb"])">
-                                <span>@Localized["Unit_Lb"]</span>
-                            </label>
+                            @foreach (var unit in Enum.GetValues<WeightUnit>())
+                            {
+                                var displayValue = Localized[unit.ToLabel()];
+                                
+                                <label class="radio-button">
+                                    <input type="radio"
+                                           value="@displayValue"
+                                           @onchange="UpdateDisplayUnit"
+                                           checked="@IsSelectedUnit(unit)">
+                                    <span>@displayValue</span>
+                                </label>
+                            }
                         </div>
                     </div>
                     <table class="table">
@@ -55,7 +46,7 @@
                             {
                                 <tr>
                                     <td>@patient.Id</td>
-                                    <td>@GetWeightDisplay(patient)</td>
+                                    <td>@_selectedDisplayUnit.SelectEntryValueForUnit(patient)</td>
                                     <td>@patient.Doctor?.FirstName @patient.Doctor?.LastName</td>
                                     <td>@patient.DateCreated</td>
                                     <td><button class="button" @onclick="() => ShowDeleteConfirmation(patient.Id)">@Localized["Button_Delete"]</button></td>
@@ -65,7 +56,7 @@
                     </table>
                 </div>
                 <div class="container">
-                    <EditForm Model="_patientWeightPayload" OnValidSubmit="HandleSubmit">
+                    <EditForm Model="_formValues" OnValidSubmit="HandleSubmit">
                         <DataAnnotationsValidator />
                         <ValidationSummary class="text-danger" />
                         <div class="field">
@@ -73,15 +64,17 @@
                             <InputNumber 
                                 class="input"
                                 placeholder=60
-                                @bind-Value="_patientWeightPayload.Weight"
+                                @bind-Value="_formValues.Weight"
                                 @bind-Value:format="F2" />
                         </div>
                         <div class="field">
                             <label class="label">@Localized["Label_Unit"]</label>
-                            <select class="input" placeholder=cm @bind="_patientWeightPayload.Unit">
-                                <option value=@Localized["Unit_Kg"]>@Localized["Unit_Kg"]</option>
-                                <option value=@Localized["Unit_St"]>@Localized["Unit_St"]</option>
-                                <option value=@Localized["Unit_Lb"]>@Localized["Unit_Lb"]</option>
+                            <select class="input" placeholder=cm @bind="_formValues.Unit">
+                                @foreach (var unit in Enum.GetValues<WeightUnit>())
+                                {
+                                    var displayValue = Localized[unit.ToLabel()];
+                                    <option value=@displayValue>@displayValue</option>
+                                }
                             </select>
                         </div>
                         <button type="submit" class="button is-primary">@Localized["Button_Create"]</button>
@@ -103,7 +96,7 @@
     private string _pageTitle = "";
     private Patient? _patient;
     private List<PatientWeight> _patientsWeight = new();
-    private readonly PatientWeightPayload _patientWeightPayload = new();
+    private readonly PatientWeightFormValues _formValues = new();
     
     private bool _refreshing;
     private HttpStatusCodeException? _exception;
@@ -111,14 +104,11 @@
     private readonly BlazorAlertController _alertController = new();
     private string ErrorMessage { get; set; } = string.Empty;
     
-    private string? _selectedDisplayUnit;
+    private WeightUnit _selectedDisplayUnit = WeightUnit.Lb;
     private int _weightId;
 
     protected override async Task OnInitializedAsync()
     {
-        _patientWeightPayload.Unit = Localized["Unit_Kg"];
-        _selectedDisplayUnit = Localized["Unit_Kg"];
-
         if (PatientAnalyticsAuthStateProvider.IsDoctor())
         {
             await PatientAnalyticsAuthStateProvider.ServiceWrapperAsync(
@@ -149,15 +139,9 @@
     {
         ErrorMessage = string.Empty;
 
-        if (_patientWeightPayload.Weight <= 0.0)
+        if (!_formValues.Weight.HasValue || _formValues.Weight <= 0.0)
         {
             ErrorMessage = Localized["Error_WeightRequired"];
-            return;
-        }
-
-        if (string.IsNullOrEmpty(_patientWeightPayload.Unit))
-        {
-            ErrorMessage = Localized["Error_UnitRequired"];
             return;
         }
 
@@ -165,9 +149,12 @@
             _refreshing,
             async token =>
             {
-                var newWeightEntry = await PatientMetricsWeightService.CreateEntry(token, Id, _patientWeightPayload);
+                PatientWeightPayload.TryParse(_formValues, out var payload);
+                
+                var newWeightEntry = await PatientMetricsWeightService.CreateEntry(token, Id, payload);
+                
                 _patientsWeight.Insert(0, newWeightEntry);
-                _patientWeightPayload.Weight = 0.0;
+                _formValues.Reset();
             },
             refreshing => _refreshing = refreshing,
             exception => ErrorMessage = exception.Message, 
@@ -196,18 +183,7 @@
             () => NavigationManager.NavigateTo("/"));
     }
 
-    private string GetWeightDisplay(PatientWeight patientWeight)
-    {
-        return _selectedDisplayUnit switch
-        {
-            var unit when unit == $"{Localized["Unit_Kg"]}" => $"{patientWeight.WeightKgFormatted} {Localized["Unit_Kg"]}",
-            var unit when unit == $"{Localized["Unit_St"]}" => $"{patientWeight.WeightStFormatted} {Localized["Unit_St"]}",
-            var unit when unit == $"{Localized["Unit_Lb"]}" => $"{patientWeight.WeightLbFormatted} {Localized["Unit_Lb"]}",
-            _ => $"{patientWeight.WeightKg:F1} {Localized["Unit_Kg"]}"
-        };
-    }
-
-    private bool IsSelectedUnit(string unit)
+    private bool IsSelectedUnit(WeightUnit unit)
     {
         return _selectedDisplayUnit == unit;
     }
@@ -216,7 +192,9 @@
     {
         if (e.Value is not null)
         {
-            _selectedDisplayUnit = e.Value.ToString();
+            Enum.TryParse(e.Value.ToString(), out WeightUnit weightUnit);
+            
+            _selectedDisplayUnit = weightUnit;
         }
     }
 }

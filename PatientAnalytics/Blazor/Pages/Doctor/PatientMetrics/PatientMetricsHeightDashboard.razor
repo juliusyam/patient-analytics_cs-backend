@@ -18,27 +18,18 @@
                     <div class="field">
                         <label class="label">@Localized["Label_Selected_Unit"]</label>
                         <div class="control">
-                            <label class="radio-button">
-                                <input type="radio" 
-                                        value="@Localized["Unit_Cm"]"
-                                        @onchange="UpdateDisplayUnit" 
-                                        checked="@IsSelectedUnit(Localized["Unit_Cm"])">
-                                <span>@Localized["Unit_Cm"]</span>
-                            </label>
-                            <label class="radio-button">
-                                <input type="radio"
-                                        value="@Localized["Unit_In"]"
-                                        @onchange="UpdateDisplayUnit" 
-                                        checked="@IsSelectedUnit(Localized["Unit_In"])">
-                                <span>@Localized["Unit_In"]</span>
-                            </label>
-                            <label class="radio-button">
-                                <input type="radio"
-                                        value="@Localized["Unit_Ft"]"
-                                        @onchange="UpdateDisplayUnit" 
-                                        checked="@IsSelectedUnit(Localized["Unit_Ft"])">
-                                <span>@Localized["Unit_Ft"]</span>
-                            </label>
+                            @foreach (var unit in Enum.GetValues<HeightUnit>())
+                            {
+                                var displayValue = Localized[unit.ToLabel()];
+                                
+                                <label class="radio-button">
+                                    <input type="radio"
+                                           value="@displayValue"
+                                           @onchange="UpdateDisplayUnit"
+                                           checked="@IsSelectedUnit(unit)">
+                                    <span>@displayValue</span>
+                                </label>
+                            }
                         </div>
                     </div>
                     <table class="table">
@@ -55,7 +46,7 @@
                             {
                                 <tr>
                                     <td>@patient.Id</td>
-                                    <td>@GetHeightDisplay(patient)</td>
+                                    <td>@_selectedDisplayUnit.SelectEntryValueForUnit(patient)</td>
                                     <td>@patient.Doctor?.FirstName @patient.Doctor?.LastName</td>
                                     <td>@patient.DateCreated</td>
                                     <td>
@@ -70,7 +61,7 @@
                 </div>
 
                 <div class="container">
-                    <EditForm Model="_patientHeightPayload" OnValidSubmit="HandleSubmit">
+                    <EditForm Model="_formValues" OnValidSubmit="HandleSubmit">
                         <DataAnnotationsValidator />
                         <ValidationSummary class="text-danger" />
                         <div class="field">
@@ -78,14 +69,20 @@
                             <InputNumber 
                                 class="input" 
                                 placeholder=120 
-                                @bind-Value="_patientHeightPayload.Height"
+                                @bind-Value="_formValues.Height"
                                 @bind-Value:format="F2" />
                         </div>
                         <div class="field">
                             <label class="label">@Localized["Label_Unit"]</label>
-                            <select class="input" placeholder=cm @bind="_patientHeightPayload.Unit">
-                                <option value=@Localized["Unit_Cm"]>@Localized["Unit_Cm"]</option>
-                                <option value=@Localized["Unit_In"]>@Localized["Unit_In"]</option>
+                            <select class="input" placeholder=cm @bind="_formValues.Unit">
+                                @foreach (var unit in Enum.GetValues<HeightUnit>())
+                                {
+                                    @if (unit != HeightUnit.Ft)
+                                    {
+                                        var displayValue = Localized[unit.ToLabel()];
+                                        <option value=@displayValue>@displayValue</option>
+                                    }
+                                }
                             </select>
                         </div>
                         <button type="submit" class="button is-primary">@Localized["Button_Create"]</button>
@@ -107,7 +104,7 @@
     private string _pageTitle = "";
     private Patient? _patient;
     private List<PatientHeight> _patientsHeight = new();
-    private readonly PatientHeightPayload _patientHeightPayload = new();
+    private readonly PatientHeightFormValues _formValues = new();
     
     private bool _refreshing;
     private HttpStatusCodeException? _exception;
@@ -115,14 +112,11 @@
     private readonly BlazorAlertController _alertController = new();
     private string ErrorMessage { get; set; } = string.Empty;
 
-    private string? _selectedDisplayUnit;
+    private HeightUnit _selectedDisplayUnit = HeightUnit.Cm;
     private int _heightId;
 
     protected override async Task OnInitializedAsync()
     {
-        _patientHeightPayload.Unit= Localized["Unit_Cm"];
-        _selectedDisplayUnit = Localized["Unit_Cm"];
-
         if (PatientAnalyticsAuthStateProvider.IsDoctor())
         {
             await PatientAnalyticsAuthStateProvider.ServiceWrapperAsync(
@@ -156,15 +150,9 @@
     {
         ErrorMessage = string.Empty;
 
-        if (_patientHeightPayload.Height <= 0.0)
+        if (!_formValues.Height.HasValue || _formValues.Height <= 0.0)
         {
             ErrorMessage = Localized["Error_HeightRequired"];
-            return;
-        }
-
-        if (string.IsNullOrEmpty(_patientHeightPayload.Unit))
-        {
-            ErrorMessage = Localized["Error_UnitRequired"];
             return;
         }
 
@@ -172,11 +160,12 @@
             _refreshing,
             async token =>
             {
-                var newHeightEntry = await PatientMetricsHeightService.CreateEntry(
-                    token, Id, _patientHeightPayload);
+                PatientHeightPayload.TryParse(_formValues, out var payload);
+                
+                var newHeightEntry = await PatientMetricsHeightService.CreateEntry(token, Id, payload);
                 
                 _patientsHeight.Insert(0, newHeightEntry);
-                _patientHeightPayload.Height = 0.0;
+                _formValues.Reset();
             },
             refreshing => _refreshing = refreshing,
             exception => ErrorMessage = exception.Message, 
@@ -205,18 +194,7 @@
             () => NavigationManager.NavigateTo("/"));
     }
 
-    private string GetHeightDisplay(PatientHeight patientHeight)
-    {
-        return _selectedDisplayUnit switch
-        {
-            var unit when unit == $"{Localized["Unit_Cm"]}" => $"{patientHeight.HeightCmFormatted} {Localized["Unit_Cm"]}",
-            var unit when unit == $"{Localized["Unit_In"]}" => $"{patientHeight.HeightInFormatted} {Localized["Unit_In"]}",
-            var unit when unit == $"{Localized["Unit_Ft"]}" => $"{patientHeight.HeightFtFormatted} {Localized["Unit_Ft"]}",
-            _ => $"{patientHeight.HeightCm:F1} {Localized["Unit_Cm"]}"
-        };
-    }
-
-    private bool IsSelectedUnit(string unit)
+    private bool IsSelectedUnit(HeightUnit unit)
     {
         return _selectedDisplayUnit == unit;
     }
@@ -225,7 +203,9 @@
     {
         if (e.Value is not null)
         {
-            _selectedDisplayUnit = e.Value.ToString();
+            Enum.TryParse(e.Value.ToString(), out HeightUnit heightUnit);
+            
+            _selectedDisplayUnit = heightUnit;
         }
     }
 }
