@@ -10,15 +10,18 @@ public class UserService
 {
     private readonly Context _context;
     private readonly JwtService _jwtService;
+    private readonly BlobService _blobService;
     private readonly IStringLocalizer<ApiResponseLocalized> _localized;
 
     public UserService(
         [FromServices] Context context,
         JwtService jwtService,
+        BlobService blobService,
         IStringLocalizer<ApiResponseLocalized> localized)
     {
         _context = context;
         _jwtService = jwtService;
+        _blobService = blobService;
         _localized = localized;
     }
 
@@ -74,6 +77,15 @@ public class UserService
         await _context.SaveChangesAsync();
 
         return user;
+    }
+
+    public async Task<Guid> EditUserProfileImage(string token, int userId, IFormFile file)
+    {
+        await using var stream = file.OpenReadStream();
+
+        var fileId = await _blobService.UploadAsync(stream, file.ContentType);
+
+        return fileId;
     }
     
     public async Task<IActionResult> DeactivateUser(string token, int userId)

@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json.Serialization;
+using Azure.Storage.Blobs;
 using Blazored.Toast;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -116,6 +117,10 @@ builder.Services.AddScoped<PatientMetricsTemperatureService>();
 builder.Services.AddScoped<PatientMetricsBloodPressureService>();
 builder.Services.AddScoped<PatientMetricsHeightService>();
 builder.Services.AddScoped<PatientMetricsWeightService>();
+builder.Services.AddScoped<BlobService>();
+builder.Services.AddSingleton(_ => 
+    new BlobServiceClient(builder.Configuration.GetConnectionString("BlobStorage")));
+    
 builder.Services.AddHostedService<DatabasePopulateService>();
 
 builder.Services.AddCors(options =>
