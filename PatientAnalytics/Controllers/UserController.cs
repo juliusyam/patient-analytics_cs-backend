@@ -75,14 +75,16 @@ public class UserController
     }
 
     [HttpPut("users/{userId:int}/profile-image", Name = "EditUserProfileImage")]
-    public async Task<Guid> EditUserProfileImage(
+    public async Task<IResult> EditUserProfileImage(
         [FromServices] IHttpContextAccessor httpContextAccessor,
         [FromRoute] int userId,
         [FromForm] FilePayload payload)
     {
         ValidateAuthorization(httpContextAccessor, out var authorization);
 
-        return await _userService.EditUserProfileImage(authorization, userId, payload.File);
+        var imageResponse = await _userService.EditUserProfileImage(authorization, userId, payload.File);
+        
+        return Results.File(imageResponse.Stream, imageResponse.ContentType, "file.png");
     }
 
     [HttpPut("users/{userId:int}/deactivate", Name = "DeactivateUser")]

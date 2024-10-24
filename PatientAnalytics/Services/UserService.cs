@@ -79,13 +79,15 @@ public class UserService
         return user;
     }
 
-    public async Task<Guid> EditUserProfileImage(string token, int userId, IFormFile file)
+    public async Task<FileResponse> EditUserProfileImage(string token, int userId, IFormFile file)
     {
         await using var stream = file.OpenReadStream();
 
         var fileId = await _blobService.UploadAsync(stream, file.ContentType);
 
-        return fileId;
+        var fileResponse = await _blobService.DownloadAsync(fileId);
+        
+        return fileResponse;
     }
     
     public async Task<IActionResult> DeactivateUser(string token, int userId)
