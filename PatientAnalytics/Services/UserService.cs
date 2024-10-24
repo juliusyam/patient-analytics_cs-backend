@@ -80,7 +80,7 @@ public class UserService
         return user;
     }
 
-    public async Task<FileResponse> EditUserProfileImage(string token, int userId, IFormFile file)
+    public async Task<Guid> EditUserProfileImage(string token, int userId, IFormFile file)
     {
         var user = GetUserById(token, userId);
         
@@ -105,7 +105,20 @@ public class UserService
 
         await _context.SaveChangesAsync();
 
-        var fileResponse = await _blobService.DownloadAsync(fileId);
+        return fileId;
+    }
+    
+    public async Task<FileResponse> DownloadUserProfileImage(string token, int userId)
+    {
+        var user = GetUserById(token, userId);
+
+        if (!user.ProfileImageGuid.HasValue)
+        {
+            throw new HttpStatusCodeException(StatusCodes.Status404NotFound,
+                $"Unable to locate profile image for user with id: {userId}");
+        }
+        
+        var fileResponse = await _blobService.DownloadAsync(user.ProfileImageGuid.Value);
         
         return fileResponse;
     }

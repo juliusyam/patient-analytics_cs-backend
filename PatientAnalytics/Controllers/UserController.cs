@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using MimeTypes;
 using PatientAnalytics.Middleware;
 using PatientAnalytics.Models;
 using PatientAnalytics.Services;
@@ -75,16 +76,28 @@ public class UserController
     }
 
     [HttpPut("users/{userId:int}/profile-image", Name = "EditUserProfileImage")]
-    public async Task<IResult> EditUserProfileImage(
+    public async Task<Guid> EditUserProfileImage(
         [FromServices] IHttpContextAccessor httpContextAccessor,
         [FromRoute] int userId,
         [FromForm] FilePayload payload)
     {
         ValidateAuthorization(httpContextAccessor, out var authorization);
 
-        var imageResponse = await _userService.EditUserProfileImage(authorization, userId, payload.File);
+        return await _userService.EditUserProfileImage(authorization, userId, payload.File);
+    }
+
+    [HttpGet("users/{userId:int}/profile-image", Name = "DownloadUserProfileImage")]
+    public async Task<IResult> DownloadUserProfileImage(
+        [FromServices] IHttpContextAccessor httpContextAccessor,
+        [FromRoute] int userId)
+    {
+        ValidateAuthorization(httpContextAccessor, out var authorization);
+
+        var imageResponse = await _userService.DownloadUserProfileImage(authorization, userId);
+
+        var imageExtension = MimeTypeMap.GetExtension(imageResponse.ContentType);
         
-        return Results.File(imageResponse.Stream, imageResponse.ContentType, "file.png");
+        return Results.File(imageResponse.Stream, imageResponse.ContentType, $"file{imageExtension}");
     }
 
     [HttpPut("users/{userId:int}/deactivate", Name = "DeactivateUser")]
