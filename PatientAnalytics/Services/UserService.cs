@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using PatientAnalytics.Middleware;
 using PatientAnalytics.Models;
+using PatientAnalytics.Utils;
 using PatientAnalytics.Utils.Localization;
 
 namespace PatientAnalytics.Services;
@@ -83,7 +84,11 @@ public class UserService
     {
         var user = GetUserById(token, userId);
         
-        // TODO: Check if file is Image
+        if (!FileValidation.IsValidImageFile(file))
+        {
+            throw new HttpStatusCodeException(StatusCodes.Status400BadRequest,
+                "File must be a png, jpeg, webp or svg");
+        }
 
         if (user.ProfileImageGuid.HasValue)
         {
