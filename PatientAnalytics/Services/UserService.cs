@@ -81,9 +81,24 @@ public class UserService
 
     public async Task<FileResponse> EditUserProfileImage(string token, int userId, IFormFile file)
     {
+        var user = GetUserById(token, userId);
+        
+        // TODO: Check if file is Image
+
+        if (user.ProfileImageGuid.HasValue)
+        {
+            await _blobService.DeleteAsync(user.ProfileImageGuid.Value);
+        }
+        
         await using var stream = file.OpenReadStream();
 
         var fileId = await _blobService.UploadAsync(stream, file.ContentType);
+        
+        user.UpdateProfileImageGuid(fileId);
+
+        _context.Users.Update(user);
+
+        await _context.SaveChangesAsync();
 
         var fileResponse = await _blobService.DownloadAsync(fileId);
         
