@@ -1,10 +1,10 @@
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PatientAnalytics.Models.PatientMetrics;
 
 namespace PatientAnalytics.Models;
-using Microsoft.EntityFrameworkCore;
 
-public class Context : DbContext
+public class Context : DbContext, IDataProtectionKeyContext
 {
     public Context(DbContextOptions<Context> options) : base(options)
     {
@@ -18,6 +18,8 @@ public class Context : DbContext
     public virtual DbSet<PatientBloodPressure> PatientBloodPressures { get; private set; } = default!;
     public virtual DbSet<PatientHeight> PatientHeights { get; private set; } = default!;
     public virtual DbSet<PatientWeight> PatientWeights { get; private set; } = default!;
+    
+    public DbSet<DataProtectionKey> DataProtectionKeys { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

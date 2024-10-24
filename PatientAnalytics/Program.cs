@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using Blazored.Toast;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -101,6 +102,10 @@ var connectionString = builder.Configuration.GetConnectionString("PatientAnalyti
 
 builder.Services.AddDbContext<Context>(opt =>
     opt.UseNpgsql(connectionString));
+
+// Browser Storage Encryption Persist Keys to Database Context
+builder.Services.AddDataProtection().PersistKeysToDbContext<Context>();
+
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<RegistrationService>();
