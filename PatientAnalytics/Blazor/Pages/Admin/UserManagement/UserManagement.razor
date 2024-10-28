@@ -18,6 +18,9 @@
                 <button class="button is-success" @onclick="() => _userEditModalRevealed = true">
                     @Localized["Button_UserEditAccountInfo"]
                 </button>
+                <button class="button is-success" @onclick="() => _profileImageEditModalRevealed = true">
+                    Update Profile Image
+                </button>
                 @if (_user.IsDeactivated)
                 {
                     <button class="button is-primary is-outlined" @onclick="OnActivateUser">
@@ -41,6 +44,13 @@
             OnUserEdited="user => _user = user"
             User="_user"
         />
+        
+        <ProfileImageEditModal
+            IsModalOpen="@_profileImageEditModalRevealed"
+            OnClose="() => _profileImageEditModalRevealed = false"
+            OnProfileImageEdited="guid => _user.ProfileImageGuid = guid"
+            User="_user"
+        />
     }
     
     <ConfirmationModal Alert="_alertController.Alert" />
@@ -56,6 +66,7 @@
 
     private User? _user;
     private bool _userEditModalRevealed;
+    private bool _profileImageEditModalRevealed;
 
     private readonly BlazorAlertController _alertController = new();
 

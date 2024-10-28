@@ -12,7 +12,7 @@
             <figure class="image is-128x128 mb-4">
                 <img
                     class="is-rounded"
-                    style="height: 100%"
+                    style="height: 100%; object-fit: cover;"
                     src="http://127.0.0.1:10000/devstoreaccount1/user-profile-images/@Person.ProfileImageGuid"
                     alt="Profile Image"/>
             </figure>
@@ -37,7 +37,10 @@
 </section>
 
 @code {
-    [Parameter] public string Title { private get; set; } = null!;
-    
-    [Parameter] public Person Person { private get; set; } = null!;
+
+    [Parameter]
+    public string Title { private get; set; } = null!;
+
+    [Parameter]
+    public Person Person { private get; set; } = null!;
 }

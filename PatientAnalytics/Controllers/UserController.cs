@@ -83,7 +83,9 @@ public class UserController
     {
         ValidateAuthorization(httpContextAccessor, out var authorization);
 
-        return await _userService.EditUserProfileImage(authorization, userId, payload.File);
+        await using var stream = payload.File.OpenReadStream();
+        
+        return await _userService.EditUserProfileImage(authorization, userId, stream, payload.File.ContentType);
     }
 
     [HttpGet("users/{userId:int}/profile-image", Name = "DownloadUserProfileImage")]

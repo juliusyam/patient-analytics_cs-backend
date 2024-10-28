@@ -80,11 +80,11 @@ public class UserService
         return user;
     }
 
-    public async Task<Guid> EditUserProfileImage(string token, int userId, IFormFile file)
+    public async Task<Guid> EditUserProfileImage(string token, int userId, Stream stream, string contentType)
     {
         var user = GetUserById(token, userId);
         
-        if (!FileValidation.IsValidImageFile(file))
+        if (!FileValidation.IsValidImageFile(contentType))
         {
             throw new HttpStatusCodeException(StatusCodes.Status400BadRequest,
                 "File must be a png, jpeg, webp or svg");
@@ -95,9 +95,9 @@ public class UserService
             await _blobService.DeleteAsync(user.ProfileImageGuid.Value);
         }
         
-        await using var stream = file.OpenReadStream();
-
-        var fileId = await _blobService.UploadAsync(stream, file.ContentType);
+        // await using var stream = payload.File.OpenReadStream();
+        
+        var fileId = await _blobService.UploadAsync(stream, contentType);
         
         user.UpdateProfileImageGuid(fileId);
 

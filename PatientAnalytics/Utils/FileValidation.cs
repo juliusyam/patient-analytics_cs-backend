@@ -5,7 +5,7 @@ namespace PatientAnalytics.Utils;
 
 public static class FileValidation
 {
-    public static bool IsValidImageFile(IFormFile file)
+    public static bool IsValidImageFile(string contentType)
     {
         var validImageTypes = new[]
         {
@@ -15,7 +15,7 @@ public static class FileValidation
             MediaTypeNames.Image.Svg
         };
         
-        return validImageTypes.Contains(file.ContentType);
+        return validImageTypes.Contains(contentType);
     }
 }
 
