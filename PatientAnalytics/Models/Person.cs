@@ -14,8 +14,14 @@ public class Person
     [EmailAddress(ErrorMessage = "Email address format is invalid.")]
     public string Email { get; set; } = null!;
     public string? Address { get; set; }
+    public Guid? ProfileImageGuid { get; set; }
     public DateTime DateCreated { get; set; }
     public DateTime? DateEdited { get; set; }
+
+    public void UpdateProfileImageGuid(Guid guid)
+    {
+        ProfileImageGuid = guid;
+    }
 }
 
 public class PersonPayload : UserAccountInfoPayload

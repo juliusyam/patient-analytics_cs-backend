@@ -6,6 +6,18 @@
         <h2 class="title is-4">
             @string.Format(Localized["Format_FullName"], Person.FirstName, Person.LastName)
         </h2>
+        
+        @if (Person.ProfileImageGuid.HasValue)
+        {
+            <figure class="image is-128x128 mb-4">
+                <img
+                    class="is-rounded"
+                    style="height: 100%; object-fit: cover;"
+                    src="http://127.0.0.1:10000/devstoreaccount1/user-profile-images/@Person.ProfileImageGuid"
+                    alt="Profile Image"/>
+            </figure>
+        }
+        
         <ContentWithLabel Label="@Localized["Label_Email"]">@Person.Email</ContentWithLabel>
         <ContentWithLabel Label="@Localized["Label_Gender"]">@Person.Gender</ContentWithLabel>
         <ContentWithLabel Label="@Localized["Label_DateOfBirth"]">
@@ -25,7 +37,10 @@
 </section>
 
 @code {
-    [Parameter] public string Title { private get; set; } = null!;
-    
-    [Parameter] public Person Person { private get; set; } = null!;
+
+    [Parameter]
+    public string Title { private get; set; } = null!;
+
+    [Parameter]
+    public Person Person { private get; set; } = null!;
 }

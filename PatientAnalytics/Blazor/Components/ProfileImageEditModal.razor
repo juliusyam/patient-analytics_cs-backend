@@ -1,0 +1,87 @@
+@inject PatientAnalyticsAuthStateProvider PatientAnalyticsAuthStateProvider
+@inject UserService UserService
+@inject IStringLocalizer<Localized> Localized
+@rendermode InteractiveServer
+
+@if (IsModalOpen)
+{
+    <div class="modal is-active">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">@Localized["Button_UpdateUser"]</p>
+                <button class="delete" aria-label="close" @onclick="CloseModal"></button>
+            </header>
+            <section class="modal-card-body">
+                <InputFile OnChange="LoadFiles" class="form-control" accept=".png" />
+                <button type="submit" class="button is-primary" disabled="@(_payload is null)" @onclick="HandleSubmit">
+                    @Localized["Button_Update"]
+                </button>
+                <p class="has-text-danger">@ErrorMessage</p>
+            </section>
+        </div>
+    </div>
+}
+
+@code {
+
+    [Parameter]
+    public bool IsModalOpen { private get; set; }
+
+    [Parameter]
+    public EventCallback OnClose { private get; set; }
+
+    [Parameter]
+    public EventCallback<Guid> OnProfileImageEdited { private get; set; }
+
+    [Parameter]
+    public User User { get; set; } = null!;
+
+    private BlazorFileUploadPayload? _payload;
+    private string ErrorMessage { get; set; } = string.Empty;
+    
+    private async Task HandleSubmit()
+    {
+        var token = PatientAnalyticsAuthStateProvider.FetchCurrentUser().Token;
+        ErrorMessage = string.Empty;
+
+        if (_payload is not null)
+        {
+            try
+            {
+                var guid = await UserService.EditUserProfileImage(
+                    token, 
+                    User.Id, 
+                    _payload.Stream, 
+                    _payload.ContentType);
+        
+                await OnProfileImageEdited.InvokeAsync(guid);
+            
+                await OnClose.InvokeAsync();
+            }
+            catch (HttpStatusCodeException exception)
+            {
+                ErrorMessage = exception.Message;
+            }
+        }
+    }
+
+    private void LoadFiles(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+
+        var stream = file.OpenReadStream();
+
+        _payload = new BlazorFileUploadPayload
+        {
+            Stream = stream,
+            ContentType = file.ContentType
+        };
+    }
+    
+    private void CloseModal()
+    {
+        OnClose.InvokeAsync();
+    }
+
+}

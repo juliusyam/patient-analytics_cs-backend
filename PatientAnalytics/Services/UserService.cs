@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using PatientAnalytics.Middleware;
 using PatientAnalytics.Models;
+using PatientAnalytics.Utils;
 using PatientAnalytics.Utils.Localization;
 
 namespace PatientAnalytics.Services;
@@ -10,15 +11,18 @@ public class UserService
 {
     private readonly Context _context;
     private readonly JwtService _jwtService;
+    private readonly BlobService _blobService;
     private readonly IStringLocalizer<ApiResponseLocalized> _localized;
 
     public UserService(
         [FromServices] Context context,
         JwtService jwtService,
+        BlobService blobService,
         IStringLocalizer<ApiResponseLocalized> localized)
     {
         _context = context;
         _jwtService = jwtService;
+        _blobService = blobService;
         _localized = localized;
     }
 
@@ -74,6 +78,49 @@ public class UserService
         await _context.SaveChangesAsync();
 
         return user;
+    }
+
+    public async Task<Guid> EditUserProfileImage(string token, int userId, Stream stream, string contentType)
+    {
+        var user = GetUserById(token, userId);
+        
+        if (!FileValidation.IsValidImageFile(contentType))
+        {
+            throw new HttpStatusCodeException(StatusCodes.Status400BadRequest,
+                "File must be a png, jpeg, webp or svg");
+        }
+
+        if (user.ProfileImageGuid.HasValue)
+        {
+            await _blobService.DeleteAsync(user.ProfileImageGuid.Value);
+        }
+        
+        // await using var stream = payload.File.OpenReadStream();
+        
+        var fileId = await _blobService.UploadAsync(stream, contentType);
+        
+        user.UpdateProfileImageGuid(fileId);
+
+        _context.Users.Update(user);
+
+        await _context.SaveChangesAsync();
+
+        return fileId;
+    }
+    
+    public async Task<FileResponse> DownloadUserProfileImage(string token, int userId)
+    {
+        var user = GetUserById(token, userId);
+
+        if (!user.ProfileImageGuid.HasValue)
+        {
+            throw new HttpStatusCodeException(StatusCodes.Status404NotFound,
+                $"Unable to locate profile image for user with id: {userId}");
+        }
+        
+        var fileResponse = await _blobService.DownloadAsync(user.ProfileImageGuid.Value);
+        
+        return fileResponse;
     }
     
     public async Task<IActionResult> DeactivateUser(string token, int userId)
